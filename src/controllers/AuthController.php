@@ -5,7 +5,7 @@ include '../../database/config.php';
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     // LOGIN
     if (isset($_POST['login'])) {
-        $email = $_POST['username']; 
+        $email = $_POST['email']; 
         $password = $_POST['password'];
 
         $stmt = $conn->prepare("SELECT * FROM users WHERE email = ? AND status = 'Active'");
@@ -21,7 +21,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 $_SESSION['role_id'] = $user['role_id'];
                 $_SESSION['branch_id'] = $user['branch_id'];
 
-                header("Location: ../dashboard.php");
+                header("Location: ../views/landingPage.php");
                 exit;
             } else {
                 echo "Invalid password.";
