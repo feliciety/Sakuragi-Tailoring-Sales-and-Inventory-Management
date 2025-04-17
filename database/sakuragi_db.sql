@@ -3,9 +3,9 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Apr 01, 2025 at 10:19 AM
+-- Generation Time: Apr 17, 2025 at 08:59 AM
 -- Server version: 10.4.32-MariaDB
--- PHP Version: 8.2.12
+-- PHP Version: 8.0.30
 
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
 START TRANSACTION;
@@ -171,6 +171,18 @@ CREATE TABLE `users` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
+-- Dumping data for table `users`
+--
+
+INSERT INTO `users` (`user_id`, `branch_id`, `role_id`, `full_name`, `email`, `password`, `phone_number`, `status`, `created_at`) VALUES
+(0, NULL, 2, 'New User', 'cjaylao447@gmail.com', '$2y$10$CR57kWDTlOwkPVlr.KP2fuxl1.2c4QZgssMHonh0nsI43cuerCfpK', '0000000000', 'Active', '2025-04-13 10:27:35'),
+(0, NULL, 2, 'New User', 'cjaylao407@gmail.com', '$2y$10$OsPFvRTX.ndBDp.Mz5vLh.fJWvs09do8Mif1ylaP/TcIP7chuh7/m', '0000000000', 'Active', '2025-04-13 10:27:42'),
+(0, NULL, 2, 'New User', 'cjaylao123@gmail.com', '$2y$10$f8H6cOSyzW2l.R00uusx2u14TfAuq94oFd7WBM7bE2QWUsrLn4Xg2', '0000000000', 'Active', '2025-04-13 10:28:09'),
+(0, NULL, 2, 'New User', 'cjaylao321@gmail.com', '$2y$10$l.GumCipAn7ALTj4h8rBe.dBNuYiY8cvuqlxKB.HsC0rF7d24zcl.', '0000000000', 'Active', '2025-04-13 10:28:27'),
+(0, NULL, 2, 'New User', 'cjaylao7@gmail.com', '$2y$10$XT/XPliopOkcnbxrP6QQMeD5quNB1DF28y0L93I5XnThUMh6SfrKG', '0000000000', 'Active', '2025-04-13 10:28:45'),
+(0, NULL, 2, 'New User', 'cjaylao07@gmail.com', '$2y$10$YD2opd7TADYQ6vEVHMT.7eoqIdksAzOVSmtOmA8stcLdUy4/1FL3O', '0000000000', 'Active', '2025-04-13 10:29:04');
+
+--
 -- Indexes for dumped tables
 --
 
@@ -241,15 +253,6 @@ ALTER TABLE `suppliers`
   ADD PRIMARY KEY (`supplier_id`);
 
 --
--- Indexes for table `users`
---
-ALTER TABLE `users`
-  ADD PRIMARY KEY (`user_id`),
-  ADD UNIQUE KEY `email` (`email`),
-  ADD KEY `branch_id` (`branch_id`),
-  ADD KEY `role_id` (`role_id`);
-
---
 -- AUTO_INCREMENT for dumped tables
 --
 
@@ -308,22 +311,8 @@ ALTER TABLE `suppliers`
   MODIFY `supplier_id` bigint(20) NOT NULL AUTO_INCREMENT;
 
 --
--- AUTO_INCREMENT for table `users`
---
-ALTER TABLE `users`
-  MODIFY `user_id` bigint(20) NOT NULL AUTO_INCREMENT;
-
---
 -- Constraints for dumped tables
 --
-
---
--- Constraints for table `employees`
---
-ALTER TABLE `employees`
-  ADD CONSTRAINT `employees_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `users` (`user_id`),
-  ADD CONSTRAINT `employees_ibfk_2` FOREIGN KEY (`branch_id`) REFERENCES `branches` (`branch_id`),
-  ADD CONSTRAINT `employees_ibfk_3` FOREIGN KEY (`department_id`) REFERENCES `departments` (`department_id`);
 
 --
 -- Constraints for table `inventory`
@@ -334,25 +323,10 @@ ALTER TABLE `inventory`
   ADD CONSTRAINT `inventory_ibfk_3` FOREIGN KEY (`material_id`) REFERENCES `materials` (`material_id`);
 
 --
--- Constraints for table `orders`
---
-ALTER TABLE `orders`
-  ADD CONSTRAINT `orders_ibfk_1` FOREIGN KEY (`branch_id`) REFERENCES `branches` (`branch_id`),
-  ADD CONSTRAINT `orders_ibfk_2` FOREIGN KEY (`user_id`) REFERENCES `users` (`user_id`),
-  ADD CONSTRAINT `orders_ibfk_3` FOREIGN KEY (`employee_id`) REFERENCES `employees` (`employee_id`);
-
---
 -- Constraints for table `payments`
 --
 ALTER TABLE `payments`
   ADD CONSTRAINT `payments_ibfk_1` FOREIGN KEY (`order_id`) REFERENCES `orders` (`order_id`);
-
---
--- Constraints for table `users`
---
-ALTER TABLE `users`
-  ADD CONSTRAINT `users_ibfk_1` FOREIGN KEY (`branch_id`) REFERENCES `branches` (`branch_id`),
-  ADD CONSTRAINT `users_ibfk_2` FOREIGN KEY (`role_id`) REFERENCES `roles` (`role_id`);
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
