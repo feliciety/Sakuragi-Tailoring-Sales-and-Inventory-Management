@@ -21,7 +21,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 $_SESSION['role_id'] = $user['role_id'];
                 $_SESSION['branch_id'] = $user['branch_id'];
 
-                header("Location: ../views/landingPage.php");
+                header("Location: ../views/dashboard/costumerDashboard.php");
                 exit;
             } else {
                 echo "Invalid password.";
