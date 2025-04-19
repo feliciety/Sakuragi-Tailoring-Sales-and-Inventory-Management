@@ -1,6 +1,6 @@
-<?php include '../includes/session_check.php'; ?>
-<?php include '../includes/admin_header.php'; ?>
-<?php include '../includes/admin_sidebar.php'; ?>
+<?php include '../session_check.php'; ?>
+<?php include '../admin_header.php'; ?>
+<?php include '../admin_sidebar.php'; ?>
 
 <div class="container mt-4">
     <h2 class="mb-3">Admin Dashboard</h2>
@@ -29,4 +29,4 @@
     </div>
 </div>
 
-<?php include '../includes/admin_footer.php'; ?>
+<?php include '../admin_footer.php'; ?>
