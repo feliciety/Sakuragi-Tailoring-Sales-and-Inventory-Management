@@ -2,41 +2,44 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Sakuragi Customer Portal</title>
+    <title>Customer | Sakuragi Tailoring</title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    
-    <!-- Bootstrap + Custom Styles -->
+
+    <!-- Bootstrap CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="../public/assets/style.css">
 
-    <!-- Optional: Google Font -->
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
+    <!-- Bootstrap Icons -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
+
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="../../assets/css/style.css">
 </head>
-<body style="font-family: 'Inter', sans-serif; background-color: #f8f9fa;">
+<body>
 
-<!-- NAVBAR -->
-<nav class="navbar navbar-expand-lg navbar-dark bg-primary shadow-sm">
-    <div class="container-fluid px-4">
-        <a class="navbar-brand fw-bold" href="../dashboards/customer_dashboard.php">Sakuragi</a>
+<!-- Top Navbar -->
+<nav class="navbar navbar-expand-lg navbar-light bg-white border-bottom shadow-sm px-4">
+    <a class="navbar-brand fw-bold text-primary" href="#">
+        <i class="bi bi-scissors"></i> Sakuragi Tailoring
+    </a>
 
-        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarUser"
-                aria-controls="navbarUser" aria-expanded="false" aria-label="Toggle navigation">
-            <span class="navbar-toggler-icon"></span>
-        </button>
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarContent">
+        <span class="navbar-toggler-icon"></span>
+    </button>
 
-        <div class="collapse navbar-collapse justify-content-end" id="navbarUser">
-            <ul class="navbar-nav align-items-center">
-                <li class="nav-item me-3 text-white small">
-                    Hello, <strong><?= $_SESSION['user']['full_name']; ?></strong>
-                </li>
-                <li class="nav-item">
-                    <a href="../auth/logout.php" class="btn btn-sm btn-light">Logout</a>
-                </li>
-            </ul>
-        </div>
+    <div class="collapse navbar-collapse justify-content-end" id="navbarContent">
+        <ul class="navbar-nav mb-2 mb-lg-0">
+            <li class="nav-item dropdown">
+                <a class="nav-link dropdown-toggle fw-semibold" href="#" id="userDropdown" role="button" data-bs-toggle="dropdown">
+                    <i class="bi bi-person-circle me-1"></i>
+                    <?= $_SESSION['user']['full_name'] ?? 'Customer'; ?>
+                </a>
+                <ul class="dropdown-menu dropdown-menu-end">
+                    <li><a class="dropdown-item" href="../../auth/logout.php"><i class="bi bi-box-arrow-right me-1"></i> Logout</a></li>
+                </ul>
+            </li>
+        </ul>
     </div>
 </nav>
 
-<!-- PAGE LAYOUT CONTAINER START -->
 <div class="container-fluid">
     <div class="row">

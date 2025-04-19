@@ -5,12 +5,14 @@ include '../../includes/customer_header.php';
 include '../../includes/customer_sidebar.php';
 ?>
 
-
 <div class="dashboard-content py-4 px-3">
-    <h2 class="fw-semibold mb-2">Welcome, <?= $_SESSION['user']['full_name']; ?></h2>
+    <h2 class="fw-semibold mb-2">
+        Welcome, <?= isset($_SESSION['user']['full_name']) ? htmlspecialchars($_SESSION['user']['full_name']) : 'Customer'; ?>
+    </h2>
     <p class="text-muted">This is your customer dashboard.</p>
 
     <div class="row g-4 mt-3">
+        <!-- Place Order -->
         <div class="col-md-6">
             <div class="card border-0 shadow-sm rounded-4 p-4 h-100">
                 <h5 class="fw-semibold mb-2">Place New Order</h5>
@@ -18,6 +20,8 @@ include '../../includes/customer_sidebar.php';
                 <a href="place_order.php" class="btn btn-outline-primary">Start Order</a>
             </div>
         </div>
+
+        <!-- My Orders -->
         <div class="col-md-6">
             <div class="card border-0 shadow-sm rounded-4 p-4 h-100">
                 <h5 class="fw-semibold mb-2">My Orders</h5>
@@ -25,6 +29,8 @@ include '../../includes/customer_sidebar.php';
                 <a href="my_orders.php" class="btn btn-outline-primary">View Orders</a>
             </div>
         </div>
+
+        <!-- Services -->
         <div class="col-md-6">
             <div class="card border-0 shadow-sm rounded-4 p-4 h-100">
                 <h5 class="fw-semibold mb-2">Services</h5>
@@ -32,6 +38,8 @@ include '../../includes/customer_sidebar.php';
                 <a href="services.php" class="btn btn-outline-primary">View Services</a>
             </div>
         </div>
+
+        <!-- About Us -->
         <div class="col-md-6">
             <div class="card border-0 shadow-sm rounded-4 p-4 h-100">
                 <h5 class="fw-semibold mb-2">About Us</h5>
@@ -43,4 +51,3 @@ include '../../includes/customer_sidebar.php';
 </div>
 
 <?php include '../../includes/customer_footer.php'; ?>
-

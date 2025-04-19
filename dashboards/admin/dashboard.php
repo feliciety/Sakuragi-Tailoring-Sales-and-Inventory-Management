@@ -29,4 +29,4 @@
     </div>
 </div>
 
-<?php include '../admin_footer.php'; ?>
+<?php include '../includes/admin_footer.php'; ?>
