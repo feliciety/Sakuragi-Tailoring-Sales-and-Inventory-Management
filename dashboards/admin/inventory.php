@@ -21,9 +21,18 @@
             <div class="flex space-x-2">
                 <select class="border rounded px-2 py-1 text-sm">
                     <option>All Categories</option>
+                    <option>Fabrics</option>
+                    <option>Threads</option>
+                    <option>Sublimation Supplies</option>
+                    <option>Embroidery Supplies</option>
+                    <option>Other Supplies</option>
                 </select>
                 <select class="border rounded px-2 py-1 text-sm">
                     <option>All Status</option>
+                    <option>In Stock</option>
+                    <option>Low Stock</option>
+                    <option>Out of Stock</option>
+                    <option>On Order</option>
                 </select>
             </div>
         </div>
@@ -66,7 +75,8 @@
                         <td class="py-3 px-4">20</td>
                         <td class="py-3 px-4">Mar 18, 2025</td>
                         <td class="py-3 px-4">
-                            <button class="text-gray-500 hover:text-gray-700">...</button>
+                            <button class="text-gray-500 hover:text-gray-700">Edit</button>
+                            <button class="text-gray-500 hover:text-gray-700">Delete</button>
                         </td>
                     </tr>
 
