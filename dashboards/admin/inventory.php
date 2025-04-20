@@ -80,6 +80,6 @@
                         </td>
                     </tr>
 
-</body>
-</html>
+                </body>
+                </html>
 <?php include '../../includes/admin_footer.php'; ?>

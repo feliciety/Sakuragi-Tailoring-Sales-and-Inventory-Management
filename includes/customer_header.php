@@ -18,7 +18,7 @@
 
 <!-- Top Navbar -->
 <nav class="navbar navbar-expand-lg navbar-light bg-white border-bottom shadow-sm px-4">
-    <a class="navbar-brand fw-bold text-primary" href="#">
+    <a class="navbar-brand fw-bold text-primary" href="../customer/dashboard.php">
         <i class="bi bi-scissors"></i> Sakuragi Tailoring
     </a>
 

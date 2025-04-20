@@ -1,5 +1,4 @@
 <?php
-session_start();
 include '../../includes/session_check.php';
 include '../../includes/customer_header.php';
 include '../../includes/customer_sidebar.php';
