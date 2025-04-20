@@ -15,7 +15,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && !isset($_POST['register'])) {
         $_SESSION['user'] = $user;
 
         if ($user['role'] === 'admin') {
-            header("Location: ../dashboards/admin/admin_dashboard.php");
+            header("Location: ../../dashboards/admin/admin_dashboard.php");
         } else {
             header("Location: ../dashboards/customer/customer_dashboard.php");
         }
