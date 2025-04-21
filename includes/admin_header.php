@@ -46,7 +46,7 @@
         </div>
       </div>
 
-      <!-- Logout Area -->
+    
       <span class="navbar-text text-white small me-2">Welcome, <?= $_SESSION['user']['full_name']; ?></span>
       <a href="../../auth/logout.php" class="btn btn-sm btn-outline-light">Logout</a>
     </div>
@@ -54,10 +54,10 @@
   </div>
 </nav>
 
-<!-- Content Container -->
+
 <div class="container-fluid mt-4">
   <div class="row">
-    <!-- Dashboard content here -->
+ 
   </div>
 </div>
 

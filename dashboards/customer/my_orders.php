@@ -3,7 +3,6 @@ include '../../includes/session_check.php';
 include '../../includes/customer_header.php';
 include '../../includes/customer_sidebar.php';
 include '../../config/db.php'; 
-
 $userId = $_SESSION['user']['user_id'];
 ?>
 
@@ -41,7 +40,7 @@ $userId = $_SESSION['user']['user_id'];
                         <tbody>
                         <?php while ($row = $result->fetch_assoc()): ?>
                             <tr>
-                                <td>#<?= htmlspecialchars($row['order_id']) ?></td>
+                                <td><?= htmlspecialchars($row['order_id']) ?></td>
                                 <td><?= date("M d, Y", strtotime($row['order_date'])) ?></td>
                                 <td><?= htmlspecialchars($row['service_type'] ?? 'N/A') ?></td>
                                 <td><?= htmlspecialchars($row['quantity'] ?? '1') ?></td>
