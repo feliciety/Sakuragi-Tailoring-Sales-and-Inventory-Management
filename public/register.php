@@ -32,7 +32,7 @@
                     <button class="btn btn-primary w-100" type="submit">Register</button>
                 </form>
                 <div class="text-center mt-3">
-                    <a href="loginPage.php">Already have an account? Login</a>
+                <a >Already have an account? </a>    <a href="loginPage.php">Login</a>
                 </div>
             </div>
         </div>

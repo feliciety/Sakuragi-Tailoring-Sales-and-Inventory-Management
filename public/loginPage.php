@@ -11,7 +11,6 @@ if (isset($_SESSION['user'])) {
 <head>
     <title>Login | Sakuragi Tailoring</title>
     <link href="assets/bootstrap/css/bootstrap.min.css" rel="stylesheet">
-    
     <link rel="stylesheet" href="assets/style.css">
 </head>
 <body>
@@ -38,7 +37,7 @@ if (isset($_SESSION['user'])) {
                     <button class="btn btn-primary w-100" type="submit">Login</button>
                 </form>
                 <div class="text-center mt-3">
-                    <a href="register.php">Don’t have an account? Register</a>
+                  <a >Don’t have an account? </a>  <a href="register.php">Register</a>
                 </div>
             </div>
         </div>
