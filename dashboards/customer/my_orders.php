@@ -52,7 +52,7 @@ $userId = $_SESSION['user']['user_id'];
                                         'In Progress' => 'warning',
                                         'Cancelled' => 'danger',
                                         default => 'secondary',
-                                    };
+                                    };  
                                     ?>
                                     <span class="badge bg-<?= $badgeClass ?>"><?= htmlspecialchars($status) ?></span>
                                 </td>

@@ -10,7 +10,8 @@ if (isset($_SESSION['user'])) {
 <html>
 <head>
     <title>Login | Sakuragi Tailoring</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="assets/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+    
     <link rel="stylesheet" href="assets/style.css">
 </head>
 <body>
@@ -44,6 +45,5 @@ if (isset($_SESSION['user'])) {
     </div>
 </div>
 
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>

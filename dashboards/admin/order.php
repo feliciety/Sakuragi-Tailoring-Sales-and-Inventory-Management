@@ -1,67 +1,78 @@
-<?php   include '../../includes/session_check.php'; 
-        include '../../includes/admin_header.php'; 
-        include '../../includes/admin_sidebar.php'; ?>
+<?php   
+    include '../../includes/session_check.php'; 
+    include '../../includes/admin_header.php'; 
+    include '../../includes/admin_sidebar.php'; 
+?>
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Orders Table with Tailwind CSS</title>
-    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Orders Table</title>
+  <link href="../../public/assets/bootstrap/css/bootstrap.min.css" rel="stylesheet">
 </head>
-<body class="bg-gray-100 font-sans">
-    <div class="container mx-auto p-6">
-        <!-- Header -->
-        <div class="flex justify-between items-center mb-4">
-            <div>
-                <h1 class="text-2xl font-bold">Orders</h1>
-                <p class="text-gray-600">Manage customer orders and track their progress</p>
-            </div>
-            <div>
-                <select class="border rounded px-2 py-1 text-sm">
-                    <option>All Orders</option>
-                </select>
-            </div>
+<body class="bg-light">
+<div class="container py-5">
+    <!-- Header -->
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h1 class="h4 fw-bold">Orders</h1>
+            <p class="text-muted mb-0">Manage customer orders and track their progress</p>
         </div>
+        <div>
+            <select class="form-select form-select-sm w-auto">
+                <option>All Orders</option>
+            </select>
+        </div>
+    </div>
 
-        <!-- Table -->
-        <div class="bg-white shadow rounded-lg overflow-hidden">
-            <table class="min-w-full">
-                <thead>
-                    <tr class="bg-gray-50 text-gray-600 text-sm uppercase tracking-wider">
-                        <th class="py-3 px-4 text-left">Order ID</th>
-                        <th class="py-3 px-4 text-left">Customer</th>
-                        <th class="py-3 px-4 text-left">Service</th>
-                        <th class="py-3 px-4 text-left">Date</th>
-                        <th class="py-3 px-4 text-left">Total</th>
-                        <th class="py-3 px-4 text-left">Status</th>
-                        <th class="py-3 px-4 text-left">Progress</th>
-                        <th class="py-3 px-4 text-left">Actions</th>
+    <!-- Table -->
+    <div class="card shadow-sm">
+        <div class="card-body table-responsive">
+            <table class="table table-hover align-middle">
+                <thead class="table-light text-uppercase small text-muted">
+                    <tr>
+                        <th>Order ID</th>
+                        <th>Customer</th>
+                        <th>Service</th>
+                        <th>Date</th>
+                        <th>Total</th>
+                        <th>Status</th>
+                        <th>Progress</th>
+                        <th>Actions</th>
                     </tr>
                 </thead>
-                <tbody class="text-gray-700">
-                    <!-- Row 1 -->
-                    <tr class="border-t">
-                        <td class="py-3 px-4">#001 Example(01)</td>
-                        <td class="py-3 px-4">John Smith</td>
-                        <td class="py-3 px-4">Embroidery</td>
-                        <td class="py-3 px-4">Mar 19, 2025</td>
-                        <td class="py-3 px-4">$45.00</td>
-                        <td class="py-3 px-4">
-                            <span class="px-2 py-1 bg-blue-100 text-blue-600 rounded">In Progress</span>
-                        </td>
-                        <td class="py-3 px-4">
-                            <div class="w-24 bg-gray-200 rounded-full h-2.5">
-                                <div class="bg-blue-600 h-2.5 rounded-full" style="width: 80%"></div>
+                <tbody>
+                    <!-- Row Example -->
+                    <tr>
+                        <td>#001 Example(01)</td>
+                        <td>John Smith</td>
+                        <td>Embroidery</td>
+                        <td>Mar 19, 2025</td>
+                        <td>$45.00</td>
+                        <td><span class="badge bg-primary bg-opacity-10 text-primary">In Progress</span></td>
+                        <td>
+                            <div class="progress" style="height: 8px;">
+                                <div class="progress-bar bg-primary" role="progressbar" style="width: 80%;" aria-valuenow="80" aria-valuemin="0" aria-valuemax="100"></div>
                             </div>
                         </td>
-                        <td class="py-3 px-4 flex space-x-2">
-                            <button class="text-gray-500 hover:text-gray-700">👁️</button>
-                            <button class="text-gray-500 hover:text-gray-700">✏️</button>
-                            <button class="text-gray-500 hover:text-gray-700">🗑️</button>
+                        <td class="d-flex gap-2">
+                            <button class="btn btn-sm btn-light border"><i class="bi bi-eye"></i></button>
+                            <button class="btn btn-sm btn-light border"><i class="bi bi-pencil"></i></button>
+                            <button class="btn btn-sm btn-light border text-danger"><i class="bi bi-trash"></i></button>
                         </td>
                     </tr>
-                   
+                    <!-- Add more rows here -->
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<!-- Bootstrap JS -->
+<script src="../../public/assets/bootstrap/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>
+
 <?php include '../../includes/admin_footer.php'; ?>

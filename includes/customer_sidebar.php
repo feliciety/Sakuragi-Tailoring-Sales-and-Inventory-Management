@@ -12,7 +12,7 @@ $current = basename($_SERVER['PHP_SELF']);
         </li>
         <li class="nav-item">
             <a href="about_us.php" class="nav-link <?= $current === 'about_us.php' ? 'bg-info text-white fw-bold' : 'text-dark' ?>">
-                <i class="bi bi-info-circle me-1"></i> About Us
+                <i class="bi bi-info-circle"></i> About Us
             </a>
         </li>
         <li class="nav-item">
