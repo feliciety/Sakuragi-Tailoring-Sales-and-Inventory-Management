@@ -1,23 +1,19 @@
+<h5 class="mb-3">Step 1: Select a Service</h5>
+<div class="row g-4">
 <?php
+$services = ['Embroidery', 'Sublimation', 'Screen Printing', 'Alterations', 'Patches'];
+foreach ($services as $service): ?>
+    <div class="col-md-4">
+        <div class="service-card" onclick="selectService('<?= $service ?>')">
+            <h6 class="fw-bold"><?= $service ?></h6>
+            <small>Click to select</small>
+        </div>
+    </div>
+<?php endforeach; ?>
+</div>
+<input type="hidden" name="selected_service" id="selected_service">
 
-
-// Initialize step if not yet set
-if (!isset($_SESSION['step'])) {
-    $_SESSION['step'] = 1;
-}
-
-// Get the current step
-$currentStep = $_SESSION['step'];
-?>
-
-<!-- HTML Area -->
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Order Process</title>
-</head>
-<body>
-
-</body>
-</html>
+<!-- Navigation Buttons -->
+<div class="d-flex justify-content-end mt-4">
+    <button class="btn btn-primary" onclick="nextStep()">Next</button>
+</div>
