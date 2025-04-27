@@ -1,58 +1,49 @@
-.container {
-    background-color: #ffffff;
-    padding: 30px;
-    border-radius: 8px;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-    max-width: 400px; /* Reduced width */
-    margin-top: 50px;
+/* Upload Drag & Drop Design */
+.upload-drop-area {
+    border: 3px dashed #ccc;
+    border-radius: 16px;
+    padding: 50px 20px;
+    background-color: #f9f9f9;
+    transition: border-color 0.3s ease, background-color 0.3s ease;
 }
 
-.form-group label {
-    font-weight: bold;
+.upload-drop-area:hover {
+    border-color: #6c5ce7;
+    background-color: #f1f1ff;
 }
 
-.form-control {
-    border-radius: 5px;
+.upload-icon {
+    font-size: 3.5rem;
+    color: #6c5ce7;
+    transition: transform 0.3s ease;
 }
 
-.btn-primary {
-    background-color: #007bff;
-    border-color: #007bff;
+.upload-drop-area:hover .upload-icon {
+    transform: scale(1.1);
 }
 
-.btn-primary:hover {
-    background-color: #0056b3;
-    border-color: #0056b3;
+.upload-text {
+    font-size: 1.25rem;
 }
 
-#imagePreviewContainer {
-    display: none;
-    text-align: center;
-    margin-top: 20px;
+.upload-preview img {
+    border: 2px solid #6c5ce7;
+    padding: 5px;
+    border-radius: 12px;
+    transition: transform 0.3s ease;
 }
 
-#imagePreview {
-    max-width: 100%;
-    height: 200px; /* Set height for image preview */
-    object-fit: contain; /* Ensures the image fits within the container without stretching */
-    border-radius: 8px;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-}
-.custom-file-upload {
-    padding: 10px 20px;
-    font-size: 16px;
-    background-color: #007bff; /* Primary color */
-    border-color: #007bff;
-    border-radius: 5px;
-    cursor: pointer;
-    display: inline-block;
+.upload-preview img:hover {
+    transform: scale(1.05);
 }
 
-.custom-file-upload:hover {
-    background-color: #0056b3; /* Darker shade for hover */
-    border-color: #0056b3;
+textarea#description {
+    border-radius: 12px;
+    border-color: #ddd;
+    transition: border-color 0.3s ease;
 }
 
-input[type="file"] {
-    display: none; /* Hide the default file input field */
+textarea#description:focus {
+    border-color: #6c5ce7;
+    box-shadow: 0 0 5px rgba(108, 92, 231, 0.3);
 }
