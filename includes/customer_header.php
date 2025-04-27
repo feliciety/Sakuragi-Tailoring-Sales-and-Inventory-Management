@@ -7,6 +7,7 @@
 
     
     <link href= "../../public/assets/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+    <link href="../../public/assets/css/customer.css" rel="stylesheet">
 
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
 
@@ -30,7 +31,7 @@
             <li class="nav-item dropdown">
                 <a class="nav-link dropdown-toggle fw-semibold" href="#" id="userDropdown" role="button" data-bs-toggle="dropdown">
                     <i class="bi bi-person-circle me-1"></i>
-                    <?= $_SESSION['user']['full_name'] ?? 'Customer'; ?>
+                    <?= $_SESSION['user']['full_name'] ?? 'Customer' ?>
                 </a>
                 <ul class="dropdown-menu dropdown-menu-end">
                     <li><a class="dropdown-item" href="../../auth/logout.php"><i class="bi bi-box-arrow-right me-1"></i> Logout</a></li>

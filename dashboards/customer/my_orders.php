@@ -2,7 +2,7 @@
 include '../../includes/session_check.php';
 include '../../includes/customer_header.php';
 include '../../includes/customer_sidebar.php';
-include '../../config/db.php'; 
+include '../../config/db.php';
 $userId = $_SESSION['user']['user_id'];
 ?>
 
@@ -15,11 +15,11 @@ $userId = $_SESSION['user']['user_id'];
 
     <div class="card shadow-sm border-0 rounded-4 p-4">
         <?php
-        $query = "SELECT * FROM orders WHERE user_id = ? ORDER BY order_date DESC";
+        $query = 'SELECT * FROM orders WHERE user_id = ? ORDER BY order_date DESC';
         $stmt = $conn->prepare($query);
 
         if ($stmt) {
-            $stmt->bind_param("i", $userId);
+            $stmt->bind_param('i', $userId);
             $stmt->execute();
             $result = $stmt->get_result();
 
@@ -41,7 +41,7 @@ $userId = $_SESSION['user']['user_id'];
                         <?php while ($row = $result->fetch_assoc()): ?>
                             <tr>
                                 <td><?= htmlspecialchars($row['order_id']) ?></td>
-                                <td><?= date("M d, Y", strtotime($row['order_date'])) ?></td>
+                                <td><?= date('M d, Y', strtotime($row['order_date'])) ?></td>
                                 <td><?= htmlspecialchars($row['service_type'] ?? 'N/A') ?></td>
                                 <td><?= htmlspecialchars($row['quantity'] ?? '1') ?></td>
                                 <td>
@@ -52,13 +52,15 @@ $userId = $_SESSION['user']['user_id'];
                                         'In Progress' => 'warning',
                                         'Cancelled' => 'danger',
                                         default => 'secondary',
-                                    };  
+                                    };
                                     ?>
                                     <span class="badge bg-<?= $badgeClass ?>"><?= htmlspecialchars($status) ?></span>
                                 </td>
                                 <td><?= number_format($row['total_price'], 2) ?></td>
                                 <td>
-                                    <a href="order_details.php?id=<?= $row['order_id'] ?>" class="btn btn-sm btn-outline-primary">View</a>
+                                    <a href="order_details.php?id=<?= $row[
+                                        'order_id'
+                                    ] ?>" class="btn btn-sm btn-outline-primary">View</a>
                                 </td>
                             </tr>
                         <?php endwhile; ?>

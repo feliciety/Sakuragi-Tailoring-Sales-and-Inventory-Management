@@ -1,4 +1,12 @@
 /* Flattering Medium-Sized Service Cards */
+body {
+    font-family: 'Poppins', sans-serif;
+    background-color: #f8f9fa;
+    color: #333;
+}
+
+
+
 .service-card {
     cursor: pointer;
     border: 2px solid transparent;

@@ -1,6 +1,5 @@
 <?php
-  $current = basename($_SERVER['PHP_SELF']);
-?>
+$current = basename($_SERVER['PHP_SELF']); ?>
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -19,19 +18,29 @@
       
       <ul class="nav">
         <li class="nav-item">
-          <a href="../admin/dashboard.php" class="nav-link <?= $current === 'dashboard.php' ? 'active fw-bold text-white' : 'text-light' ?>">Dashboard</a>
+          <a href="../admin/dashboard.php" class="nav-link <?= $current === 'dashboard.php'
+              ? 'active fw-bold text-white'
+              : 'text-light' ?>">Dashboard</a>
         </li>
         <li class="nav-item">
-          <a href="../admin/inventory.php" class="nav-link <?= $current === 'inventory.php' ? 'active fw-bold text-white' : 'text-light' ?>">Inventory</a>
+          <a href="../admin/inventory.php" class="nav-link <?= $current === 'inventory.php'
+              ? 'active fw-bold text-white'
+              : 'text-light' ?>">Inventory</a>
         </li>
         <li class="nav-item">
-          <a href="../admin/order.php" class="nav-link <?= $current === 'order.php' ? 'active fw-bold text-white' : 'text-light' ?>">Orders</a>
+          <a href="../admin/order.php" class="nav-link <?= $current === 'order.php'
+              ? 'active fw-bold text-white'
+              : 'text-light' ?>">Orders</a>
         </li>
         <li class="nav-item">
-          <a href="../admin/services.php" class="nav-link <?= $current === 'services.php' ? 'active fw-bold text-white' : 'text-light' ?>">Services</a>
+          <a href="../admin/services.php" class="nav-link <?= $current === 'services.php'
+              ? 'active fw-bold text-white'
+              : 'text-light' ?>">Services</a>
         </li>
         <li class="nav-item">
-          <a href="../admin/reports.php" class="nav-link <?= $current === 'reports.php' ? 'active fw-bold text-white' : 'text-light' ?>">Reports</a>
+          <a href="../admin/reports.php" class="nav-link <?= $current === 'reports.php'
+              ? 'active fw-bold text-white'
+              : 'text-light' ?>">Reports</a>
         </li>
       </ul>
     </div>
@@ -50,7 +59,7 @@
         </div>
       </div>
 
-      <span class="navbar-text text-white small me-2">Welcome, <?= $_SESSION['user']['full_name']; ?></span>
+      <span class="navbar-text text-white small me-2">Welcome, <?= $_SESSION['user']['full_name'] ?></span>
       <a href="../../auth/logout.php" class="btn btn-sm btn-outline-light">Logout</a>
     </div>
 

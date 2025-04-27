@@ -1,7 +1,7 @@
 <?php
 session_start();
 if (isset($_SESSION['user'])) {
-    header("Location: ../dashboards/" . $_SESSION['user']['role'] . "/dashboard.php");
+    header('Location: ../dashboards/' . $_SESSION['user']['role'] . '/dashboard.php');
     exit();
 }
 ?>

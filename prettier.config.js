@@ -1,0 +1,6 @@
+module.exports = {
+    plugins: ["@prettier/plugin-php"],
+    tabWidth: 4,
+    singleQuote: true,
+    printWidth: 120
+};

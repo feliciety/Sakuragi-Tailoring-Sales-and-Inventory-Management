@@ -1,4 +1,8 @@
-/* === Stepper Progress Container === */
+body {
+    font-family: 'Poppins', sans-serif;
+    background-color: #f8f9fa;
+}
+
 .progress-container {
     display: flex;
     justify-content: space-between;
@@ -6,6 +10,7 @@
     position: relative;
     margin: 40px 0;
 }
+
 
 /* Line that connects steps */
 .progress-bar-fill {

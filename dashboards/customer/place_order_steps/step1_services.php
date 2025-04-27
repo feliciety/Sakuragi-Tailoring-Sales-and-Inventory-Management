@@ -8,7 +8,7 @@
         'Sublimation' => '🎨',
         'Screen Printing' => '🖨️',
         'Alterations' => '✂️',
-        'Patches' => '🧵'
+        'Patches' => '🧵',
     ];
     foreach ($services as $service => $icon): ?>
         <div class="col-md-4 col-sm-6">
@@ -19,7 +19,8 @@
                 <small class="text-muted">Click to select</small>
             </div>
         </div>
-    <?php endforeach; ?>
+    <?php endforeach;
+    ?>
 </div>
 <input type="hidden" name="selected_service" id="selected_service">
 
