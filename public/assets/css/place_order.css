@@ -43,13 +43,13 @@
 
 .step-circle.active {
     background-color: #fff;
-    border: 2px solid #6c5ce7;
-    color: #6c5ce7;
+    border: 2px solid #596deb;
+    color: #596deb;
     transform: scale(1.1);
 }
 
 .step-circle.completed {
-    background-color: #6c5ce7;
+    background-color: #596deb;
     color: #fff;
     transform: scale(1.05);
 }
