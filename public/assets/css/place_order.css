@@ -1,0 +1,144 @@
+/* === Stepper Progress Container === */
+.progress-container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    position: relative;
+    margin: 40px 0;
+}
+
+/* Line that connects steps */
+.progress-bar-fill {
+    position: absolute;
+    top: 18px;
+    left: 0;
+    height: 4px;
+    background-color: #6c5ce7;
+    width: 0%;
+    z-index: 0;
+    transition: width 0.4s ease-in-out;
+}
+
+/* Step circle styling */
+.progress-step {
+    position: relative;
+    text-align: center;
+    flex: 1;
+    z-index: 1;
+}
+
+.step-circle {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    background-color: #ddd;
+    color: #999;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin: auto;
+    transition: background-color 0.3s, color 0.3s, transform 0.3s;
+    font-weight: bold;
+}
+
+.step-circle.active {
+    background-color: #fff;
+    border: 2px solid #6c5ce7;
+    color: #6c5ce7;
+    transform: scale(1.1);
+}
+
+.step-circle.completed {
+    background-color: #6c5ce7;
+    color: #fff;
+    transform: scale(1.05);
+}
+
+.step-label {
+    margin-top: 10px;
+    font-size: 0.9rem;
+    color: #666;
+    transition: color 0.3s;
+}
+
+.progress-step.active .step-label,
+.progress-step.completed .step-label {
+    color: #6c5ce7;
+    font-weight: 600;
+}
+
+/* === Step Content Box === */
+.step-box {
+    display: none;
+    opacity: 0;
+    transform: translateY(20px);
+    animation: fadeIn 0.5s forwards;
+}
+
+.step-box.active {
+    display: block;
+    opacity: 1;
+    transform: translateY(0);
+}
+
+/* Fade-in animation */
+@keyframes fadeIn {
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* === Navigation Buttons Styling === */
+#prevBtn, #nextBtn {
+    min-width: 120px;
+    padding: 10px 20px;
+    font-weight: 500;
+}
+
+/* Disabled button styling */
+#prevBtn:disabled, #nextBtn:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+/* Responsive: vertical on mobile */
+@media (max-width: 576px) {
+    .progress-container {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .progress-step {
+        text-align: left;
+        width: 100%;
+        margin-bottom: 20px;
+    }
+
+    .progress-step::before {
+        content: "";
+        position: absolute;
+        top: 50%;
+        left: 18px;
+        width: 4px;
+        height: 100%;
+        background-color: #ddd;
+        transform: translateY(-50%);
+    }
+
+    .progress-bar-fill {
+        width: 4px;
+        height: 0%;
+        left: 18px;
+        top: 0;
+        transition: height 0.4s ease-in-out;
+    }
+
+    .step-label {
+        margin-left: 50px;
+    }
+
+    .step-circle {
+        margin-left: 0;
+    }
+}

@@ -1,4 +1,6 @@
 <h5 class="mb-3">Step 1: Select a Service</h5>
+<p class="text-muted">Choose which service you would like to avail for your custom order.</p>
+
 <div class="row g-4">
 <?php
 $services = ['Embroidery', 'Sublimation', 'Screen Printing', 'Alterations', 'Patches'];
@@ -12,8 +14,3 @@ foreach ($services as $service): ?>
 <?php endforeach; ?>
 </div>
 <input type="hidden" name="selected_service" id="selected_service">
-
-<!-- Navigation Buttons -->
-<div class="d-flex justify-content-end mt-4">
-    <button class="btn btn-primary" onclick="nextStep()">Next</button>
-</div>

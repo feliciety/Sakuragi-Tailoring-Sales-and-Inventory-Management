@@ -1,10 +1,12 @@
 <?php
+session_start();
 include '../../includes/session_check.php';
 include '../../includes/customer_header.php';
 include '../../includes/customer_sidebar.php';
 ?>
 
-<link rel="stylesheet" href="../../public/assets/css/style.css">
+<!-- Include your modern styles -->
+<link rel="stylesheet" href="../../public/assets/css/place_order.css">
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 
 <div class="container py-4">
@@ -18,28 +20,69 @@ include '../../includes/customer_sidebar.php';
 
     <!-- Step-by-step Order Form (Hidden initially) -->
     <div id="orderFormWizard" class="d-none">
-        <h3 class="fw-semibold mb-4">📝 Place New Order</h3>
+        <h3 class="fw-semibold text-center mb-4">📝 Sakuragi Custom Order Process</h3>
 
-        <ul class="nav nav-pills mb-3" id="order-steps" role="tablist">
-            <li class="nav-item"><button class="nav-link active" data-bs-toggle="pill" data-bs-target="#step1">1. Service</button></li>
-            <li class="nav-item"><button class="nav-link" data-bs-toggle="pill" data-bs-target="#step2">2. Upload</button></li>
-            <li class="nav-item"><button class="nav-link" data-bs-toggle="pill" data-bs-target="#step3">3. Customize</button></li>
-            <li class="nav-item"><button class="nav-link" data-bs-toggle="pill" data-bs-target="#step4">4. Summary</button></li>
-            <li class="nav-item"><button class="nav-link" data-bs-toggle="pill" data-bs-target="#step5">5. Payment</button></li>
-            <li class="nav-item"><button class="nav-link" data-bs-toggle="pill" data-bs-target="#step6">6. Done</button></li>
-        </ul>
+        <!-- Custom Animated Stepper -->
+        <div class="progress-container position-relative">
+            <div class="progress-bar-fill"></div>
 
-        <div class="tab-content border rounded-4 p-4 shadow-sm bg-white" id="stepContent">
-            <div class="tab-pane fade show active" id="step1"><?php include 'place_order_steps/step1_services.php'; ?></div>
-            <div class="tab-pane fade" id="step2"><?php include 'place_order_steps/step2_uploads.php'; ?></div>
-            <div class="tab-pane fade" id="step3"><?php include 'place_order_steps/step3_customize.php'; ?></div>
-            <div class="tab-pane fade" id="step4"><?php include 'place_order_steps/step4_summary.php'; ?></div>
-            <div class="tab-pane fade" id="step5"><?php include 'place_order_steps/step5_payment.php'; ?></div>
-            <div class="tab-pane fade" id="step6"><?php include 'place_order_steps/step6_success.php'; ?></div>
+            <div class="progress-step">
+                <div class="step-circle">1</div>
+                <div class="step-label">Service</div>
+            </div>
+            <div class="progress-step">
+                <div class="step-circle">2</div>
+                <div class="step-label">Upload</div>
+            </div>
+            <div class="progress-step">
+                <div class="step-circle">3</div>
+                <div class="step-label">Customize</div>
+            </div>
+            <div class="progress-step">
+                <div class="step-circle">4</div>
+                <div class="step-label">Summary</div>
+            </div>
+            <div class="progress-step">
+                <div class="step-circle">5</div>
+                <div class="step-label">Payment</div>
+            </div>
+            <div class="progress-step">
+                <div class="step-circle">6</div>
+                <div class="step-label">Done</div>
+            </div>
+        </div>
+
+        <!-- Step Content -->
+        <div class="step-content mt-5">
+            <div id="step1" class="step-box active">
+                <?php include 'place_order_steps/step1_services.php'; ?>
+            </div>
+            <div id="step2" class="step-box">
+                <?php include 'place_order_steps/step2_uploads.php'; ?>
+            </div>
+            <div id="step3" class="step-box">
+                <?php include 'place_order_steps/step3_customize.php'; ?>
+            </div>
+            <div id="step4" class="step-box">
+                <?php include 'place_order_steps/step4_summary.php'; ?>
+            </div>
+            <div id="step5" class="step-box">
+                <?php include 'place_order_steps/step5_payment.php'; ?>
+            </div>
+            <div id="step6" class="step-box">
+                <?php include 'place_order_steps/step6_success.php'; ?>
+            </div>
+        </div>
+
+        <!-- Navigation Buttons -->
+        <div class="d-flex justify-content-between mt-4">
+            <button class="btn btn-outline-secondary" id="prevBtn" onclick="prevStep()">Back</button>
+            <button class="btn btn-primary" id="nextBtn" onclick="nextStep()">Next</button>
         </div>
     </div>
 </div>
 
+<!-- JS Logic -->
 <script>
 function startOrder() {
     document.getElementById('orderLanding').classList.add('d-none');
