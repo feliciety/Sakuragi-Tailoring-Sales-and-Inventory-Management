@@ -48,3 +48,21 @@ function prevStep() {
 }
 
 document.addEventListener('DOMContentLoaded', updateStepper);
+
+// Image preview function for Step 2
+function previewImage() {
+    const file = document.getElementById('image').files[0];
+    const reader = new FileReader();
+
+    reader.onloadend = function () {
+        const imagePreview = document.getElementById('imagePreview');
+        imagePreview.src = reader.result;
+        document.getElementById('imagePreviewContainer').style.display = 'block';
+    }
+
+    if (file) {
+        reader.readAsDataURL(file);
+    } else {
+        document.getElementById('imagePreviewContainer').style.display = 'none';
+    }
+}
