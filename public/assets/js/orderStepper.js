@@ -25,17 +25,12 @@ function updateStepper() {
     });
 
     const percentage = ((currentStep - 1) / (totalSteps - 1)) * 100;
-    if (fillBar) {
-        fillBar.style.width = percentage + '%';
-    }
+    fillBar.style.width = percentage + '%';
 
+    // Show/hide content
     stepBoxes.forEach((box, index) => {
         box.classList.toggle('active', index + 1 === currentStep);
     });
-
-    // Disable Prev/Next at start/end
-    document.getElementById('prevBtn').disabled = currentStep === 1;
-    document.getElementById('nextBtn').innerText = currentStep === totalSteps ? 'Finish' : 'Next';
 }
 
 function nextStep() {
