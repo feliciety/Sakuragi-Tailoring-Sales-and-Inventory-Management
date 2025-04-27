@@ -142,3 +142,79 @@
         margin-left: 0;
     }
 }
+
+
+.how-to-order .border {
+    border-color: #ddd;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.how-to-order .border:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 6px 18px rgba(0, 0, 0, 0.12);
+}
+
+.how-to-order h5 {
+    color: #6c5ce7;
+}
+
+.how-to-order p {
+    font-size: 0.9rem;
+}
+
+
+
+
+/* Start Order Button - Modern UI UX */
+.start-order-btn {
+    background: linear-gradient(135deg, #6c5ce7 0%, #a29bfe 100%);
+    color: #fff;
+    border: none;
+    border-radius: 50px;
+    padding: 14px 40px;
+    font-weight: 600;
+    font-size: 1rem;
+    box-shadow: 0 4px 15px rgba(108, 92, 231, 0.3);
+    transition: background 0.3s ease, transform 0.2s ease;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    cursor: pointer;
+    text-decoration: none;
+}
+
+.start-order-btn:hover {
+    background: linear-gradient(135deg, #5f56d7 0%, #8c82f9 100%);
+    transform: translateY(-3px);
+}
+
+.start-order-btn:active {
+    transform: scale(0.98);
+}
+
+.start-order-btn .btn-icon {
+    font-size: 1.3rem;
+    animation: bounce 1.5s infinite;
+}
+
+@keyframes bounce {
+    0%, 100% {
+        transform: translateY(0);
+    }
+    50% {
+        transform: translateY(-5px);
+    }
+}
+
+.start-order-btn .btn-text {
+    font-size: 1rem;
+}
+
+/* Optional: Center button nicely on smaller screens */
+@media (max-width: 576px) {
+    .start-order-btn {
+        padding: 12px 30px;
+        font-size: 0.95rem;
+    }
+}

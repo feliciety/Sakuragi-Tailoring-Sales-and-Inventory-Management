@@ -17,12 +17,17 @@ include '../../includes/customer_sidebar.php';
 
 <div class="container py-5">
     <!-- 🌟 Landing Section -->
-    <section id="orderLanding" class="text-center">
-        <h2 class="fw-bold mb-3 text-primary-emphasis">🧵 Welcome to Sakuragi Custom Orders</h2>
-        <p class="text-muted mb-4">Ready to bring your designs to life? Whether it's embroidery, sublimation, or screen printing — we've got you covered.</p>
-        <img src="../../public/assets/images/illustration-tailoring.png" alt="Tailoring Illustration" class="img-fluid my-4" style="max-height: 250px;">
-        <button class="btn btn-primary px-5 py-2 fw-semibold rounded-pill shadow-sm" onclick="startOrder()">✨ Start Your Order</button>
-    </section>
+    <section id="orderLanding" class="text-center py-5">
+    <h2 class="fw-bold mb-3 text-primary-emphasis">🧵 Welcome to Sakuragi Custom Orders</h2>
+    <p class="text-muted mb-4">Ready to bring your designs to life? Whether it's embroidery, sublimation, or screen printing — we've got you covered.</p>
+
+    <!-- ✨ Upgraded Start Button -->
+    <button class="start-order-btn" onclick="startOrder()">
+        <span class="btn-icon">🚀</span>
+        <span class="btn-text">Start Your Order</span>
+    </button>
+</section>
+
 
     <!-- 🟢 Stepper Wizard -->
     <section id="orderFormWizard" class="d-none">
@@ -57,6 +62,56 @@ include '../../includes/customer_sidebar.php';
             <button class="btn btn-primary btn-sm px-4 rounded-pill" id="nextBtn" onclick="nextStep()">Next →</button>
         </div>
     </section>
+
+    <section id="orderLanding" class="text-center">
+<!-- 📌 How to Order Section -->
+    <div class="how-to-order text-start mt-5">
+        <h3 class="fw-bold text-center mb-4 text-primary">🛠️ How to Place Your Order</h3>
+        <div class="row justify-content-center">
+            <div class="col-md-6 mb-4">
+                <div class="p-4 border rounded-4 shadow-sm h-100">
+                    <h5 class="fw-semibold mb-2">📋 Step 1: Choose Your Service</h5>
+                    <p class="text-muted small">Select the type of tailoring service you need — Embroidery, Sublimation, Screen Printing, Alterations, or Patches.</p>
+                </div>
+            </div>
+            <div class="col-md-6 mb-4">
+                <div class="p-4 border rounded-4 shadow-sm h-100">
+                    <h5 class="fw-semibold mb-2">📂 Step 2: Upload Your Design</h5>
+                    <p class="text-muted small">Provide your PSD file for design processing. Make sure your file is clear and final to avoid confusion.</p>
+                </div>
+            </div>
+            <div class="col-md-6 mb-4">
+                <div class="p-4 border rounded-4 shadow-sm h-100">
+                    <h5 class="fw-semibold mb-2">🧵 Step 3: Choose Design Type</h5>
+                    <p class="text-muted small">Select <strong>Customizable</strong> if you have a list of names, numbers, or sizes — or <strong>Standard</strong> for the same design and size across all items.</p>
+                </div>
+            </div>
+            <div class="col-md-6 mb-4">
+                <div class="p-4 border rounded-4 shadow-sm h-100">
+                    <h5 class="fw-semibold mb-2">📑 Step 4: Review Order Summary</h5>
+                    <p class="text-muted small">Double-check all the details of your order — the service, uploaded files, and design type. Make sure everything is correct before proceeding.</p>
+                </div>
+            </div>
+            <div class="col-md-6 mb-4">
+                <div class="p-4 border rounded-4 shadow-sm h-100">
+                    <h5 class="fw-semibold mb-2">💳 Step 5: Payment</h5>
+                    <p class="text-muted small">Select your preferred payment method — GCash, Cash on Pickup, or Walk-in Payment. Upload proof if necessary.</p>
+                </div>
+            </div>
+            <div class="col-md-6 mb-4">
+                <div class="p-4 border rounded-4 shadow-sm h-100">
+                    <h5 class="fw-semibold mb-2">✅ Step 6: Confirmation</h5>
+                    <p class="text-muted small">Your order will be submitted successfully! You can track the status of your order through your dashboard.</p>
+                </div>
+            </div>
+        </div>
+
+        <p class="mt-4 text-center text-muted small">
+            ℹ️ Need help? Feel free to contact our support team anytime via chat or email!
+        </p>
+    </div>
+</section>
+
 </div>
 
 <!-- 🚀 JS Logic -->
