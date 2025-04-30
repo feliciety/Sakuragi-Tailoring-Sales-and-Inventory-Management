@@ -1,21 +1,20 @@
 <?php
-include '../../includes/session_check.php';
-include '../../includes/customer_header.php';
-include '../../includes/customer_sidebar.php';
+require_once __DIR__ . '/../../config/session_handler.php';
+require_once __DIR__ . '/../../config/constants.php';
+require_once '../../middleware/auth_required.php'; // Any logged-in user
+require_once '../../includes/header.php';
+require_once '../../includes/sidebar_customer.php';
+
+
+if (get_user_role() !== ROLE_CUSTOMER) {
+    header('Location: /dashboards/employee/dashboard.php');
+    exit();
+}
 ?>
 
-<link rel="stylesheet" href="../../public/assets/css/style.css">
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<main class="main-content">
+    <h1>Our Services</h1>
+    <p>View available tailoring services offered by Sakuragi Tailoring Shop.</p>
+</main>
 
-<div class="dashboard-content py-4 px-3">
-    <h3 class="fw-semibold">Our Services</h3>
-    <ul>
-        <li>👕 Custom Tailoring (Uniforms, T-Shirts, Jerseys)</li>
-        <li>🧵 Embroidery and Patching</li>
-        <li>🎨 Sublimation and Printing</li>
-        <li>🚚 Delivery & Tracking Services</li>
-        <li>📐 Design Consultation</li>
-    </ul>
-</div>
-
-<?php include '../../includes/customer_footer.php'; ?>
+<?php require_once '../../includes/footer.php'; ?>

@@ -1,0 +1,19 @@
+<aside class="sidebar" id="sidebar">
+  <div class="sidebar-header">
+    <button class="sidebar-toggle" id="sidebarToggle">
+      <i class="fas fa-bars"></i>
+    </button>
+  </div>
+
+  <nav>
+    <ul>
+      <li><a href="/dashboards/customer/dashboard.php" class="nav-link"><i class="fas fa-home"></i><span>Dashboard</span></a></li>
+      <li><a href="/dashboards/customer/place_order.php" class="nav-link"><i class="fas fa-plus-circle"></i><span>Place New Order</span></a></li>
+      <li><a href="/dashboards/customer/my_orders.php" class="nav-link"><i class="fas fa-folder-open"></i><span>My Orders</span></a></li>
+      <li><a href="/dashboards/customer/services.php" class="nav-link"><i class="fas fa-th-list"></i><span>Our Services</span></a></li>
+      <li><a href="/dashboards/customer/account.php" class="nav-link"><i class="fas fa-user-cog"></i><span>My Account</span></a></li>
+    </ul>
+  </nav>
+</aside>
+
+<div class="overlay" id="overlay"></div>

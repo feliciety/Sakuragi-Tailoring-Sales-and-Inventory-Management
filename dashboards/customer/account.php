@@ -13,8 +13,8 @@ if (get_user_role() !== ROLE_CUSTOMER) {
 ?>
 
 <main class="main-content">
-    <h1>My Orders</h1>
-    <p>View your current and past orders here.</p>
+    <h1>My Account</h1>
+    <p>Manage your account information and settings here.</p>
 </main>
 
 <?php require_once '../../includes/footer.php'; ?>
