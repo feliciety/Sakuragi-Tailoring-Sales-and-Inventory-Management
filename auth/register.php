@@ -72,19 +72,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
 
     <!-- Left side - Illustration -->
-    <div class="illustration"><a href="../index.php" class="back-button">
+    <div class="illustration2"></div>
+    <a href="../index.php" class="back-button">
             <i class="fas fa-arrow-left"></i>
-        </a></div>
-  
-<div class>
-
-
-</div>
-
+        </a>
     <div class="register-form">
-
-  
- 
 
     <h2>Create Account</h2>
     <p>Join Sakuragi Tailoring Shop. It’s quick and easy!</p>

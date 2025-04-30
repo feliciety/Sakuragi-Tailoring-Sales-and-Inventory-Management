@@ -43,6 +43,7 @@ body {
     box-shadow: 0 0 20px rgba(77, 140, 255, 0.35); /* glowing shadow */
     transition: 0.3s ease;
     flex-shrink: 0;
+
 }
 
 .back-button:hover {
@@ -322,9 +323,26 @@ body {
     flex: 1;
     padding: 60px 40px;
     flex-direction: column;
-    animation: slideIn 1.5s ease forwards;
+    animation: slideInReverse 1.5s ease forwards;
 }
 
+@keyframes slideInReverse {
+    from { transform: translateX(50px); opacity: 0; }
+    to { transform: translateX(0); opacity: 1; }
+}
+
+.illustration2 {
+    flex: 1;
+    background: url('../images/tailoring-shop.png') no-repeat center;
+    background-size: cover;
+    position: relative;
+    animation: fadeInLeft 2s ease forwards;
+}
+
+@keyframes fadeInLeft {
+    from { transform: translateX(-50px); opacity: 0; }
+    to { transform: translateX(0); opacity: 1; }
+}
 /* Non-scrollable: Title, paragraph, messages */
 .register-form h2 {
     font-size: 32px;
