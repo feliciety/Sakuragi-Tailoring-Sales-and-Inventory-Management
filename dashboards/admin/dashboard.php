@@ -69,40 +69,60 @@ while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
         <h1>Welcome, <?= $_SESSION['full_name']; ?> (Admin)</h1>
 
         <section class="dashboard-cards">
-            <div class="card"><h3>Total Orders</h3><p>✔ 123</p></div>
-            <div class="card"><h3>Inventory Items</h3><p>📦 87</p></div>
-            <div class="card"><h3>Total Sales</h3><p>₱ 75,000</p></div>
-            <div class="card"><h3>Active Employees</h3><p>👥 12</p></div>
-        </section>
+  <div class="card card-blue">
+    <div class="card-content">
+      <div class="card-text">
+        <h3>Total Orders</h3>
+        <p>123</p>
+      </div>
+      <div class="card-icon"><i class="fa-solid fa-cart-shopping"></i></div>
+    </div>
+  </div>
+
+  <div class="card card-red">
+    <div class="card-content">
+      <div class="card-text">
+        <h3>Inventory Items</h3>
+        <p>87</p>
+      </div>
+      <div class="card-icon"><i class="fa-solid fa-boxes-stacked"></i></div>
+    </div>
+  </div>
+
+  <div class="card card-yellow">
+    <div class="card-content">
+      <div class="card-text">
+        <h3>Total Sales</h3>
+        <p>₱ 75,000</p>
+      </div>
+      <div class="card-icon"><i class="fa-solid fa-peso-sign"></i></div>
+    </div>
+  </div>
+
+  <div class="card card-green">
+    <div class="card-content">
+      <div class="card-text">
+        <h3>Active Employees</h3>
+        <p>12</p>
+      </div>
+      <div class="card-icon"><i class="fa-solid fa-users"></i></div>
+    </div>
+  </div>
+</section>
+
 
         <section class="chart-grid-2x2">
-            <div class="chart-card">
-                <h2>📈 Orders - Last 7 Days</h2>
-                <canvas id="ordersChart"></canvas>
-            </div>
-            <div class="chart-card">
-                <h2>📊 Orders by Status</h2>
-                <canvas id="orderStatusChart"></canvas>
-            </div>
-            <div class="chart-card">
-                <h2>🏆 Top 5 Products</h2>
-                <canvas id="topProductsChart"></canvas>
-            </div>
-            <div class="chart-card">
-                <h2>📍 Orders Per Branch</h2>
-                <canvas id="branchChart"></canvas>
-            </div>
+            <div class="chart-card"><h2>📈 Orders - Last 7 Days</h2><canvas id="ordersChart"></canvas></div>
+            <div class="chart-card"><h2>📊 Orders by Status</h2><canvas id="orderStatusChart"></canvas></div>
+            <div class="chart-card"><h2>🏆 Top 5 Products</h2><canvas id="topProductsChart"></canvas></div>
+            <div class="chart-card"><h2>📍 Orders Per Branch</h2><canvas id="branchChart"></canvas></div>
         </section>
 
         <section class="recent-orders">
             <h2>📝 Recent Orders</h2>
             <table>
-                <thead>
-                    <tr><th>Order #</th><th>Customer</th><th>Status</th><th>Total</th><th>Date</th></tr>
-                </thead>
-                <tbody>
-                    <tr><td>#10012</td><td>Jane D.</td><td>In Progress</td><td>₱1,200</td><td>2025-04-28</td></tr>
-                </tbody>
+                <thead><tr><th>Order #</th><th>Customer</th><th>Status</th><th>Total</th><th>Date</th></tr></thead>
+                <tbody><tr><td>#10012</td><td>Jane D.</td><td>In Progress</td><td>₱1,200</td><td>2025-04-28</td></tr></tbody>
             </table>
         </section>
 
@@ -122,10 +142,7 @@ while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
                         <li>
                             <div class="timeline-header">
                                 <strong><?= htmlspecialchars($label) ?></strong>
-                                <span class="date-range">
-                                    <?= date('M d', strtotime($orderTimelineStarts[$i])) ?> →
-                                    <?= date('M d', strtotime($orderTimelineEnds[$i])) ?>
-                                </span>
+                                <span class="date-range"><?= date('M d', strtotime($orderTimelineStarts[$i])) ?> → <?= date('M d', strtotime($orderTimelineEnds[$i])) ?></span>
                             </div>
                             <div class="timeline-bar">
                                 <?php
@@ -145,6 +162,7 @@ while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
 </main>
 
 <?php require_once __DIR__ . '/../../includes/footer.php'; ?>
+
 
 
         <!-- External Libraries -->
@@ -249,10 +267,19 @@ while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
 
 
 <style>
+/* Hide all scrollbars in modern browsers */
+body {
+  overflow-y: auto;
+  scrollbar-width: none; /* Firefox */
+}
+
+body::-webkit-scrollbar {
+  display: none; /* Chrome, Safari, Edge */
+}
+    
 .admin-dashboard {
     padding: 30px 20px;
     font-family: 'Segoe UI', sans-serif;
-    background: linear-gradient(to bottom, #f4f8fb, #eaf3fa);
 }
 
 .dashboard-container {
@@ -264,6 +291,8 @@ while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
     animation: fadeIn 0.8s ease-in-out;
 }
 
+
+
 @keyframes fadeIn {
     0% { opacity: 0; transform: translateY(15px); }
     100% { opacity: 1; transform: translateY(0); }
@@ -274,6 +303,7 @@ while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
     text-align: center;
     background: linear-gradient(90deg, #0077cc, #00c6ff);
     -webkit-background-clip: text;
+    background-clip: text;
     -webkit-text-fill-color: transparent;
     font-weight: 700;
     animation: slideIn 0.6s ease;
@@ -284,41 +314,110 @@ while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
     to { opacity: 1; transform: translateY(0); }
 }
 
-/* Dashboard cards */
+/* Container */
 .dashboard-cards {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 20px;
-    justify-content: center;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 20px;
+  justify-content: space-between;
+  padding: 10px 0 30px;
 }
 
+/* Card */
 .dashboard-cards .card {
-    flex: 1 1 250px;
-    background: linear-gradient(to bottom right, #ffffff, #f0f8ff);
-    padding: 25px;
-    border-radius: 16px;
-    text-align: center;
-    box-shadow: 0 6px 15px rgba(0, 119, 204, 0.1);
-    transition: transform 0.3s ease, box-shadow 0.3s ease;
-    cursor: pointer;
+  flex: 1 1 calc(25% - 20px);
+  border-radius: 16px;
+  padding: 24px 30px;
+  background-color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  box-shadow: 0 10px 18px rgba(0, 0, 0, 0.04);
+  border-left: 6px solid transparent;
+  cursor: pointer;
 }
 
 .dashboard-cards .card:hover {
-    transform: translateY(-6px);
-    box-shadow: 0 12px 24px rgba(0, 119, 204, 0.2);
+  transform: translateY(-5px);
+  box-shadow: 0 12px 28px rgba(0, 0, 0, 0.08);
 }
 
-.dashboard-cards .card h3 {
-    margin-bottom: 10px;
-    font-size: 1.2rem;
-    color: #0077cc;
+/* Card content */
+.card-content {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
 }
 
-.dashboard-cards .card p {
-    font-size: 1.6rem;
-    font-weight: bold;
-    color: #004e99;
+/* Text */
+.card-text h3 {
+  margin: 0;
+  font-size: 0.95rem;
+  color: #666;
+  font-weight: 500;
 }
+
+.card-text p {
+  margin: 8px 0 0;
+  font-size: 1.75rem;
+  font-weight: 700;
+  color: #222;
+}
+
+/* Icon style */
+.card-icon {
+  background: #f1f5f9;
+  color: inherit;
+  width: 52px;
+  height: 52px;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 22px;
+  box-shadow: inset 0 0 0 2px rgba(255, 255, 255, 0.2);
+}
+
+/* Color Variants (PRIMARY colors) */
+.card-blue {
+  border-left-color: #007bff;
+  --icon-color: #007bff;
+}
+.card-blue .card-icon { color: #007bff; }
+
+.card-red {
+  border-left-color: #dc3545;
+  --icon-color: #dc3545;
+}
+.card-red .card-icon { color: #dc3545; }
+
+.card-yellow {
+  border-left-color: #ffc107;
+  --icon-color: #ffc107;
+}
+.card-yellow .card-icon { color: #ffc107; }
+
+.card-green {
+  border-left-color: #28a745;
+  --icon-color: #28a745;
+}
+.card-green .card-icon { color: #28a745; }
+
+/* Responsive */
+@media (max-width: 992px) {
+  .dashboard-cards .card {
+    flex: 1 1 calc(50% - 20px);
+  }
+}
+
+@media (max-width: 576px) {
+  .dashboard-cards .card {
+    flex: 1 1 100%;
+  }
+}
+
 
 /* Chart grid layout */
 .chart-grid-2x2 {

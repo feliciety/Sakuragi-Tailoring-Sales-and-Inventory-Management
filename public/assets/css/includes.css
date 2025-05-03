@@ -336,12 +336,12 @@
   }
   
   .main-footer p {
-    margin: 0;
+    margin-left: 220px;
     letter-spacing: 0.3px;
   }
 
   .main-content {
-    margin-top: 70px; /* header height */
+    margin-top: 30px; /* header height */
     margin-left: 220px; /* sidebar width */
     min-height: calc(100vh - 70px - 60px); /* header + footer */
     background-color: #fff;
