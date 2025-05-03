@@ -2,27 +2,33 @@
 <p class="text-muted text-center mb-4">Choose whether your order requires unique names and sizes (Customizable) or standard sizing across all items (Non-Customizable).</p>
 
 <!-- Option Selection -->
-<div class="d-flex justify-content-center gap-3 mb-4">
-    <div class="design-type-option" onclick="selectDesignType('customizable')">
-        <input type="radio" name="design_type" id="customizable" value="customizable" class="d-none">
-        <label for="customizable" class="design-type-card text-center p-4 shadow-sm rounded-4">
-            <div class="option-icon mb-2">👕</div>
-            <h6 class="fw-bold mb-1">Customizable</h6>
-            <small>Upload an Excel list for officer shirts with unique names and sizes.</small>
-        </label>
+<div class="row g-4 justify-content-center">
+    <div class="col-md-5 col-sm-6">
+        <div class="design-type-card text-center p-4 shadow-sm rounded-4 h-100"
+             onclick="selectDesignType('customizable')">
+            <input type="radio" name="design_type" id="customizable" value="customizable" class="d-none">
+            <label for="customizable" class="w-100 h-100 d-flex flex-column align-items-center justify-content-center">
+                <div class="option-icon mb-2">👕</div>
+                <h6 class="fw-bold mb-2">Customizable</h6>
+                <small>Upload an Excel list for personalized uniforms with different names, numbers, or roles.</small>
+            </label>
+        </div>
     </div>
-    <div class="design-type-option" onclick="selectDesignType('standard')">
-        <input type="radio" name="design_type" id="standard" value="standard" class="d-none">
-        <label for="standard" class="design-type-card text-center p-4 shadow-sm rounded-4">
-            <div class="option-icon mb-2">🧵</div>
-            <h6 class="fw-bold mb-1">Standard</h6>
-            <small>Same design and sizes for all items. Manually add sizes and quantities.</small>
-        </label>
+    <div class="col-md-5 col-sm-6">
+        <div class="design-type-card text-center p-4 shadow-sm rounded-4 h-100"
+             onclick="selectDesignType('standard')">
+            <input type="radio" name="design_type" id="standard" value="standard" class="d-none">
+            <label for="standard" class="w-100 h-100 d-flex flex-column align-items-center justify-content-center">
+                <div class="option-icon mb-2">🧵</div>
+                <h6 class="fw-bold mb-2">Standard</h6>
+                <small>Same design and sizes for all items. Manually add sizes and quantities.</small>
+            </label>
+        </div>
     </div>
 </div>
 
 <!-- 📂 Customizable Excel Upload Section -->
-<div id="customizableSection" class="d-none">
+<div id="customizableSection" class="d-none mt-5">
     <h6 class="fw-bold mb-3 text-primary">📂 Upload Excel File (.xlsx)</h6>
     <input type="file" class="form-control mb-3" id="excelFile" accept=".xlsx" onchange="handleExcelUpload()">
 
@@ -35,7 +41,7 @@
 </div>
 
 <!-- 📝 Non-Customizable Manual Table -->
-<div id="nonCustomizableSection" class="d-none">
+<div id="nonCustomizableSection" class="d-none mt-5">
     <h6 class="fw-bold mb-3 text-primary">📋 Manual Entry for Sizes and Quantities</h6>
     <table class="table table-bordered align-middle">
         <thead class="table-light">
@@ -56,48 +62,40 @@
     <button class="btn btn-outline-primary btn-sm mt-2 rounded-pill" onclick="addManualRow()">➕ Add Row</button>
 </div>
 
+
 <style>
-    .design-type-card {
+.design-type-card {
     border: 2px solid transparent;
     background-color: #fff;
     transition: all 0.3s ease;
     cursor: pointer;
+    border-radius: 16px;
+    height: 100%;
+    padding: 30px 20px;
+    box-shadow: 0 0 0 rgba(0,0,0,0);
+    user-select: none;
 }
 
 .design-type-card:hover {
-    border-color: #6c5ce7;
-    background-color: #f9f9ff;
+    border-color: #0b5cf9;
+    box-shadow: 0 8px 20px rgba(11, 92, 249, 0.15);
+    transform: translateY(-2px);
 }
 
 .design-type-card.selected {
-    border-color: #6c5ce7;
-    background: linear-gradient(135deg, #6c5ce7 0%, #a29bfe 100%);
-    color: #fff;
+    border-color: #0b5cf9;
+    background: #eef4ff;
+    box-shadow: 0 10px 25px rgba(11, 92, 249, 0.15);
 }
 
-.design-type-card.selected small,
-.design-type-card.selected h6 {
-    color: #fff;
+.design-type-card.selected h6,
+.design-type-card.selected small {
+    color: #0b5cf9;
 }
 
 .option-icon {
-    font-size: 2.5rem;
-}
-
-#excelSearch {
-    max-width: 300px;
-}
-
-.editable-table input {
-    border: none;
-    background-color: transparent;
-    border-bottom: 1px dashed #aaa;
-    text-align: center;
-}
-
-.editable-table input:focus {
-    outline: none;
-    border-bottom: 1px solid #6c5ce7;
+    font-size: 2.8rem;
+    line-height: 1;
 }
 
 </style>

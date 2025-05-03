@@ -31,21 +31,26 @@ function previewImage() {
 }
 // ⭐ Step 3: Design Type Selection Logic
 function selectDesignType(type) {
-    // Update the radio buttons
-    document.querySelectorAll('input[name="design_type"]').forEach(el => {
-        el.checked = el.id === type;
-    });
-
-    // Update card selection styles
-    document.querySelectorAll('.design-type-card').forEach(card => {
-        card.classList.remove('selected');
-    });
-    document.querySelector(`label[for="${type}"]`).classList.add('selected');
-
-    // Show/Hide sections
-    document.getElementById('customizableSection').classList.toggle('d-none', type !== 'customizable');
-    document.getElementById('nonCustomizableSection').classList.toggle('d-none', type !== 'standard');
-}
+        // Remove 'selected' from all cards
+        document.querySelectorAll('.design-type-card').forEach(card => {
+            card.classList.remove('selected');
+        });
+    
+        // Add 'selected' to the clicked one
+        const selectedCard = type === 'customizable'
+            ? document.querySelector('input#customizable').closest('.design-type-card')
+            : document.querySelector('input#standard').closest('.design-type-card');
+    
+        selectedCard.classList.add('selected');
+    
+        // Toggle visibility of related sections
+        document.getElementById('customizableSection').classList.toggle('d-none', type !== 'customizable');
+        document.getElementById('nonCustomizableSection').classList.toggle('d-none', type !== 'standard');
+    
+        // Update hidden input if needed
+        document.getElementById('customizable').checked = type === 'customizable';
+        document.getElementById('standard').checked = type === 'standard';
+    }
 
 // ⭐ Handle Excel Upload and Convert to Editable Table
 function handleExcelUpload() {
@@ -171,18 +176,23 @@ function updateStepper() {
         }
     });
 
-    const percentage = ((currentStep - 1) / (totalSteps - 1)) * 100;
-    if (fillBar) {
+    let percentage = ((currentStep - 1) / (totalSteps - 1)) * 100;
+
+// Don't fill past Step 5
+if (currentStep === totalSteps) {
+    percentage = ((totalSteps - 2) / (totalSteps - 1)) * 100;
+}
+
+if (fillBar) {
+    if (window.innerWidth <= 576) {
+        fillBar.style.height = percentage + '%';
+        fillBar.style.width = '4px';
+    } else {
         fillBar.style.width = percentage + '%';
-        if (window.innerWidth <= 576) {
-            // If mobile (vertical), adjust height instead of width
-            fillBar.style.height = percentage + '%';
-            fillBar.style.width = '4px';
-        } else {
-            fillBar.style.width = percentage + '%';
-            fillBar.style.height = '4px';
-        }
+        fillBar.style.height = '4px';
     }
+}
+
 
     // Show/hide the correct step content box
     stepBoxes.forEach((box, index) => {

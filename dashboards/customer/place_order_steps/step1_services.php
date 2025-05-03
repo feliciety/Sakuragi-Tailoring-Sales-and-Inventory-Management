@@ -12,8 +12,7 @@
     ];
     foreach ($services as $service => $icon): ?>
         <div class="col-md-4 col-sm-6">
-            <div class="service-card text-center p-4 shadow-sm rounded-4 h-100" 
-                onclick="selectService('<?= $service ?>', this)">
+            <div class="service-card text-center p-4 h-100" onclick="selectService('<?= $service ?>', this)">
                 <div class="service-icon mb-3"><?= $icon ?></div>
                 <h6 class="fw-bold mb-2"><?= $service ?></h6>
                 <small class="text-muted">Click to select</small>
@@ -24,261 +23,36 @@
 <input type="hidden" name="selected_service" id="selected_service">
 
 <style>
-    body {
-    font-family: 'Poppins', sans-serif;
-    background-color: #f8f9fa;
-    color: #333;
-    line-height: 1.5;
-    font-size: 0.88rem;
+    .service-card {
+    background: #ffffff;
+    border: 2px solid transparent;
+    border-radius: 16px;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 14px rgba(11, 92, 249, 0.08);
+    cursor: pointer;
+    transform: scale(1);
 }
 
-/* ======= Layout Structure ======= */
-.dashboard-content {
-    min-height: 100vh;
-    padding: 40px 0;
-    display: flex;
-    justify-content: center;
+.service-card:hover {
+    transform: scale(1.05);
+    box-shadow: 0 6px 20px rgba(11, 92, 249, 0.15);
+    border-color: rgba(11, 92, 249, 0.2);
 }
 
-.content-wrapper {
-    max-width: 950px;
-    width: 100%;
-    padding: 16px 12px;
-}
-
-/* ======= Typography ======= */
-.section-title {
-    font-weight: 700;
-    font-size: 1.55rem;
-    color: #0d6efd;
-    margin-bottom: 10px;
-    letter-spacing: 0.3px;
-}
-
-.section-subtitle {
-    color: #6c757d;
-    font-size: 0.85rem;
-    margin-top: 5px;
-}
-
-.section-heading {
-    font-weight: 600;
-    font-size: 1.15rem;
-    color: #0d6efd;
-    margin-bottom: 10px;
-}
-
-/* ======= Animations ======= */
-@keyframes fadeInUp {
-    from { opacity: 0; transform: translateY(20px); }
-    to { opacity: 1; transform: translateY(0); }
-}
-
-@keyframes zoomInGrid {
-    from { opacity: 0; transform: scale(0.85); }
-    to { opacity: 1; transform: scale(1); }
-}
-
-.fade-in-up {
-    animation: fadeInUp 0.8s ease both;
-}
-
-.zoom-in {
-    animation: zoomInGrid 0.7s ease forwards;
-}
-
-.delay-1 { animation-delay: 0.1s; }
-.delay-2 { animation-delay: 0.2s; }
-.delay-3 { animation-delay: 0.3s; }
-.delay-4 { animation-delay: 0.4s; }
-
-/* ======= Image Styling ======= */
-.about-image {
-    border-radius: 12px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.08);
-    transition: transform 0.3s ease;
-    max-width: 280px;
-}
-
-.about-image:hover {
+.service-card.selected {
+    border-color: #0B5CF9;
+    background: linear-gradient(135deg, #e8f0ff, #ffffff);
+    box-shadow: 0 0 0 3px rgba(11, 92, 249, 0.25);
     transform: scale(1.03);
 }
 
-/* ======= Unified Section Styling ======= */
-.about-section {
-    background-color: #ffffff;
-    border-radius: 10px;
-    box-shadow: 0 3px 8px rgba(0, 0, 0, 0.07);
-    padding: 18px;
-    transition: transform 0.3s ease, box-shadow 0.3s ease;
-}
-
-.about-section:hover {
-    transform: translateY(-3px);
-    box-shadow: 0 5px 12px rgba(0, 0, 0, 0.1);
-}
-
-/* ======= Achievements / Stats Section ======= */
-.modern-stats-card {
-    background-color: #ffffff;
-    border-radius: 14px;
-    padding: 25px 20px;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
-    transition: transform 0.3s ease, box-shadow 0.3s ease;
-    height: 100%;
-}
-
-.modern-stats-card:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 6px 18px rgba(0, 0, 0, 0.12);
-}
-
-.stats-icon {
-    font-size: 2rem;
-    color: #0d6efd;
-}
-
-.stats-number {
-    font-weight: 700;
-    font-size: 1.5rem;
-    color: #0d6efd;
-    margin-top: 10px;
-}
-
-.stats-label {
-    font-size: 0.85rem;
-    color: #6c757d;
-    margin-top: 6px;
-}
-
-.custom-gap {
-    row-gap: 20px;
-    column-gap: 30px;
-}
-
-/* ======= Core Values (Dashboard-Style Cards) ======= */
-.value-card {
-    background-color: #ffffff;
-}
-/* Flattering Medium-Sized Service Cards */
-.service-card {
-    cursor: pointer;
-    border: 2px solid transparent;
-    background-color: #fff;
-    transition: all 0.3s ease-in-out;
-    border-radius: 16px;
-    padding: 18px;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
-    transition: transform 0.3s ease, box-shadow 0.3s ease;
-    height: 100%;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    text-align: center;
-}
-
-.value-card:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 6px 18px rgba(0, 0, 0, 0.12);
-}
-
-.value-card .icon {
-    font-size: 1.8rem;
-    margin-bottom: 8px;
-}
-
-.value-card h5 {
-    font-size: 0.95rem;
-    font-weight: 600;
-    color: #212529;
-}
-
-.value-card .value-description {
-    font-size: 0.78rem;
-    color: #6c757d;
-    margin-top: 5px;
-}
-
-/* ======= Developer Team Styling ======= */
-.developer-card {
-    background-color: #ffffff;
-    border-radius: 12px;
-    padding: 20px 15px;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
-    transition: transform 0.3s ease, box-shadow 0.3s ease;
-}
-
-.developer-card:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 6px 18px rgba(0, 0, 0, 0.12);
-}
-
-.developer-image-container {
-    overflow: hidden;
-    border-radius: 12px;
-    height: 180px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    background-color: #f1f1f1;
-}
-
-.developer-image {
-    width: 100%;
-    height: 180px;
-    object-fit: cover;
+.service-icon {
+    font-size: 48px;
     transition: transform 0.3s ease;
 }
 
-.developer-card:hover .developer-image {
-    transform: scale(1.05);
-}
-
-/* ======= Responsive Tweaks ======= */
-@media (max-width: 768px) {
-    .section-title {
-        font-size: 1.5rem;
-    }
-
-    .section-subtitle {
-        font-size: 0.85rem;
-    }
-
-    .stats-icon {
-        font-size: 1.8rem;
-    }
-
-    .stats-number {
-        font-size: 1.3rem;
-    }
-
-    .stats-label {
-        font-size: 0.8rem;
-    }
-
-    .about-section {
-        padding: 16px;
-    }
-
-    .value-card .icon {
-        font-size: 1.6rem;
-    }
-
-    .value-card h5 {
-        font-size: 0.92rem;
-    }
-
-    .value-card .value-description {
-        font-size: 0.75rem;
-    }
-
-    .developer-image-container {
-        height: 140px;
-    }
-
-    .developer-image {
-        height: 140px;
-    }
+.service-card:hover .service-icon {
+    transform: scale(1.2);
 }
 
 </style>

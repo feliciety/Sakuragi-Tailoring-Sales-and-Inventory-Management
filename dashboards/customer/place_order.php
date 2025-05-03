@@ -181,7 +181,7 @@ if (get_user_role() !== ROLE_CUSTOMER) {
     top: 35%;
     left: 10%;
     right: 10%;
-    height: 4px;
+    height: 6px;
     background-color: #dfe6ed;
     z-index: 0;
     border-radius: 2px;
@@ -191,7 +191,8 @@ if (get_user_role() !== ROLE_CUSTOMER) {
     position: absolute;
     top: 35%;
     left: 10%;
-    height: 4px;
+    right: 10%;
+    height: 6px;
     background: linear-gradient(90deg, #0B5CF9, #4D8CFF);
     z-index: 1;
     border-radius: 2px;
@@ -210,10 +211,11 @@ if (get_user_role() !== ROLE_CUSTOMER) {
 }
 
 .step-circle {
-    width: 32px;
-    height: 32px;
+    width: 48px;         /* Increased from 32px */
+    height: 48px;        /* Increased from 32px */
+    font-size: 1.1rem;   /* Larger number */
     border-radius: 50%;
-    border: 2px solid #ccc;
+    border: 3px solid #ccc;
     background-color: white;
     color: #999;
     display: flex;
@@ -242,7 +244,7 @@ if (get_user_role() !== ROLE_CUSTOMER) {
 
 .step-label {
     margin-top: 8px;
-    font-size: 0.85rem;
+    font-size: 0.95rem; /* Slightly larger label */
     color: #34495e;
     font-weight: 500;
     transition: all 0.3s ease;
