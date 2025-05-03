@@ -6,6 +6,9 @@ require_once '../../includes/header.php';
 require_once '../../includes/sidebar_admin.php';
 ?>
 
+<!-- Font Awesome for icons -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+
 <main class="main-content">
     <h1>Manage Employees</h1>
 
@@ -13,11 +16,13 @@ require_once '../../includes/sidebar_admin.php';
         <div class="filters">
             <div class="input-wrapper">
                 <i class="fas fa-search"></i>
-                <input type="text" id="searchInput" placeholder="Search employees..." class="table-search" onkeyup="filterTable()">
+                <input type="text" id="searchInput" placeholder="Search employees..." class="table-search"
+                    onkeyup="filterTableBySearch('searchInput', 'employeeTable')">
             </div>
             <div class="select-wrapper">
                 <i class="fas fa-filter"></i>
-                <select id="statusFilter" class="table-filter" onchange="filterByStatus()">
+                <select id="statusFilter" class="table-filter"
+                    onchange="filterTableByStatus('statusFilter', 'employeeTable')">
                     <option value="">All Status</option>
                     <option value="active">Active</option>
                     <option value="hired">Hired</option>
@@ -26,7 +31,7 @@ require_once '../../includes/sidebar_admin.php';
             </div>
         </div>
 
-        <button onclick="exportTableToCSV()" class="btn-export">
+        <button onclick="exportTableToCSV('employeeTable', 'employees.csv')" class="btn-export">
             <i class="fas fa-download"></i> Export CSV
         </button>
     </div>
@@ -35,11 +40,11 @@ require_once '../../includes/sidebar_admin.php';
         <table id="employeeTable">
             <thead>
                 <tr>
-                    <th onclick="sortTable(0)">Name</th>
-                    <th onclick="sortTable(1)">Position</th>
-                    <th onclick="sortTable(2)">Department</th>
-                    <th onclick="sortTable(3)">Branch</th>
-                    <th onclick="sortTable(4)">Status</th>
+                    <th onclick="sortTableByColumn('employeeTable', 0)">Name</th>
+                    <th onclick="sortTableByColumn('employeeTable', 1)">Position</th>
+                    <th onclick="sortTableByColumn('employeeTable', 2)">Department</th>
+                    <th onclick="sortTableByColumn('employeeTable', 3)">Branch</th>
+                    <th onclick="sortTableByColumn('employeeTable', 4)">Status</th>
                     <th>Actions</th>
                 </tr>
             </thead>
@@ -70,5 +75,8 @@ require_once '../../includes/sidebar_admin.php';
         </table>
     </div>
 </main>
+
+<!-- Include centralized table logic -->
+<script src="/assets/js/tables.js"></script>
 
 <?php require_once '../../includes/footer.php'; ?>

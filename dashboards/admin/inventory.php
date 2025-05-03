@@ -6,6 +6,9 @@ require_once '../../includes/header.php';
 require_once '../../includes/sidebar_admin.php';
 ?>
 
+<!-- Font Awesome for icons -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+
 <main class="main-content">
     <h1>Inventory Management</h1>
 
@@ -13,19 +16,22 @@ require_once '../../includes/sidebar_admin.php';
         <div class="filters">
             <div class="input-wrapper">
                 <i class="fas fa-search"></i>
-                <input type="text" id="inventorySearch" placeholder="Search items..." class="table-search" onkeyup="filterInventoryTable()">
+                <input type="text" id="inventorySearch" placeholder="Search items..."
+                    class="table-search"
+                    onkeyup="filterTableBySearch('inventorySearch', 'inventoryTable')">
             </div>
             <div class="select-wrapper">
                 <i class="fas fa-filter"></i>
-                <select id="stockFilter" class="table-filter" onchange="filterInventoryStatus()">
+                <select id="stockFilter" class="table-filter"
+                    onchange="filterTableByStatus('stockFilter', 'inventoryTable')">
                     <option value="">All Stock</option>
-                    <option value="low">Low Stock</option>
-                    <option value="ok">Sufficient Stock</option>
+                    <option value="low">Low</option>
+                    <option value="sufficient">Sufficient</option>
                 </select>
             </div>
         </div>
 
-        <button onclick="exportInventoryToCSV()" class="btn-export">
+        <button onclick="exportTableToCSV('inventoryTable', 'inventory.csv')" class="btn-export">
             <i class="fas fa-download"></i> Export CSV
         </button>
     </div>
@@ -34,11 +40,11 @@ require_once '../../includes/sidebar_admin.php';
         <table id="inventoryTable">
             <thead>
                 <tr>
-                    <th onclick="sortTable(0)">Item Name</th>
-                    <th onclick="sortTable(1)">Category</th>
-                    <th onclick="sortTable(2)">Supplier</th>
-                    <th onclick="sortTable(3)">Quantity</th>
-                    <th onclick="sortTable(4)">Last Updated</th>
+                    <th onclick="sortTableByColumn('inventoryTable', 0)">Item Name</th>
+                    <th onclick="sortTableByColumn('inventoryTable', 1)">Category</th>
+                    <th onclick="sortTableByColumn('inventoryTable', 2)">Supplier</th>
+                    <th onclick="sortTableByColumn('inventoryTable', 3)">Quantity</th>
+                    <th onclick="sortTableByColumn('inventoryTable', 4)">Last Updated</th>
                     <th>Status</th>
                     <th>Actions</th>
                 </tr>
@@ -72,5 +78,8 @@ require_once '../../includes/sidebar_admin.php';
         </table>
     </div>
 </main>
+
+<!-- Load centralized table script -->
+<script src="/assets/js/tables.js"></script>
 
 <?php require_once '../../includes/footer.php'; ?>
