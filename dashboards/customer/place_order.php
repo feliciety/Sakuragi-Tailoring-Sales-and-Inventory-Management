@@ -213,23 +213,32 @@ if (get_user_role() !== ROLE_CUSTOMER) {
     width: 32px;
     height: 32px;
     border-radius: 50%;
-    background-color: #dfe6ed;
-    color: #fff;
-    font-weight: bold;
+    border: 2px solid #ccc;
+    background-color: white;
+    color: #999;
     display: flex;
     align-items: center;
     justify-content: center;
+    font-weight: bold;
     transition: background-color 0.3s ease, transform 0.3s ease;
 }
 
 .progress-step.active .step-circle {
-    background: #0B5CF9;
+    background-color: white;
+    color: #0B5CF9;
+    border: 2px solid #0B5CF9;
+
+
     transform: scale(1.1);
 }
 
 .progress-step.completed .step-circle {
-    background: #2ecc71;
+
+    background-color:#0B5CF9;
+    color: white;
+    border: 2px solid #0B5CF9;
 }
+
 
 .step-label {
     margin-top: 8px;
