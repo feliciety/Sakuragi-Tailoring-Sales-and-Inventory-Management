@@ -44,20 +44,17 @@ require_once __DIR__ . '/../../controller/admincontroller/employee/employee.php'
         <table id="employeeTable">
             <thead>
                 <tr>
-                    <th onclick="sortTableByColumn('employeeTable', 0)">Employee ID</th>
-                    <th onclick="sortTableByColumn('employeeTable', 1)">Name</th>
-                    <th onclick="sortTableByColumn('employeeTable', 2)">Position</th>
-                    <th onclick="sortTableByColumn('employeeTable', 3)">Department</th>
-                    <th onclick="sortTableByColumn('employeeTable', 4)">Branch</th>
-                    <th onclick="sortTableByColumn('employeeTable', 5)">Status</th>
+                    <th onclick="sortTableByColumn('employeeTable', 0)">Employee Name</th>
+                    <th onclick="sortTableByColumn('employeeTable', 1)">Position</th>
+                    <th onclick="sortTableByColumn('employeeTable', 2)">Department</th>
+                    <th onclick="sortTableByColumn('employeeTable', 3)">Branch</th>
+                    <th onclick="sortTableByColumn('employeeTable', 4)">Status</th>
                     <th>Actions</th>
                 </tr>
             </thead>
             <tbody>
                 <?php if ($result && count($result) > 0): ?>
                     <?php foreach ($result as $row): ?>
-                        <tr data-employee-id="<?= htmlspecialchars($row['employee_id']) ?>">
-                            <td><?= htmlspecialchars($row['employee_id']) ?></td>
                             <td><?= htmlspecialchars($row['full_name']) ?></td>
                             <td class="position"><?= htmlspecialchars($row['position'] ?? '—') ?></td>
                             <td class="department"><?= htmlspecialchars($row['department'] ?? '—') ?></td>

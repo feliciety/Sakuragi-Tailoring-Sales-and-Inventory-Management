@@ -12,7 +12,7 @@ $chartData = [];
 for ($i = 6; $i >= 0; $i--) {
     $date = date('Y-m-d', strtotime("-$i days"));
     $chartLabels[] = date('M d', strtotime($date));
-    $stmt = $pdo->prepare("SELECT COUNT(*) FROM orders WHERE DATE(order_date) = ?");
+    $stmt = $pdo->prepare('SELECT COUNT(*) FROM orders WHERE DATE(order_date) = ?');
     $stmt->execute([$date]);
     $chartData[] = (int) $stmt->fetchColumn();
 }
@@ -21,7 +21,7 @@ for ($i = 6; $i >= 0; $i--) {
 $orderStatuses = ['Pending', 'In Progress', 'Completed', 'Cancelled', 'Refunded'];
 $statusCounts = [];
 foreach ($orderStatuses as $status) {
-    $stmt = $pdo->prepare("SELECT COUNT(*) FROM orders WHERE status = ?");
+    $stmt = $pdo->prepare('SELECT COUNT(*) FROM orders WHERE status = ?');
     $stmt->execute([$status]);
     $statusCounts[] = (int) $stmt->fetchColumn();
 }
@@ -58,7 +58,7 @@ $stmt = $pdo->query("
     LIMIT 5
 ");
 while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
-    $orderTimelineLabels[] = "Order #" . $row['order_id'] . " - " . $row['full_name'];
+    $orderTimelineLabels[] = 'Order #' . $row['order_id'] . ' - ' . $row['full_name'];
     $orderTimelineStarts[] = $row['order_date'];
     $orderTimelineEnds[] = $row['expected_completion'];
 }
@@ -66,7 +66,7 @@ while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
 
 <main class="main-content admin-dashboard">
     <div class="dashboard-container">
-        <h1>Welcome, <?= $_SESSION['full_name']; ?> (Admin)</h1>
+        <h1>Welcome, <?= $_SESSION['full_name'] ?> (Admin)</h1>
 
         <section class="dashboard-cards">
   <div class="card card-blue">
@@ -142,14 +142,17 @@ while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
                         <li>
                             <div class="timeline-header">
                                 <strong><?= htmlspecialchars($label) ?></strong>
-                                <span class="date-range"><?= date('M d', strtotime($orderTimelineStarts[$i])) ?> → <?= date('M d', strtotime($orderTimelineEnds[$i])) ?></span>
+                                <span class="date-range"><?= date(
+                                    'M d',
+                                    strtotime($orderTimelineStarts[$i])
+                                ) ?> → <?= date('M d', strtotime($orderTimelineEnds[$i])) ?></span>
                             </div>
                             <div class="timeline-bar">
                                 <?php
-                                    $start = strtotime($orderTimelineStarts[$i]);
-                                    $end = strtotime($orderTimelineEnds[$i]);
-                                    $days = max(1, round(($end - $start) / 86400));
-                                    $widthPercent = min(100, $days * 10);
+                                $start = strtotime($orderTimelineStarts[$i]);
+                                $end = strtotime($orderTimelineEnds[$i]);
+                                $days = max(1, round(($end - $start) / 86400));
+                                $widthPercent = min(100, $days * 10);
                                 ?>
                                 <div class="timeline-fill" style="width: <?= $widthPercent ?>%;"></div>
                             </div>
