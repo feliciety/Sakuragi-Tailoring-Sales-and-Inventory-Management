@@ -44,11 +44,46 @@ if (isset($_GET['delete_id'])) {
         $stmt = $pdo->prepare($updateUserSql);
         $stmt->execute([':employee_id' => $employeeId]);
 
+        // Check if the employees table is empty
+        $checkEmptySql = 'SELECT COUNT(*) AS count FROM employees';
+        $stmt = $pdo->prepare($checkEmptySql);
+        $stmt->execute();
+        $rowCount = $stmt->fetch(PDO::FETCH_ASSOC)['count'];
+
+        if ($rowCount == 0) {
+            // Reset AUTO_INCREMENT if the table is empty
+            $resetAutoIncrementSql = 'ALTER TABLE employees AUTO_INCREMENT = 1';
+            $pdo->exec($resetAutoIncrementSql);
+        }
+
         // Redirect to refresh the page
         header('Location: ' . $_SERVER['PHP_SELF']);
         exit();
     } catch (PDOException $e) {
         echo "<script>alert('Failed to delete employee: " . $e->getMessage() . "');</script>";
+    }
+}
+
+// Handle Update Role to Customer Action
+if (isset($_GET['delete_id'])) {
+    $employeeId = $_GET['delete_id'];
+
+    try {
+        // Update the user's role to 'customer'
+        $updateUserSql = 'UPDATE users SET role = "customer" WHERE user_id = :employee_id';
+        $stmt = $pdo->prepare($updateUserSql);
+        $stmt->execute([':employee_id' => $employeeId]);
+
+        // Optionally, you can also deactivate the employee in the employees table
+        $deactivateEmployeeSql = 'UPDATE employees SET status = "Inactive" WHERE user_id = :employee_id';
+        $stmt = $pdo->prepare($deactivateEmployeeSql);
+        $stmt->execute([':employee_id' => $employeeId]);
+
+        // Redirect to refresh the page
+        header('Location: ' . $_SERVER['PHP_SELF']);
+        exit();
+    } catch (PDOException $e) {
+        echo "<script>alert('Failed to update role: " . $e->getMessage() . "');</script>";
     }
 }
 
@@ -145,7 +180,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['user_id'])) {
 
 // Fetch employees and users data
 $sql = "SELECT 
-            u.user_id AS employee_id,   
+            e.employee_id,   
             u.full_name,
             u.email,
             u.role,
@@ -153,8 +188,8 @@ $sql = "SELECT
             e.department,
             e.status,
             b.branch_name
-        FROM users u
-        LEFT JOIN employees e ON u.user_id = e.user_id  
+        FROM employees e
+        JOIN users u ON e.user_id = u.user_id  
         LEFT JOIN branches b ON e.branch_id = b.branch_id
         WHERE u.role = 'employee'";
 
