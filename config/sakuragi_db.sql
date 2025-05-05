@@ -296,11 +296,18 @@ INSERT INTO `users` (`user_id`, `branch_id`, `full_name`, `email`, `password`, `
 --
 -- Indexes for dumped tables
 --
-
+INSERT INTO branches (branch_name, location, phone_number) VALUES
+('Main', '123 Main St', '0921612456'),
+('Davao', '456 Davao St', '0987654321'),
+('Kidapawan', '789 Kidapawan St', '0921654652'),
+('Tagum', '123 Tagum St', '09123456789');
 --
 -- Indexes for table `attendance`
 --
-ALTER TABLE `attendance`
+-- Update the employees table schema
+ALTER TABLE employees
+MODIFY COLUMN department ENUM('Tailoring', 'Printing', 'Customer Service', 'Admin') NOT NULL,
+MODIFY COLUMN employee_id BIGINT(20) NOT NULL AUTO_INCREMENT UNIQUE; `attendance`
   ADD PRIMARY KEY (`attendance_id`),
   ADD KEY `employee_id` (`employee_id`);
 

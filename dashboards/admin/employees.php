@@ -4,61 +4,8 @@ require_once __DIR__ . '/../../config/constants.php';
 require_once '../../middleware/role_admin_only.php';
 require_once __DIR__ . '/../../config/db_connect.php';
 require_once '../../includes/header.php';
-
-// Handle Edit Employee Form Submission
-if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['employee_id'])) {
-    $employeeId = $_POST['employee_id'];
-    $position = $_POST['position'];
-    $department = $_POST['department'];
-    $branchName = $_POST['branch_name'];
-    $status = $_POST['status'];
-
-    // Update the employee details in the database
-    $updateSql = "UPDATE employees e
-                  JOIN branches b ON e.branch_id = b.branch_id
-                  SET e.position = :position,
-                      e.department = :department,
-                      b.branch_name = :branch_name,
-                      e.status = :status
-                  WHERE e.user_id = :employee_id";
-
-    $stmt = $pdo->prepare($updateSql);
-    $stmt->execute([
-        ':position' => $position,
-        ':department' => $department,
-        ':branch_name' => $branchName,
-        ':status' => $status,
-        ':employee_id' => $employeeId,
-    ]);
-
-    // Redirect to the same page to avoid form resubmission
-    header('Location: ' . $_SERVER['PHP_SELF']);
-    exit();
-}
-
-// Fetch employees and users data
-$sql = "SELECT 
-            u.user_id AS employee_id,   
-            u.full_name,
-            u.email,
-            u.role,
-            e.position,
-            e.department,
-            e.status,
-            b.branch_name
-        FROM users u
-        LEFT JOIN employees e ON u.user_id = e.user_id  
-        LEFT JOIN branches b ON e.branch_id = b.branch_id
-        WHERE u.role = 'employee'";
-
-$stmt = $pdo->prepare($sql);
-$stmt->execute();
-$result = $stmt->fetchAll(PDO::FETCH_ASSOC);
-
-$sql_users = 'SELECT user_id, full_name, email, role, status FROM users';
-$stmt_users = $pdo->prepare($sql_users);
-$stmt_users->execute();
-$users = $stmt_users->fetchAll(PDO::FETCH_ASSOC);
+require_once __DIR__ . '/../../includes/sidebar_admin.php';
+require_once __DIR__ . '/../../controller/admincontroller/employee/employee.php';
 ?>
 
 <!-- Font Awesome for icons -->
@@ -85,7 +32,7 @@ $users = $stmt_users->fetchAll(PDO::FETCH_ASSOC);
                 </select>
             </div>
         </div>
-        <button onclick="exportTableToCSV('inventoryTable', 'inventory.csv')" class="btn-export">
+        <button onclick="exportTableToCSV('inventoryTable', 'employee.csv')" class="btn-export">
             <i class="fas fa-download"></i> Export CSV
         </button>
         <button onclick="showAddEmployeeModal()" class="btn-export">
@@ -109,12 +56,12 @@ $users = $stmt_users->fetchAll(PDO::FETCH_ASSOC);
             <tbody>
                 <?php if ($result && count($result) > 0): ?>
                     <?php foreach ($result as $row): ?>
-                        <tr>
+                        <tr data-employee-id="<?= htmlspecialchars($row['employee_id']) ?>">
                             <td><?= htmlspecialchars($row['employee_id']) ?></td>
                             <td><?= htmlspecialchars($row['full_name']) ?></td>
-                            <td><?= htmlspecialchars($row['position'] ?? '—') ?></td>
-                            <td><?= htmlspecialchars($row['department'] ?? '—') ?></td>
-                            <td><?= htmlspecialchars($row['branch_name'] ?? '—') ?></td>
+                            <td class="position"><?= htmlspecialchars($row['position'] ?? '—') ?></td>
+                            <td class="department"><?= htmlspecialchars($row['department'] ?? '—') ?></td>
+                            <td class="branch"><?= htmlspecialchars($row['branch_name'] ?? '—') ?></td>
                             <td>
                                 <span class="status <?= strtolower($row['status'] ?? 'inactive') ?>">
                                     <?= htmlspecialchars($row['status'] ?? 'Inactive') ?>
@@ -139,12 +86,12 @@ $users = $stmt_users->fetchAll(PDO::FETCH_ASSOC);
 </main>
 
 <!-- Modal to Add Employee -->
-<div id="addEmployeeModal" class="table-responsive" style="display:none;">
+<div id="addEmployeeModal" class="modal" style="display:none;">
     <div class="modal-content">
         <span onclick="closeAddEmployeeModal()">[Close]</span>
         <h2>Select a User to Add as Employee</h2>
-        <div>
-            <table id="usersTable" border="1">
+        <div class="table-responsive">
+            <table id="usersTable">
                 <thead>
                     <tr>
                         <th>User ID</th>
@@ -179,7 +126,53 @@ $users = $stmt_users->fetchAll(PDO::FETCH_ASSOC);
     </div>
 </div>
 
-<!-- Add/Edit/Delete Modals -->
+<!-- Add Employee Modal -->
+<div id="addEmployeeDetailsModal" class="modal" style="display:none;">
+    <div class="modal-content">
+        <span onclick="closeAddEmployeeDetailsModal()">[Close]</span>
+        <h2>Add Employee Details</h2>
+        <form id="addEmployeeDetailsForm" method="POST" action="<?php echo $_SERVER['PHP_SELF']; ?>">
+            <input type="hidden" id="addEmployeeUserId" name="user_id">
+            <div>
+                <label for="addPosition">Position:</label>
+                <select id="addPosition" name="position" required>
+                    <option value="Tailor">Tailor</option>
+                    <option value="Senior Tailor">Senior Tailor</option>
+                    <option value="Assistant Tailor">Assistant Tailor</option>
+                    <option value="Quality Checker">Quality Checker</option>
+                </select>
+            </div>
+            <div>
+                <label for="addDepartment">Department:</label>
+                <select id="addDepartment" name="department" required>
+                    <option value="Tailoring">Tailoring</option>
+                    <option value="Printing">Printing</option>
+                    <option value="Customer Service">Customer Service</option>
+                    <option value="Admin">Admin</option>
+                </select>
+            </div>
+            <div>
+                <label for="addBranch">Branch:</label>
+                <select id="addBranch" name="branch_name" required>
+                    <option value="Main">Main</option>
+                    <option value="Davao">Davao</option>
+                    <option value="Kidapawan">Kidapawan</option>
+                    <option value="Tagum">Tagum</option>
+                </select>
+            </div>
+            <div>
+                <label for="addStatus">Status:</label>
+                <select id="addStatus" name="status" required>
+                    <option value="Active">Active</option>
+                    <option value="Resigned">Resigned</option>
+                    <option value="Terminated">Terminated</option>
+                </select>
+            </div>
+            <button type="submit">Add Employee</button>
+        </form>
+    </div>
+</div>
+
 <!-- Edit Employee Modal -->
 <div id="editEmployeeModal" class="modal" style="display:none;">
     <div class="modal-content">
@@ -188,16 +181,35 @@ $users = $stmt_users->fetchAll(PDO::FETCH_ASSOC);
         <form id="editEmployeeForm" method="POST" action="<?php echo $_SERVER['PHP_SELF']; ?>">
             <input type="hidden" id="editEmployeeId" name="employee_id">
             <div>
+                <div>
+                    <label for="editName">Name:</label>
+                    <input type="text" id="editName" name="name" required>
+                </div>
                 <label for="editPosition">Position:</label>
-                <input type="text" id="editPosition" name="position" required>
+                <select id="editPosition" name="position" required>
+                    <option value="Tailor">Tailor</option>
+                    <option value="Senior Tailor">Senior Tailor</option>
+                    <option value="Assistant Tailor">Assistant Tailor</option>
+                    <option value="Quality Checker">Quality Checker</option>
+                </select>
             </div>
             <div>
                 <label for="editDepartment">Department:</label>
-                <input type="text" id="editDepartment" name="department" required>
+                <select id="editDepartment" name="department" required>
+                    <option value="Tailoring">Tailoring</option>
+                    <option value="Printing">Printing</option>
+                    <option value="Customer Service">Customer Service</option>
+                    <option value="Admin">Admin</option>
+                </select>
             </div>
             <div>
                 <label for="editBranch">Branch:</label>
-                <input type="text" id="editBranch" name="branch_name" required>
+                <select id="editBranch" name="branch_name" required>
+                    <option value="Main">Main</option>
+                    <option value="Davao">Davao</option>
+                    <option value="Kidapawan">Kidapawan</option>
+                    <option value="Tagum">Tagum</option>
+                </select>
             </div>
             <div>
                 <label for="editStatus">Status:</label>
@@ -212,11 +224,12 @@ $users = $stmt_users->fetchAll(PDO::FETCH_ASSOC);
     </div>
 </div>
 
-<div id="deleteEmployeeModal" class="modal" style="display:none;">
+<!-- Delete Employee Modal -->
+<div id="deleteEmployeeModal" class="modal"">
     <div class="modal-content">
         <span onclick="closeDeleteEmployeeModal()">[Close]</span>
         <h2>Delete Employee</h2>
-        <p>Are you sure you want to delete this employee?</p>
+        <p>Are you sure you want to delete this employee? This will revert them back to a customer.</p>
         <div>
             <button onclick="confirmDelete()">Yes, Delete</button>
             <button onclick="closeDeleteEmployeeModal()">Cancel</button>
@@ -224,26 +237,112 @@ $users = $stmt_users->fetchAll(PDO::FETCH_ASSOC);
     </div>
 </div>
 
-<script>
-function showAddEmployeeModal() {
-    document.getElementById('addEmployeeModal').style.display = 'block';
-}
-
-function closeAddEmployeeModal() {
-    document.getElementById('addEmployeeModal').style.display = 'none';
-}
-
-function confirmDeleteEmployee(id) {
-    if (confirm('Are you sure you want to delete this employee?')) {
-        window.location.href = 'employee_delete.php?id=' + id;
+<!-- Custom CSS -->
+<style>
+    /* Modal Styles */
+    .modal {
+        display: none;
+        position: fixed;
+        z-index: 1000;
+        left: 0;
+        top: 0;
+        width: 100%;
+        height: 100%;
+        overflow: auto;
+        background-color: rgba(0, 0, 0, 0.5);
     }
-}
 
+    .modal-content {
+        background-color: #fff;
+        margin: 5% auto;
+        padding: 20px;
+        border-radius: 8px;
+        width: 90%;
+        max-width: 800px;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    }
+
+    .modal-content h2 {
+        margin-top: 0;
+    }
+
+    .table-responsive {
+        overflow-x: auto;
+    }
+
+    table {
+        width: 100%;
+        border-collapse: collapse;
+    }
+
+    th, td {
+        padding: 10px;
+        text-align: left;
+        border: 1px solid #ddd;
+    }
+
+    th {
+        background-color: #f4f4f4;
+    }
+
+    tr:nth-child(even) {
+        background-color: #f9f9f9;
+    }
+
+
+
+    button {
+        padding: 5px 10px;
+        cursor: pointer;
+    }
+
+    /* Responsive Table */
+    @media (max-width: 768px) {
+        table {
+            font-size: 12px;
+        }
+
+        th, td {
+            padding: 5px;
+        }
+    }
+</style>
+
+<!-- Custom JavaScript -->
+<script>
+    function showAddEmployeeModal() {
+        document.getElementById('addEmployeeModal').style.display = 'block';
+    }
+
+    function closeAddEmployeeModal() {
+        document.getElementById('addEmployeeModal').style.display = 'none';
+    }
+
+    function addEmployee(userId) {
+        document.getElementById('addEmployeeUserId').value = userId;
+        document.getElementById('addEmployeeDetailsModal').style.display = 'block';
+    }
+
+    function closeAddEmployeeDetailsModal() {
+        document.getElementById('addEmployeeDetailsModal').style.display = 'none';
+    }
+</script>
+
+<script>
 function showEditEmployeeModal(employeeId) {
-    // Populate the modal with employee data (you'll need to fetch this data via AJAX or pass it in)
+    const row = document.querySelector(`tr[data-employee-id="${employeeId}"]`);
+    const name = row.querySelector('td:nth-child(2)').textContent.trim();
+    const position = row.querySelector('.position').textContent.trim();
+    const department = row.querySelector('.department').textContent.trim();
+    const branchName = row.querySelector('.branch').textContent.trim();
+    const status = row.querySelector('.status').textContent.trim();
+
     document.getElementById('editEmployeeId').value = employeeId;
-    // Example: Fetch data and populate fields (replace with actual implementation)
-    // fetchEmployeeData(employeeId);
+    document.getElementById('editName').value = name;
+    document.getElementById('editPosition').value = position;
+    document.getElementById('editDepartment').value = department;
+    document.getElementById('editBranch').value = branchName;
+    document.getElementById('editStatus').value = status;
 
     document.getElementById('editEmployeeModal').style.display = 'block';
 }
@@ -253,7 +352,6 @@ function closeEditEmployeeModal() {
 }
 
 function showDeleteEmployeeModal(employeeId) {
-    // Store the employee ID for deletion
     window.employeeToDelete = employeeId;
     document.getElementById('deleteEmployeeModal').style.display = 'block';
 }
@@ -263,8 +361,40 @@ function closeDeleteEmployeeModal() {
 }
 
 function confirmDelete() {
-    // Redirect to delete endpoint with the employee ID
-    window.location.href = 'employee_delete.php?id=' + window.employeeToDelete;
+    const employeeId = window.employeeToDelete;
+    window.location.href = `?delete_id=${employeeId}`;
 }
+
+document.getElementById('editEmployeeForm').addEventListener('submit', function (event) {
+    event.preventDefault(); // Prevent the default form submission
+
+    const formData = new FormData(this);
+
+    fetch('<?php echo $_SERVER['PHP_SELF']; ?>', {
+        method: 'POST',
+        body: formData,
+    })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                // Update the table row with the new data
+                const row = document.querySelector(`tr[data-employee-id="${data.employee_id}"]`);
+                row.querySelector('td:nth-child(2)').textContent = data.name; // Update name
+                row.querySelector('.position').textContent = data.position;
+                row.querySelector('.department').textContent = data.department;
+                row.querySelector('.branch').textContent = data.branch_name;
+                row.querySelector('.status').textContent = data.status;
+
+                // Close the modal
+                closeEditEmployeeModal();
+            } else {
+                alert('Failed to update employee details: ' + (data.error || 'Unknown error.'));
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('An error occurred while updating employee details.');
+        });
+});
 </script>
 <?php require_once '../../includes/footer.php'; ?>
