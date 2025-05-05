@@ -344,7 +344,6 @@
     margin-top: 30px; /* header height */
     margin-left: 220px; /* sidebar width */
     min-height: calc(100vh - 70px - 60px); /* header + footer */
-    background-color: #fff;
     padding: 30px;
     overflow-y: auto;
     transition: margin-left 0.3s ease;

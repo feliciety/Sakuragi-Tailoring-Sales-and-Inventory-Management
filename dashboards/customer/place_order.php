@@ -89,7 +89,6 @@ if (get_user_role() !== ROLE_CUSTOMER) {
 <style>
     /* ========== ORDER LANDING SECTION ========== */
 .order-landing {
-    background-color: #f9faff;
     padding: 60px 40px;
     text-align: center;
     border-radius: 16px;
@@ -176,7 +175,7 @@ if (get_user_role() !== ROLE_CUSTOMER) {
 }
 
 /* ========== LINE TRACK ========== */
-.progress-bar-track {
+.progress-bar-track {   
     position: absolute;
     top: 35%;
     left: 10%;
