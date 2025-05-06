@@ -373,7 +373,7 @@ require_once __DIR__ . '/../../controller/admincontroller/employee/employee.php'
 
     /* Style for the buttons */
     .table-controls .btn-export {
-        width: 20%; /* Set the width to 20% */
+        width: 10%; /* Set the width to 20% */
         padding: 10px;
         background-color: #007bff;
         color: #fff;
