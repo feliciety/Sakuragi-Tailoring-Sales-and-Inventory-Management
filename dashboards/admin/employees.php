@@ -44,7 +44,7 @@ require_once __DIR__ . '/../../controller/admincontroller/employee/employee.php'
         <table id="employeeTable">
             <thead>
                 <tr>
-                    <th onclick="sortTableByColumn('employeeTable', 0)">Employee Name</th>
+                    <th onclick="sortTableByColumn('employeeTable', 0)">Name</th>
                     <th onclick="sortTableByColumn('employeeTable', 1)">Position</th>
                     <th onclick="sortTableByColumn('employeeTable', 2)">Department</th>
                     <th onclick="sortTableByColumn('employeeTable', 3)">Branch</th>
@@ -55,6 +55,7 @@ require_once __DIR__ . '/../../controller/admincontroller/employee/employee.php'
             <tbody>
                 <?php if ($result && count($result) > 0): ?>
                     <?php foreach ($result as $row): ?>
+                        <tr data-employee-id="<?= htmlspecialchars($row['employee_id']) ?>">
                             <td><?= htmlspecialchars($row['full_name']) ?></td>
                             <td class="position"><?= htmlspecialchars($row['position'] ?? '—') ?></td>
                             <td class="department"><?= htmlspecialchars($row['department'] ?? '—') ?></td>
@@ -75,23 +76,22 @@ require_once __DIR__ . '/../../controller/admincontroller/employee/employee.php'
                         </tr>
                     <?php endforeach; ?>
                 <?php else: ?>
-                    <tr><td colspan="7" style="text-align:center;">No employees found.</td></tr>
+                    <tr><td colspan="6" style="text-align:center;">No employees found.</td></tr>
                 <?php endif; ?>
             </tbody>
         </table>
     </div>
 </main>
 
-<!-- Modal to Add Employee -->
+<!-- Add Employee Modal -->
 <div id="addEmployeeModal" class="modal" style="display:none;">
     <div class="modal-content">
-        <span onclick="closeAddEmployeeModal()">[Close]</span>
-        <h2>Select a User to Add as Employee</h2>
+        <span class="close-btn" onclick="closeAddEmployeeModal()">×</span>
+        <h2 class="modal-title">Select a User to Add as Employee</h2>
         <div class="table-responsive">
             <table id="usersTable">
                 <thead>
                     <tr>
-                        <th>User ID</th>
                         <th>Full Name</th>
                         <th>Email</th>
                         <th>Role</th>
@@ -101,16 +101,14 @@ require_once __DIR__ . '/../../controller/admincontroller/employee/employee.php'
                 </thead>
                 <tbody>
                     <?php foreach ($users as $user): ?>
-                        <?php if ($user['role'] === 'customer'):// Only include customers
-                             ?>
+                        <?php if ($user['role'] === 'customer'): ?>
                             <tr>
-                                <td><?= htmlspecialchars($user['user_id']) ?></td>
                                 <td><?= htmlspecialchars($user['full_name']) ?></td>
                                 <td><?= htmlspecialchars($user['email']) ?></td>
                                 <td><?= htmlspecialchars($user['role']) ?></td>
                                 <td><?= htmlspecialchars($user['status']) ?></td>
                                 <td>
-                                    <button onclick="addEmployee(<?= $user['user_id'] ?>)">
+                                    <button class="btn-primary" onclick="addEmployee(<?= $user['user_id'] ?>)">
                                         Add as Employee
                                     </button>
                                 </td>
@@ -173,15 +171,11 @@ require_once __DIR__ . '/../../controller/admincontroller/employee/employee.php'
 <!-- Edit Employee Modal -->
 <div id="editEmployeeModal" class="modal" style="display:none;">
     <div class="modal-content">
-        <span onclick="closeEditEmployeeModal()">[Close]</span>
-        <h2>Edit Employee</h2>
+        <span class="close-btn" onclick="closeEditEmployeeModal()">×</span>
+        <h2 class="modal-title">Edit Employee</h2>
         <form id="editEmployeeForm" method="POST" action="<?php echo $_SERVER['PHP_SELF']; ?>">
             <input type="hidden" id="editEmployeeId" name="employee_id">
-            <div>
-                <div>
-                    <label for="editName">Name:</label>
-                    <input type="text" id="editName" name="name" required>
-                </div>
+            <div class="form-group">
                 <label for="editPosition">Position:</label>
                 <select id="editPosition" name="position" required>
                     <option value="Tailor">Tailor</option>
@@ -190,7 +184,7 @@ require_once __DIR__ . '/../../controller/admincontroller/employee/employee.php'
                     <option value="Quality Checker">Quality Checker</option>
                 </select>
             </div>
-            <div>
+            <div class="form-group">
                 <label for="editDepartment">Department:</label>
                 <select id="editDepartment" name="department" required>
                     <option value="Tailoring">Tailoring</option>
@@ -199,7 +193,7 @@ require_once __DIR__ . '/../../controller/admincontroller/employee/employee.php'
                     <option value="Admin">Admin</option>
                 </select>
             </div>
-            <div>
+            <div class="form-group">
                 <label for="editBranch">Branch:</label>
                 <select id="editBranch" name="branch_name" required>
                     <option value="Main">Main</option>
@@ -208,7 +202,7 @@ require_once __DIR__ . '/../../controller/admincontroller/employee/employee.php'
                     <option value="Tagum">Tagum</option>
                 </select>
             </div>
-            <div>
+            <div class="form-group">
                 <label for="editStatus">Status:</label>
                 <select id="editStatus" name="status" required>
                     <option value="Active">Active</option>
@@ -216,7 +210,7 @@ require_once __DIR__ . '/../../controller/admincontroller/employee/employee.php'
                     <option value="Terminated">Terminated</option>
                 </select>
             </div>
-            <button type="submit">Save Changes</button>
+            <button type="submit" class="btn-primary">Save Changes</button>
         </form>
     </div>
 </div>
@@ -255,12 +249,34 @@ require_once __DIR__ . '/../../controller/admincontroller/employee/employee.php'
         padding: 20px;
         border-radius: 8px;
         width: 90%;
-        max-width: 800px;
+        max-width: 600px;
         box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        animation: fadeIn 0.3s ease-in-out;
     }
 
-    .modal-content h2 {
-        margin-top: 0;
+    /* Specific styling for the Add Employee Modal */
+    #addEmployeeModal .modal-content {
+        width: 70%; /* Set the width to 70% of the screen */
+        max-width: none; /* Remove the max-width constraint */
+    }
+
+    .modal-title {
+        font-size: 24px;
+        margin-bottom: 20px;
+        text-align: center;
+        color: #333;
+    }
+
+    .close-btn {
+        float: right;
+        font-size: 24px;
+        font-weight: bold;
+        color: #333;
+        cursor: pointer;
+    }
+
+    .close-btn:hover {
+        color: #ff0000;
     }
 
     .table-responsive {
@@ -270,6 +286,7 @@ require_once __DIR__ . '/../../controller/admincontroller/employee/employee.php'
     table {
         width: 100%;
         border-collapse: collapse;
+        margin-top: 20px;
     }
 
     th, td {
@@ -280,17 +297,59 @@ require_once __DIR__ . '/../../controller/admincontroller/employee/employee.php'
 
     th {
         background-color: #f4f4f4;
+        font-weight: bold;
     }
 
     tr:nth-child(even) {
         background-color: #f9f9f9;
     }
 
+    .btn-primary {
+        background-color: #007bff;
+        color: #fff;
+        border: none;
+        padding: 8px 12px;
+        border-radius: 4px;
+        cursor: pointer;
+        font-size: 14px;
+    }
 
+    .btn-primary:hover {
+        background-color: #0056b3;
+    }
+
+    .form-group {
+        margin-bottom: 15px;
+    }
+
+    label {
+        display: block;
+        font-weight: bold;
+        margin-bottom: 5px;
+    }
+
+    select, input[type="text"], button {
+        width: 100%;
+        padding: 8px;
+        border: 1px solid #ddd;
+        border-radius: 4px;
+        font-size: 14px;
+    }
 
     button {
-        padding: 5px 10px;
         cursor: pointer;
+    }
+
+    /* Animation */
+    @keyframes fadeIn {
+        from {
+            opacity: 0;
+            transform: translateY(-10px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
     }
 
     /* Responsive Table */
@@ -302,6 +361,31 @@ require_once __DIR__ . '/../../controller/admincontroller/employee/employee.php'
         th, td {
             padding: 5px;
         }
+    }
+
+    /* Style for the button container */
+    .table-controls .button-group {
+        display: flex;
+        justify-content: flex-end; /* Align buttons to the right */
+        gap: 20px; /* Add a gap of 20px between the buttons */
+        margin-top: 10px; /* Add some spacing above the buttons */
+    }
+
+    /* Style for the buttons */
+    .table-controls .btn-export {
+        width: 20%; /* Set the width to 20% */
+        padding: 10px;
+        background-color: #007bff;
+        color: #fff;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+        font-size: 14px;
+        text-align: center;
+    }
+
+    .table-controls .btn-export:hover {
+        background-color: #0056b3;
     }
 </style>
 
@@ -328,14 +412,12 @@ require_once __DIR__ . '/../../controller/admincontroller/employee/employee.php'
 <script>
 function showEditEmployeeModal(employeeId) {
     const row = document.querySelector(`tr[data-employee-id="${employeeId}"]`);
-    const name = row.querySelector('td:nth-child(2)').textContent.trim();
     const position = row.querySelector('.position').textContent.trim();
     const department = row.querySelector('.department').textContent.trim();
     const branchName = row.querySelector('.branch').textContent.trim();
     const status = row.querySelector('.status').textContent.trim();
 
     document.getElementById('editEmployeeId').value = employeeId;
-    document.getElementById('editName').value = name;
     document.getElementById('editPosition').value = position;
     document.getElementById('editDepartment').value = department;
     document.getElementById('editBranch').value = branchName;

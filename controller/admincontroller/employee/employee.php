@@ -166,5 +166,6 @@ $sql_users = 'SELECT user_id, full_name, email, role, status FROM users';
 $stmt_users = $pdo->prepare($sql_users);
 $stmt_users->execute();
 $users = $stmt_users->fetchAll(PDO::FETCH_ASSOC);
-
 ?>
+
+
