@@ -1,4 +1,4 @@
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />';
+
 <?php
 // Handle Add Employee Action (Quick Add via URL)
 if (isset($_GET['user_id'])) {
@@ -186,178 +186,8 @@ $stmt_users->execute();
 $users = $stmt_users->fetchAll(PDO::FETCH_ASSOC);
 ?>
 
-
-<!-- Custom CSS -->
-<style>
-    /* Modal Styles */
-    .modal {
-        display: none;
-        position: fixed;
-        z-index: 1000;
-        left: 0;
-        top: 0;
-        width: 100%;
-        height: 100%;
-        overflow: auto;
-        background-color: rgba(0, 0, 0, 0.5);
-    }
-
-    .modal-content {
-        background-color: #fff;
-        margin: 10% auto;
-        padding: 20px;
-        border-radius: 8px;
-        width: 50%;
-        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-    }
-
-    .modal-title {
-        font-size: 24px;
-        margin-bottom: 20px;
-        text-align: center;
-    }
-
-    .close-btn {
-        float: right;
-        font-size: 20px;
-        font-weight: bold;
-        cursor: pointer;
-    }
-
-    .close-btn:hover {
-        color: red;
-    }
-
-    .table-responsive {
-        overflow-x: auto;
-    }
-
-    table {
-        width: 100%;
-        border-collapse: collapse;
-        margin-top: 20px;
-    }
-
-    th, td {
-        padding: 10px;
-        text-align: left;
-        border: 1px solid #ddd;
-    }
-
-    th {
-        background-color: #f4f4f4;
-        font-weight: bold;
-    }
-
-    tr:nth-child(even) {
-        background-color: #f9f9f9;
-    }
-
-    .btn-primary {
-        background-color: #007bff;
-        color: #fff;
-        border: none;
-        padding: 8px 12px;
-        border-radius: 4px;
-        cursor: pointer;
-        font-size: 14px;
-    }
-
-    .btn-primary:hover {
-        background-color: #0056b3;
-    }
-
-    .form-group {
-        margin-bottom: 15px;
-    }
-
-    label {
-        display: block;
-        font-weight: bold;
-        margin-bottom: 5px;
-    }
-
-    select, input[type="text"], button {
-        width: 100%;
-        padding: 8px;
-        border: 1px solid #ddd;
-        border-radius: 4px;
-        font-size: 14px;
-    }
-
-    button {
-        cursor: pointer;
-    }
-
-    /* Animation */
-    @keyframes fadeIn {
-        from {
-            opacity: 0;
-            transform: translateY(-10px);
-        }
-        to {
-            opacity: 1;
-            transform: translateY(0);
-        }
-    }
-
-    /* Responsive Table */
-    @media (max-width: 768px) {
-        table {
-            font-size: 12px;
-        }
-
-        th, td {
-            padding: 5px;
-        }
-    }
-
-    /* Style for the button container */
-    .table-controls .button-group {
-        display: flex;
-        justify-content: flex-end; /* Align buttons to the right */
-        gap: 20px; /* Add a gap of 20px between the buttons */
-        margin-top: 10px; /* Add some spacing above the buttons */
-    }
-
-    /* Style for the buttons */
-    .table-controls .btn-export {
-        width: 10%; /* Set the width to 20% */
-        padding: 10px;
-        background-color: #007bff;
-        color: #fff;
-        border: none;
-        border-radius: 4px;
-        cursor: pointer;
-        font-size: 14px;
-        text-align: center;
-    }
-
-    .table-controls .btn-export:hover {
-        background-color: #0056b3;
-    }
-
-    .success-message {
-        background-color: rgb(63, 190, 92); /* Green background */
-        color: #fff; /* White text */
-        padding: 15px;
-        text-align: center;
-        border-radius: 100px;
-        position: fixed;
-        top: 100px;
-        left: 50%;
-        transform: translateX(-50%);
-        z-index: 1000;
-        width: 20%;
-        max-width: 600px;
-        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-        opacity: 1; /* Fully visible */
-        transition: opacity 0.5s ease-in-out; /* Smooth fade-out */
-    }
-</style>
-
-<!-- Custom JavaScript -->
 <script>
+    
     function showAddEmployeeModal() {
         document.getElementById('addEmployeeModal').style.display = 'block';
     }
@@ -382,9 +212,7 @@ $users = $stmt_users->fetchAll(PDO::FETCH_ASSOC);
     function closeAddEmployeeDetailsModal() {
         document.getElementById('addEmployeeDetailsModal').style.display = 'none';
     }
-</script>
 
-<script>
 function showEditEmployeeModal(employeeId) {
     const row = document.querySelector(`tr[data-employee-id="${employeeId}"]`);
     const position = row.querySelector('.position').textContent.trim();
