@@ -62,6 +62,10 @@ while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
     $orderTimelineStarts[] = $row['order_date'];
     $orderTimelineEnds[] = $row['expected_completion'];
 }
+
+// Fetch active employees
+$stmt = $pdo->query('SELECT COUNT(*) FROM employees WHERE status = "active"');
+$activeEmployeesCount = (int) $stmt->fetchColumn();
 ?>
 
 <main class="main-content admin-dashboard">
@@ -101,11 +105,11 @@ while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
 
   <div class="card card-green">
     <div class="card-content">
-      <div class="card-text">
-        <h3>Active Employees</h3>
-        <p>12</p>
-      </div>
-      <div class="card-icon"><i class="fa-solid fa-users"></i></div>
+        <div class="card-text">
+            <h3>Active Employees</h3>
+            <p><?= $activeEmployeesCount ?></p>
+        </div>
+        <div class="card-icon"><i class="fa-solid fa-users"></i></div>
     </div>
   </div>
 </section>
@@ -539,66 +543,64 @@ body::-webkit-scrollbar {
     color: #004e99;
     border-left: 5px solid #0077cc;
     padding-left: 10px;
-}
-
+}   padding-left: 0;
+    margin: 0;
 .low-stock ul {
     list-style: none;
     padding-left: 0;
-    margin: 0;
-}
-
-.low-stock li {
-    background: #fff6f6;
-    padding: 14px;
+    margin: 0;: #fff6f6;
+}   padding: 14px;
     border-left: 6px solid #ff4c4c;
-    margin-bottom: 10px;
+.low-stock li {om: 10px;
+    background: #fff6f6;
+    padding: 14px;;
+    border-left: 6px solid #ff4c4c;
+    margin-bottom: 10px;m 0.3s ease;
     font-weight: 500;
     color: #cc0000;
     border-radius: 6px;
     transition: transform 0.3s ease;
+}   background: #ffeaea;
 }
-
 .low-stock li:hover {
     transform: translateX(5px);
     background: #ffeaea;
-}
-
+}   list-style: none;
+    padding: 0;
 /* Timeline styles */
 .timeline-list {
     list-style: none;
-    padding: 0;
-    margin: 0;
-}
-
-.timeline-list li {
-    margin-bottom: 18px;
+    padding: 0;li {
+    margin: 0;tom: 18px;
+}   background: #f0f8ff;
+    padding: 12px 16px;
+.timeline-list li {10px;
+    margin-bottom: 18px;x rgba(0,0,0,0.04);
     background: #f0f8ff;
     padding: 12px 16px;
     border-radius: 10px;
     box-shadow: 0 2px 6px rgba(0,0,0,0.04);
-}
-
-.timeline-header {
-    display: flex;
+}   justify-content: space-between;
+    font-size: 0.95rem;
+.timeline-header { 5px;
+    display: flex;;
     justify-content: space-between;
     font-size: 0.95rem;
     margin-bottom: 5px;
     color: #0077cc;
     font-weight: 600;
-}
-
-.timeline-bar {
+}   background: #e0e0e0;
+    border-radius: 5px;
+.timeline-bar {idden;
     height: 10px;
     background: #e0e0e0;
     border-radius: 5px;
     overflow: hidden;
-}
-
-.timeline-fill {
+}   background: linear-gradient(90deg, #0077cc, #00c6ff);
+    border-radius: 5px;
+.timeline-fill {width 0.6s ease-in-out;
     height: 100%;
     background: linear-gradient(90deg, #0077cc, #00c6ff);
     border-radius: 5px;
     transition: width 0.6s ease-in-out;
 }
-
-</style>

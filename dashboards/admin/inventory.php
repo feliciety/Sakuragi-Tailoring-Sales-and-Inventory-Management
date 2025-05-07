@@ -3,10 +3,13 @@ require_once __DIR__ . '/../../config/session_handler.php';
 require_once __DIR__ . '/../../config/constants.php';
 require_once '../../middleware/role_admin_only.php';
 require_once '../../includes/header.php';
+require_once __DIR__ . '/../../config/db_connect.php';
 require_once '../../includes/sidebar_admin.php';
+require_once __DIR__ . '/../../controller/InventoryController.php';
 ?>
 
 <!-- Font Awesome for icons -->
+<link rel="stylesheet" href="/../public/assets/css/adminInventory.css.css" />';
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
 
 <main class="main-content">
@@ -50,36 +53,50 @@ require_once '../../includes/sidebar_admin.php';
                 </tr>
             </thead>
             <tbody>
-                <tr>
-                    <td>Red Cotton Fabric</td>
-                    <td>Fabric</td>
-                    <td>ABC Textiles</td>
-                    <td>5</td>
-                    <td>2025-05-01</td>
-                    <td><span class="status absent">Low</span></td>
-                    <td class="action-buttons">
-                        <button class="edit"><i class="fas fa-pen"></i></button>
-                        <button class="delete"><i class="fas fa-trash"></i></button>
-                    </td>
-                </tr>
-                <tr>
-                    <td>Black Thread</td>
-                    <td>Thread</td>
-                    <td>XYZ Supplies</td>
-                    <td>50</td>
-                    <td>2025-04-30</td>
-                    <td><span class="status employed">Sufficient</span></td>
-                    <td class="action-buttons">
-                        <button class="edit"><i class="fas fa-pen"></i></button>
-                        <button class="delete"><i class="fas fa-trash"></i></button>
-                    </td>
-                </tr>
+                <?php foreach ($inventoryItems as $item): ?>
+                    <tr>
+                        <td><?= htmlspecialchars($item['item_name']) ?></td>
+                        <td><?= htmlspecialchars($item['category']) ?></td>
+                        <td><?= htmlspecialchars($item['supplier_name']) ?></td>
+                        <td><?= htmlspecialchars($item['quantity']) ?></td>
+                        <td><?= htmlspecialchars($item['last_updated']) ?></td>
+                        <td><span class="status <?= $item['status'] === 'Low' ? 'absent' : 'employed' ?>">
+                            <?= htmlspecialchars($item['status']) ?>
+                        </span></td>
+                        <td class="action-buttons">
+                            <button class="edit" onclick="openEditModal(<?= $item[
+                                'inventory_id'
+                            ] ?>, '<?= htmlspecialchars($item['item_name'], ENT_QUOTES) ?>', <?= $item['quantity'] ?>)">
+                                <i class="fas fa-pen"></i>
+                            </button>
+                            <button class="delete"><i class="fas fa-trash"></i></button>
+                        </td>
+                    </tr>
+                <?php endforeach; ?>
             </tbody>
         </table>
     </div>
 </main>
 
-<!-- Load centralized table script -->
-<script src="/assets/js/tables.js"></script>
+<!-- Edit Modal -->
+<div id="editModal" class="modal">
+    <div class="modal-content">
+        <span class="close" onclick="closeModal()">&times;</span>
+        <h2>Edit Quantity</h2>
+        <form id="editForm" method="POST" action="inventory.php">
+            <input type="hidden" name="inventory_id" id="inventory_id">
+            <div class="form-group">
+                <label for="item_name">Item Name</label>
+                <input type="text" id="item_name" name="item_name" readonly>
+            </div>
+            <div class="form-group">
+                <label for="quantity">Quantity</label>
+                <input type="number" id="quantity" name="quantity" required>
+            </div>
+            <button type="submit" class="btn-save">Save Changes</button>
+        </form>
+    </div>
+</div>
+
 
 <?php require_once '../../includes/footer.php'; ?>

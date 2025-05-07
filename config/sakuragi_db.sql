@@ -302,6 +302,27 @@ INSERT INTO branches (branch_name, location, phone_number) VALUES
 ('Kidapawan', '789 Kidapawan St', '0921654652'),
 ('Tagum', '123 Tagum St', '09123456789');
 --
+--
+--
+INSERT INTO `inventory` (`inventory_id`, `branch_id`, `item_name`, `supplier_id`, `category`, `quantity`, `reorder_level`, `last_updated`) VALUES
+(1, 1, 'White Linen Fabric', 1, 'Fabric', 20, 10, '2025-05-05 00:00:00'),
+(2, 1, 'Black Nylon Thread', 2, 'Thread', 15, 10, '2025-05-04 00:00:00'),
+(3, 1, 'Blue Denim Fabric', 3, 'Fabric', 30, 10, '2025-05-03 00:00:00'),
+(4, 1, 'Green Silk Ribbon', 4, 'Accessories', 8, 10, '2025-05-02 00:00:00'),
+(5, 1, 'Yellow Cotton Yarn', 5, 'Accessories', 25, 10, '2025-05-01 00:00:00');
+--
+--
+--
+INSERT INTO `suppliers` (`supplier_name`, `contact_person`, `phone_number`, `email`, `address`, `materials_supplied`) 
+VALUES 
+('Global Supply Co.', 'John Doe', '1234567890', 'contact@globalsupply.com', '123 Global St.', 'Material 1, Material 2'),
+('Elite Suppliers', 'Jane Smith', '0987654321', 'contact@elitesuppliers.com', '456 Elite Ave.', 'Material 3, Material 4'),
+('Premier Supply Group', 'Michael Johnson', '1122334455', 'contact@premiersupply.com', '789 Premier Blvd.', 'Material 5, Material 6'),
+('NextGen Suppliers', 'Emily Davis', '2233445566', 'contact@nextgensuppliers.com', '321 NextGen Rd.', 'Material 7, Material 8'),
+('Reliable Supply Hub', 'David Wilson', '3344556677', 'contact@reliablesupply.com', '654 Reliable Ln.', 'Material 9, Material 10');
+
+--
+--
 -- Indexes for table `attendance`
 --
 -- Update the employees table schema
