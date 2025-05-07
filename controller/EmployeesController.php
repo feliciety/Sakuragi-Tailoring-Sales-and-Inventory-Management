@@ -11,9 +11,9 @@ if (isset($_GET['user_id'])) {
     $existingEmployee = $stmt->fetch(PDO::FETCH_ASSOC);
 
     if (!$existingEmployee) {
-        // Insert the user into the employees table
-        $insertSql = "INSERT INTO employees (user_id, branch_id, position, department, shift, hire_date, salary, status)
-                      VALUES (:user_id, NULL, 'New Employee', 'Admin', 'Morning', CURDATE(), 0.00, 'Active')";
+        // Insert the user into the employees table with default values
+        $insertSql = "INSERT INTO employees (user_id, branch_id, position, department, shift, hire_date, status)
+                      VALUES (:user_id, 3, 'Assistant Tailor', 'Printing', 'Morning', CURDATE(), 'Active')";
         $stmt = $pdo->prepare($insertSql);
         $stmt->execute([':user_id' => $userId]);
 
@@ -22,7 +22,7 @@ if (isset($_GET['user_id'])) {
         $stmt = $pdo->prepare($updateUserSql);
         $stmt->execute([':user_id' => $userId]);
 
-        // Redirect to avoid duplicate actions
+        // Redirect to refresh the page
         header('Location: ' . $_SERVER['PHP_SELF']);
         exit();
     } else {
@@ -204,38 +204,28 @@ $users = $stmt_users->fetchAll(PDO::FETCH_ASSOC);
 
     .modal-content {
         background-color: #fff;
-        margin: 5% auto;
+        margin: 10% auto;
         padding: 20px;
         border-radius: 8px;
-        width: 90%;
-        max-width: 600px;
+        width: 50%;
         box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-        animation: fadeIn 0.3s ease-in-out;
-    }
-
-    /* Specific styling for the Add Employee Modal */
-    #addEmployeeModal .modal-content {
-        width: 70%; /* Set the width to 70% of the screen */
-        max-width: none; /* Remove the max-width constraint */
     }
 
     .modal-title {
         font-size: 24px;
         margin-bottom: 20px;
         text-align: center;
-        color: #333;
     }
 
     .close-btn {
         float: right;
-        font-size: 24px;
+        font-size: 20px;
         font-weight: bold;
-        color: #333;
         cursor: pointer;
     }
 
     .close-btn:hover {
-        color: #ff0000;
+        color: red;
     }
 
     .table-responsive {
@@ -377,8 +367,16 @@ $users = $stmt_users->fetchAll(PDO::FETCH_ASSOC);
     }
 
     function addEmployee(userId) {
-        document.getElementById('addEmployeeUserId').value = userId;
-        document.getElementById('addEmployeeDetailsModal').style.display = 'block';
+        // Send a request to the backend to add the user as an employee
+        fetch(`?user_id=${userId}`)
+            .then(() => {
+                // Reload the page to reflect the changes in the table
+                window.location.reload();
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('An error occurred while adding the employee.');
+            });
     }
 
     function closeAddEmployeeDetailsModal() {

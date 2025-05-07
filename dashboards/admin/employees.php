@@ -56,14 +56,14 @@ require_once __DIR__ . '/../../controller/EmployeesController.php';
                     <?php foreach ($result as $row): ?>
                         <tr data-employee-id="<?= htmlspecialchars($row['employee_id']) ?>">
                             <td><?= htmlspecialchars($row['full_name']) ?></td>
-                            <td class="position"><?= htmlspecialchars($row['position'] ?? '—') ?></td>
-                            <td class="department"><?= htmlspecialchars($row['department'] ?? '—') ?></td>
+                            <td class="position"><?= htmlspecialchars($row['position'] ?? 'New Employee') ?></td>
+                            <td class="department"><?= htmlspecialchars($row['department'] ?? 'General') ?></td>
                             <td class="branch"><?= htmlspecialchars($row['branch_name'] ?? '—') ?></td>
                             <td><?= htmlspecialchars($row['hire_date']) ?></td>
-                            <td class="shift"><?= htmlspecialchars($row['shift'] ?? '—') ?></td> 
+                            <td class="shift"><?= htmlspecialchars($row['shift'] ?? 'Morning') ?></td>
                             <td>
-                                <span class="status <?= strtolower($row['status'] ?? 'inactive') ?>">
-                                    <?= htmlspecialchars($row['status'] ?? 'Inactive') ?>
+                                <span class="status <?= strtolower($row['status'] ?? 'active') ?>">
+                                    <?= htmlspecialchars($row['status'] ?? 'Active') ?>
                                 </span>
                             </td>
                             <td class="action-buttons">
@@ -119,61 +119,6 @@ require_once __DIR__ . '/../../controller/EmployeesController.php';
                 </tbody>
             </table>
         </div>
-    </div>
-</div>
-
-<!-- Add Employee Modal -->
-<div id="addEmployeeDetailsModal" class="modal" style="display:none;">
-    <div class="modal-content">
-        <span onclick="closeAddEmployeeDetailsModal()">[Close]</span>
-        <h2>Add Employee Details</h2>
-        <form id="addEmployeeDetailsForm" method="POST" action="<?php echo $_SERVER['PHP_SELF']; ?>">
-            <input type="hidden" id="addEmployeeUserId" name="user_id">
-            <div>
-                <label for="addPosition">Position:</label>
-                <select id="addPosition" name="position" required>
-                    <option value="Tailor">Tailor</option>
-                    <option value="Senior Tailor">Senior Tailor</option>
-                    <option value="Assistant Tailor">Assistant Tailor</option>
-                    <option value="Quality Checker">Quality Checker</option>
-                </select>
-            </div>
-            <div>
-                <label for="addDepartment">Department:</label>
-                <select id="addDepartment" name="department" required>
-                    <option value="Tailoring">Tailoring</option>
-                    <option value="Printing">Printing</option>
-                    <option value="Customer Service">Customer Service</option>
-                    <option value="Admin">Admin</option>
-                </select>
-            </div>
-            <div>
-                <label for="addBranch">Branch:</label>
-                <select id="addBranch" name="branch_name" required>
-                    <option value="Main">Main</option>
-                    <option value="Davao">Davao</option>
-                    <option value="Kidapawan">Kidapawan</option>
-                    <option value="Tagum">Tagum</option>
-                </select>
-            </div>
-            <div>
-                <label for="addStatus">Status:</label>
-                <select id="addStatus" name="status" required>
-                    <option value="Active">Active</option>
-                    <option value="Resigned">Resigned</option>
-                    <option value="Terminated">Terminated</option>
-                </select>
-            </div>
-            <div>
-                <label for="addShift">Shift:</label>
-                <select id="addShift" name="shift" required>
-                    <option value="Morning">Morning</option>
-                    <option value="Afternoon">Afternoon</option>
-                    <option value="Evening">Evening</option>
-                </select>
-            </div>
-            <button type="submit">Add Employee</button>
-        </form>
     </div>
 </div>
 
