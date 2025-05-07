@@ -75,7 +75,7 @@ CREATE TABLE `employees` (
   `branch_id` bigint(20) NOT NULL,
   `position` varchar(100) NOT NULL,
   `department` enum('Tailoring','Printing','Customer Service','Admin') NOT NULL,
-  `shift` enum('Morning','Afternoon','Night') NOT NULL,
+  `shift` enum('Morning','Afternoon','Evening') NOT NULL,
   `hire_date` date NOT NULL,
   `salary` decimal(10,2) NOT NULL,
   `status` enum('Active','Resigned','Terminated') DEFAULT 'Active'
