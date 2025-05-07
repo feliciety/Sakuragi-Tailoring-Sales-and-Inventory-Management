@@ -16,7 +16,17 @@ for ($i = 6; $i >= 0; $i--) {
     $stmt->execute([$date]);
     $chartData[] = (int) $stmt->fetchColumn();
 }
-
+// Fetch inventory items
+$inventoryItems = [];
+$stmt = $pdo->query("
+    SELECT item_name, category, quantity, reorder_level
+    FROM inventory
+    ORDER BY quantity ASC
+    LIMIT 5
+");
+while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
+    $inventoryItems[] = $row;
+}
 // Order statuses
 $orderStatuses = ['Pending', 'In Progress', 'Completed', 'Cancelled', 'Refunded'];
 $statusCounts = [];
@@ -66,6 +76,10 @@ while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
 // Fetch active employees
 $stmt = $pdo->query('SELECT COUNT(*) FROM employees WHERE status = "active"');
 $activeEmployeesCount = (int) $stmt->fetchColumn();
+
+// Fetch total inventory items
+$stmt = $pdo->query('SELECT COUNT(*) AS total_items FROM inventory');
+$totalInventoryItems = (int) $stmt->fetchColumn();
 ?>
 
 <main class="main-content admin-dashboard">
@@ -87,7 +101,7 @@ $activeEmployeesCount = (int) $stmt->fetchColumn();
     <div class="card-content">
       <div class="card-text">
         <h3>Inventory Items</h3>
-        <p>87</p>
+        <p><?= $totalInventoryItems ?></p>
       </div>
       <div class="card-icon"><i class="fa-solid fa-boxes-stacked"></i></div>
     </div>
@@ -134,8 +148,15 @@ $activeEmployeesCount = (int) $stmt->fetchColumn();
             <div class="low-stock">
                 <h2>⚠️ Low Stock Alerts</h2>
                 <ul>
-                    <li>🔴 Red Thread - 4 left</li>
-                    <li>🔵 Blue Ink - 2 left</li>
+                    <?php foreach ($inventoryItems as $item): ?>
+                        <?php if ($item['quantity'] <= $item['reorder_level']): ?>
+                            <li style="background: #ffeaea; padding: 14px; border-left: 6px solid #ff4c4c; margin-bottom: 10px; border-radius: 6px; font-weight: 500; color: #cc0000;">
+                                <?= htmlspecialchars($item['item_name']) ?> - 
+                                <?= htmlspecialchars($item['quantity']) ?> left 
+                                <span style="color: red;">🔴 Low</span>
+                            </li>
+                        <?php endif; ?>
+                    <?php endforeach; ?>
                 </ul>
             </div>
 
