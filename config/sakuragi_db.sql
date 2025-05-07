@@ -257,14 +257,16 @@ CREATE TABLE `shipping` (
 --
 
 CREATE TABLE `suppliers` (
-  `supplier_id` bigint(20) NOT NULL,
+  `supplier_id` bigint(20) NOT NULL AUTO_INCREMENT,
   `supplier_name` varchar(255) NOT NULL,
   `contact_person` varchar(255) NOT NULL,
   `phone_number` varchar(20) NOT NULL,
   `email` varchar(255) NOT NULL,
   `address` text NOT NULL,
-  `materials_supplied` text NOT NULL
+  `materials_supplied` text NOT NULL,
+  PRIMARY KEY (`supplier_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
 
 -- --------------------------------------------------------
 
@@ -315,13 +317,12 @@ INSERT INTO `inventory` (`inventory_id`, `branch_id`, `item_name`, `supplier_id`
 --
 INSERT INTO `suppliers` (`supplier_name`, `contact_person`, `phone_number`, `email`, `address`, `materials_supplied`) 
 VALUES 
-('Global Supply Co.', 'John Doe', '1234567890', 'contact@globalsupply.com', '123 Global St.', 'Material 1, Material 2'),
-('Elite Suppliers', 'Jane Smith', '0987654321', 'contact@elitesuppliers.com', '456 Elite Ave.', 'Material 3, Material 4'),
-('Premier Supply Group', 'Michael Johnson', '1122334455', 'contact@premiersupply.com', '789 Premier Blvd.', 'Material 5, Material 6'),
-('NextGen Suppliers', 'Emily Davis', '2233445566', 'contact@nextgensuppliers.com', '321 NextGen Rd.', 'Material 7, Material 8'),
-('Reliable Supply Hub', 'David Wilson', '3344556677', 'contact@reliablesupply.com', '654 Reliable Ln.', 'Material 9, Material 10');
+('Global Supply Co.', 'John Doe', '1234567890', 'global1@globalsupply.com', '123 Global St.', 'Material 1, Material 2'),
+('Elite Suppliers', 'Jane Smith', '0987654321', 'elite1@elitesuppliers.com', '456 Elite Ave.', 'Material 3, Material 4'),
+('Premier Supply Group', 'Michael Johnson', '1122334455', 'premier1@premiersupply.com', '789 Premier Blvd.', 'Material 5, Material 6'),
+('NextGen Suppliers', 'Emily Davis', '2233445566', 'nextgen1@nextgensuppliers.com', '321 NextGen Rd.', 'Material 7, Material 8'),
+('Reliable Supply Hub', 'David Wilson', '3344556677', 'reliable1@reliablesupply.com', '654 Reliable Ln.', 'Material 9, Material 10');
 
---
 --
 -- Indexes for table `attendance`
 --
@@ -557,6 +558,15 @@ ALTER TABLE `suppliers`
 --
 ALTER TABLE `users`
   MODIFY `user_id` bigint(20) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
+
+--
+--
+-- AUTO_INCREMENT for table `suppliers`
+ALTER TABLE suppliers AUTO_INCREMENT = 1;
+
+--
+--
+--
 
 --
 -- Constraints for dumped tables
