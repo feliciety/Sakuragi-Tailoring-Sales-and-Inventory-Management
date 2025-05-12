@@ -42,7 +42,7 @@ if (get_user_role() !== ROLE_CUSTOMER) {
             </div>
         </div>
 
-        <!-- Manage Options -->
+        <!-- Manage Options --> 
         <div class="account-actions">
             <h4>Manage Account</h4>
             <div class="action-links">

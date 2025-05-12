@@ -1,29 +1,66 @@
-<h5 class="mb-3 fw-bold text-center">Step 1: Select a Service</h5>
-<p class="text-muted text-center">Choose the type of service for your custom order. Select one to proceed.</p>
+<?php
+require_once __DIR__ . '../../../../config/db_connect.php';
+require_once __DIR__ . '../../../../config/session_handler.php';
 
-<div class="row g-4 justify-content-center">
-    <?php
-    $services = [
+// Fetch all services with prices from database
+try {
+    $query = 'SELECT service_id, service_name, service_description, service_price, service_category FROM services';
+    $stmt = $pdo->query($query);
+    $dbServices = $stmt->fetchAll(PDO::FETCH_ASSOC);
+} catch (Exception $e) {
+    error_log('Error fetching services: ' . $e->getMessage());
+    $dbServices = [];
+}
+
+// Create services array with icons and prices
+$services = [];
+foreach ($dbServices as $service) {
+    $icons = [
         'Embroidery' => '🪡',
         'Sublimation' => '🎨',
         'Screen Printing' => '🖨️',
         'Alterations' => '✂️',
-        'Patches' => '🧵'
+        'Patches' => '🧵',
     ];
-    foreach ($services as $service => $icon): ?>
+
+    $icon = $icons[$service['service_category']] ?? '📌';
+    $services[$service['service_name']] = [
+        'id' => $service['service_id'],
+        'icon' => $icon,
+        'price' => $service['service_price'],
+        'description' => $service['service_description'],
+    ];
+}
+?>
+
+<h5 class="mb-3 fw-bold text-center">Step 1: Select a Service</h5>
+<p class="text-muted text-center">Choose the type of service for your custom order. Select one to proceed.</p>
+
+<div class="row g-4 justify-content-center">
+    <?php foreach ($dbServices as $service): ?>
         <div class="col-md-4 col-sm-6">
-            <div class="service-card text-center p-4 h-100" onclick="selectService('<?= $service ?>', this)">
-                <div class="service-icon mb-3"><?= $icon ?></div>
-                <h6 class="fw-bold mb-2"><?= $service ?></h6>
-                <small class="text-muted">Click to select</small>
+            <div class="service-card text-center p-4 h-100" 
+                 onclick="selectService('<?= $service['service_name'] ?>', this)"
+                 data-service-id="<?= $service['service_id'] ?>"
+                 data-price="<?= $service['service_price'] ?>"
+                 data-category="<?= $service['service_category'] ?>">
+                <div class="service-icon mb-3">
+                    <?= $icons[$service['service_category']] ?? '📌' ?>
+                </div>
+                <h6 class="fw-bold mb-2"><?= htmlspecialchars($service['service_name']) ?></h6>
+                <div class="service-price mb-2">₱<?= number_format($service['service_price'], 2) ?></div>
+                <small class="text-muted d-block"><?= htmlspecialchars($service['service_description']) ?></small>
             </div>
         </div>
     <?php endforeach; ?>
 </div>
+
 <input type="hidden" name="selected_service" id="selected_service">
+<input type="hidden" name="selected_service_price" id="selected_service_price">
+<div id="service-details" class="text-center mt-4"></div>
 
 <style>
-    .service-card {
+.service-card {
     background: #ffffff;
     border: 2px solid transparent;
     border-radius: 16px;
@@ -55,4 +92,16 @@
     transform: scale(1.2);
 }
 
+.service-price {
+    color: #0B5CF9;
+    font-weight: 600;
+    font-size: 1.1rem;
+}
+
+.selected .service-price {
+    color: #0847c7;
+}
 </style>
+
+
+

@@ -116,7 +116,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['employee_id'])) {
     }
 }
 
-// ✅ FIXED: Handle Add Employee Details Form Submission (Prevents Duplicates)
+// Handle Add Employee Details Form Submission (Prevents Duplicates)
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['user_id']) && !isset($_POST['employee_id'])) {
     $userId = $_POST['user_id'];
     $position = $_POST['position'];
@@ -135,7 +135,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['user_id']) && !isset(
     $branchId = $branchMap[$branchName] ?? null;
 
     if ($branchId) {
-        // Insert the user into the employees table with the current hire date
         $insertSql = "INSERT INTO employees (user_id, branch_id, position, department, status, hire_date)
                       VALUES (:user_id, :branch_id, :position, :department, :status, CURDATE())";
         $stmt = $pdo->prepare($insertSql);
@@ -151,12 +150,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['user_id']) && !isset(
         $updateUserSql = "UPDATE users SET role = 'employee' WHERE user_id = :user_id";
         $stmt = $pdo->prepare($updateUserSql);
         $stmt->execute([':user_id' => $userId]);
-
-        // Redirect to refresh the page
-        header('Location: ' . $_SERVER['PHP_SELF']);
-        exit();
-    } else {
-        echo "<script>alert('Invalid branch selected.');</script>";
     }
 }
 
@@ -185,6 +178,12 @@ $stmt_users = $pdo->prepare($sql_users);
 $stmt_users->execute();
 $users = $stmt_users->fetchAll(PDO::FETCH_ASSOC);
 ?>
+
+
+
+
+
+
 
 <script>
     

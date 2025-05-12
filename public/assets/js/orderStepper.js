@@ -1,18 +1,85 @@
 //Step 1: Service Selection
-
-function selectService(service, element) {
-    document.getElementById('selected_service').value = service;
-
+function selectService(serviceName, element) {
+    // Remove selected class from all cards
     document.querySelectorAll('.service-card').forEach(card => {
         card.classList.remove('selected');
     });
+    
+    // Add selected class to clicked card
     element.classList.add('selected');
+    
+    // Get complete service data from the clicked card
+    const serviceData = {
+        id: parseInt(element.dataset.serviceId),
+        name: serviceName,
+        price: parseFloat(element.dataset.price),
+        category: element.dataset.category,
+        description: element.querySelector('small').textContent
+    };
+    
+    // Store complete service data in sessionStorage
+    sessionStorage.setItem('selectedService', JSON.stringify(serviceData));
+    
+    // Also store in orderSummaryData
+    const orderData = {
+        service: serviceData,
+        items: []
+    };
+    sessionStorage.setItem('orderSummaryData', JSON.stringify(orderData));
+    
+    // Update service details display
+    document.getElementById('service-details').innerHTML = `
+        <div class="alert alert-info">
+            <h6 class="mb-2">Selected Service: ${serviceName}</h6>
+            <p class="mb-1">Category: ${serviceData.category}</p>
+            <p class="mb-1">Price: ₱${serviceData.price.toFixed(2)}</p>
+            <p class="mb-0">${serviceData.description}</p>
+        </div>
+    `;
 
-    document.getElementById('step1NextBtn').disabled = false;
+    // Update hidden inputs
+    document.getElementById('selected_service').value = serviceData.id;
+    document.getElementById('selected_service_price').value = serviceData.price;
+    
+    // Log to verify data is being stored correctly
+    console.log('Selected Service Data:', serviceData);
 }
 
 
+//---------------------------------------------------------------------------------------------------------------------------------------//
+//---------------------------------------------------------------------------------------------------------------------------------------//
+//---------------------------------------------------------------------------------------------------------------------------------------//
+//---------------------------------------------------------------------------------------------------------------------------------------//
+//---------------------------------------------------------------------------------------------------------------------------------------//
+//---------------------------------------------------------------------------------------------------------------------------------------//
 //step 2: Image Preview
+   // Handle file upload and preview
+    function handleFileUpload() {
+        const fileInput = document.getElementById('image');
+        const file = fileInput.files[0];
+        
+        if (file) {
+            // Store just the file name
+            sessionStorage.setItem('uploadedDesign', file.name);
+            
+            // Show file info
+            document.getElementById('fileInfoContainer').innerHTML = `
+                <p class="mb-2">Selected file: ${file.name}</p>
+            `;
+        }
+    }
+
+    // Remove uploaded file
+    function removeUploadedFile() {
+        const fileInput = document.getElementById('image');
+        const fileInfoContainer = document.getElementById('fileInfoContainer');
+
+        // Clear file input and hide file info container
+        fileInput.value = '';
+        fileInfoContainer.classList.add('d-none');
+        fileInfoContainer.innerHTML = '';
+    }
+
 function previewImage() {
     const file = document.getElementById('image').files[0];
     const reader = new FileReader();
@@ -29,6 +96,10 @@ function previewImage() {
         document.getElementById('imagePreviewContainer').style.display = 'none';
     }
 }
+//---------------------------------------------------------------------------------------------------------------------------------------//
+//---------------------------------------------------------------------------------------------------------------------------------------//
+//---------------------------------------------------------------------------------------------------------------------------------------//
+//---------------------------------------------------------------------------------------------------------------------------------------//
 // ⭐ Step 3: Design Type Selection Logic
 function selectDesignType(type) {
         // Remove 'selected' from all cards
@@ -130,24 +201,203 @@ document.getElementById('excelSearch').addEventListener('keyup', function() {
         row.style.display = text.includes(filter) ? '' : 'none';
     });
 });
+// ⭐ Step 3 Standard Design Type
 
-// ⭐ Non-Customizable Manual Table Logic
+// Update the sizePrices object and cost calculation functions
+let sizePrices = {
+    'Small': 200,
+    'Medium': 200,
+    'Large': 200
+};
+
+function calculateTotalCost() {
+    let totalCost = 0;
+    const rows = document.querySelectorAll('#manualTableBody tr');
+    
+    rows.forEach(row => {
+        const size = row.querySelector('select[name="size[]"]').value;
+        const quantity = parseInt(row.querySelector('input[name="quantity[]"]').value) || 0;
+        const pricePerUnit = sizePrices[size];
+        const rowTotal = quantity * pricePerUnit;
+        
+        // Update individual row cost
+        row.querySelector('.cost-cell').textContent = `₱${rowTotal.toFixed(2)}`;
+        totalCost += rowTotal;
+    });
+
+    // Store updated items in sessionStorage
+    const items = Array.from(rows).map(row => ({
+        size: row.querySelector('select[name="size[]"]').value,
+        quantity: parseInt(row.querySelector('input[name="quantity[]"]').value) || 0,
+        pricePerUnit: sizePrices[row.querySelector('select[name="size[]"]').value],
+        cost: parseFloat(row.querySelector('.cost-cell').textContent.replace('₱', ''))
+    }));
+
+    sessionStorage.setItem('orderItems', JSON.stringify(items));
+    return totalCost;
+}
+
+function updateCost(element) {
+    calculateTotalCost();
+}
+
 function addManualRow() {
     const tbody = document.getElementById('manualTableBody');
-    const newRow = `
-        <tr>
-            <td><input type="text" class="form-control" name="size[]" placeholder="e.g., M"></td>
-            <td><input type="number" class="form-control" name="quantity[]" min="1" placeholder="e.g., 12"></td>
-            <td><button class="btn btn-outline-danger btn-sm" onclick="removeManualRow(this)">Remove</button></td>
-        </tr>`;
-    tbody.insertAdjacentHTML('beforeend', newRow);
+    const newRow = document.createElement('tr');
+    newRow.innerHTML = `
+        <td>
+            <select class="form-control" name="size[]">
+                <option value="Small">Small</option>
+                <option value="Medium">Medium</option>
+                <option value="Large">Large</option>
+            </select>
+        </td>
+        <td>
+            <input type="number" class="form-control" name="quantity[]" min="1" 
+                   placeholder="e.g., 12" value="0">
+        </td>
+        <td class="cost-cell">₱0.00</td>
+        <td>
+            <button class="btn btn-outline-danger btn-sm">Remove</button>
+        </td>
+    `;
+
+    // Add event listeners to new row elements
+    const sizeSelect = newRow.querySelector('select[name="size[]"]');
+    const quantityInput = newRow.querySelector('input[name="quantity[]"]');
+    const removeButton = newRow.querySelector('button');
+    
+    // Update event listeners to use direct function calls
+    sizeSelect.addEventListener('change', () => {
+        calculateTotalCost();
+        updateDisplay();
+    });
+    
+    quantityInput.addEventListener('input', () => {
+        calculateTotalCost();
+        updateDisplay();
+    });
+    
+    removeButton.addEventListener('click', () => {
+        newRow.remove();
+        calculateTotalCost();
+        updateDisplay();
+    });
+
+    tbody.appendChild(newRow);
+    calculateTotalCost(); // Calculate costs immediately after adding row
+    updateDisplay(); // Update the display
 }
 
-function removeManualRow(button) {
-    button.closest('tr').remove();
+// Add this new function to update all displays
+function updateDisplay() {
+    const rows = document.querySelectorAll('#manualTableBody tr');
+    let totalCost = 0;
+    
+    rows.forEach(row => {
+        const size = row.querySelector('select[name="size[]"]').value;
+        const quantity = parseInt(row.querySelector('input[name="quantity[]"]').value) || 0;
+        const pricePerUnit = sizePrices[size];
+        const rowTotal = quantity * pricePerUnit;
+        
+        row.querySelector('.cost-cell').textContent = `₱${rowTotal.toFixed(2)}`;
+        totalCost += rowTotal;
+    });
+
+    // Update session storage with current state
+    const items = Array.from(rows).map(row => ({
+        size: row.querySelector('select[name="size[]"]').value,
+        quantity: parseInt(row.querySelector('input[name="quantity[]"]').value) || 0,
+        pricePerUnit: sizePrices[row.querySelector('select[name="size[]"]').value],
+        cost: parseFloat(row.querySelector('.cost-cell').textContent.replace('₱', ''))
+    }));
+
+    sessionStorage.setItem('orderItems', JSON.stringify({
+        items: items,
+        totalCost: totalCost
+    }));
+}
+
+// Update the original updateCost function
+function updateCost(element) {
+    calculateTotalCost();
+    updateDisplay();
 }
 
 
+//---------------------------------------------------------------------------------------------------------------------------------------//
+//---------------------------------------------------------------------------------------------------------------------------------------//
+//---------------------------------------------------------------------------------------------------------------------------------------//
+//---------------------------------------------------------------------------------------------------------------------------------------//
+// ⭐ Step 4 
+function displayOrderSummary() {
+    const orderData = JSON.parse(sessionStorage.getItem('orderSummaryData'));
+    const serviceData = JSON.parse(sessionStorage.getItem('selectedService'));
+    const designFile = sessionStorage.getItem('uploadedDesign');
+    
+    if (!orderData || !serviceData) {
+        console.error('Missing order data');
+        return;
+    }
+
+    // Update service details with actual selected service data
+    document.getElementById('serviceSummary').innerHTML = `
+        <p><strong>Service:</strong> ${serviceData.name}</p>
+        <p><strong>Category:</strong> ${serviceData.category}</p>
+        <p><strong>Service Price:</strong> ₱${serviceData.price.toFixed(2)}</p>
+        <p><strong>Description:</strong> ${serviceData.description}</p>
+    `;
+
+    // Show only file name for uploaded design
+    document.getElementById('designSummary').innerHTML = designFile ? 
+        `<p><strong>File:</strong> ${designFile}</p>` : 
+        '<p class="text-muted">No design file uploaded</p>';
+
+    let totalItems = 0;
+    let shirtTotal = 0;
+
+    // Update table body
+    const tableBody = document.getElementById('summaryTableBody');
+    tableBody.innerHTML = orderData.items.map(item => {
+        const quantity = parseInt(item.quantity);
+        const cost = parseFloat(item.cost.replace('₱', ''));
+        totalItems += quantity;
+        shirtTotal += cost;
+
+        return `
+            <tr>
+                <td>${item.size}</td>
+                <td>${quantity}</td>
+                <td>₱${(cost/quantity).toFixed(2)}</td>
+                <td>₱${cost.toFixed(2)}</td>
+            </tr>
+        `;
+    }).join('');
+
+    // Update summary totals
+    document.getElementById('totalItems').textContent = totalItems;
+    document.getElementById('shirtTotal').textContent = `₱${shirtTotal.toFixed(2)}`;
+    document.getElementById('servicePrice').textContent = `₱${serviceData.price.toFixed(2)}`;
+    document.getElementById('grandTotal').textContent = `₱${(shirtTotal + parseFloat(serviceData.price)).toFixed(2)}`;
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+    if (document.querySelector('#step4.active')) {
+        displayOrderSummary();
+    }
+});
+//---------------------------------------------------------------------------------------------------------------------------------------//
+//---------------------------------------------------------------------------------------------------------------------------------------//
+//---------------------------------------------------------------------------------------------------------------------------------------//
+//---------------------------------------------------------------------------------------------------------------------------------------//
+//⭐ Step 5
+
+
+
+//---------------------------------------------------------------------------------------------------------------------------------------//
+//---------------------------------------------------------------------------------------------------------------------------------------//
+//---------------------------------------------------------------------------------------------------------------------------------------//
+//---------------------------------------------------------------------------------------------------------------------------------------//
 //Progress Indicator
 
 let currentStep = 1;
@@ -205,10 +455,145 @@ if (fillBar) {
 }
 
 function nextStep() {
-    if (currentStep < totalSteps) {
-        currentStep++;
-        updateStepper();
+    // Validate current step before proceeding
+    if (currentStep === 3) {
+        // Get service data from step 1
+        const serviceData = JSON.parse(sessionStorage.getItem('selectedService'));
+        
+        // Get design file from step 2
+        const designFile = sessionStorage.getItem('uploadedDesign');
+        
+        // Get size and quantity data from step 3
+        const items = Array.from(document.querySelectorAll('#manualTableBody tr')).map(row => {
+            const size = row.querySelector('select[name="size[]"]').value;
+            const quantity = parseInt(row.querySelector('input[name="quantity[]"]').value) || 0;
+            const cost = row.querySelector('.cost-cell').textContent;
+            return {
+                size,
+                quantity,
+                pricePerUnit: sizePrices[size],
+                cost: cost.replace('₱', '')
+            };
+        });
+
+        // Calculate totals
+        const itemsTotal = items.reduce((sum, item) => sum + parseFloat(item.cost), 0);
+        const servicePrice = parseFloat(serviceData.price);
+        const grandTotal = itemsTotal + servicePrice;
+
+        // Create complete order data
+        const orderData = {
+            service: serviceData,
+            designFile: designFile,
+            items: items,
+            totals: {
+                itemsTotal,
+                servicePrice,
+                grandTotal
+            }
+        };
+
+        // Store in sessionStorage
+        sessionStorage.setItem('orderSummaryData', JSON.stringify(orderData));
+
+        // Validate required data
+        if (!serviceData || items.length === 0) {
+            alert('Please complete all required fields before proceeding');
+            return;
+        }
+
+        // Proceed to next step
+        if (currentStep < totalSteps) {
+            currentStep++;
+            updateStepper();
+            // If moving to step 4, update the summary
+            if (currentStep === 4) {
+                displayOrderSummary();
+            }
+        }
+    } else if (currentStep === 4) {
+        // Store payment method before proceeding
+        const paymentMethod = document.querySelector('input[name="payment_method"]:checked')?.value;
+        const paymentProof = document.getElementById('paymentProof')?.files[0];
+        
+        sessionStorage.setItem('paymentMethod', paymentMethod);
+        if (paymentProof) {
+            // Handle payment proof upload if needed
+            const formData = new FormData();
+            formData.append('payment_proof', paymentProof);
+            // You can add upload logic here
+        }
+
+        if (currentStep < totalSteps) {
+            currentStep++;
+            updateStepper();
+        }
+    } else if (currentStep === 5) {
+        // Submit final order and proceed to step 6
+        submitFinalOrder().then(() => {
+            currentStep++;
+            updateStepper();
+        }).catch(error => {
+            console.error('Order submission failed:', error);
+            alert('Failed to submit order. Please try again.');
+        });
+    } else {
+        // Handle other steps
+        if (currentStep < totalSteps) {
+            currentStep++;
+            updateStepper();
+        }
     }
+}
+
+// Update submitFinalOrder to return a Promise
+function submitFinalOrder() {
+    return new Promise((resolve, reject) => {
+        // Get all required data
+        const orderData = JSON.parse(sessionStorage.getItem('orderSummaryData'));
+        const paymentProof = document.getElementById('paymentProof')?.files[0];
+
+        if (!orderData) {
+            reject('Missing order data');
+            return;
+        }
+
+        // Create FormData
+        const formData = new FormData();
+        formData.append('orderData', JSON.stringify(orderData));
+        
+        if (paymentProof) {
+            formData.append('payment_proof', paymentProof);
+        }
+
+        // Updated path to point to the controller
+        fetch('../../../controller/customerController/submit_order.php', {
+            method: 'POST',
+            body: formData
+        })
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('Network response was not ok');
+            }
+            return response.json();
+        })
+        .then(data => {
+            console.log('Server response:', data); // Debug log
+            if (data.success) {
+                // Clear session storage after successful order
+                sessionStorage.removeItem('orderSummaryData');
+                sessionStorage.removeItem('selectedService');
+                sessionStorage.removeItem('uploadedDesign');
+                resolve(data);
+            } else {
+                reject(data.error || 'Failed to submit order');
+            }
+        })
+        .catch(error => {
+            console.error('Submit error:', error);
+            reject(error.message || 'Network error occurred');
+        });
+    });
 }
 
 function prevStep() {

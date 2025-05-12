@@ -1,9 +1,62 @@
+<?php
+require_once __DIR__ . '/../../../config/db_connect.php';
+require_once __DIR__ . '/../../../config/session_handler.php';
+
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_FILES['image'])) {
+    $file = $_FILES['image'];
+    $allowedTypes = ['image/vnd.adobe.photoshop', 'application/zip'];
+
+    // Validate file type
+    if (!in_array($file['type'], $allowedTypes)) {
+        die('Invalid file type. Only PSD and ZIP files are allowed.');
+    }
+
+    // Validate file size (e.g., max 10MB)
+    if ($file['size'] > 10 * 1024 * 1024) {
+        die('File size exceeds the maximum limit of 10MB.');
+    }
+
+    // Check if the user is logged in
+    if (!isset($_SESSION['user_id'])) {
+        die('You must be logged in to upload files.');
+    }
+
+    // Get the logged-in user's ID
+    $userId = $_SESSION['user_id'];
+
+    // Generate a unique file name and save the file
+    $uploadDir = __DIR__ . '/uploads/';
+    if (!is_dir($uploadDir)) {
+        mkdir($uploadDir, 0777, true);
+    }
+    $filePath = $uploadDir . uniqid() . '-' . basename($file['name']);
+    if (!move_uploaded_file($file['tmp_name'], $filePath)) {
+        die('Failed to upload the file.');
+    }
+
+    // Use the uploads table to store design files
+    $query = "INSERT INTO uploads (user_id, file_name, file_path, file_type, file_size) 
+              VALUES (:user_id, :file_name, :file_path, :file_type, :file_size)";
+    $stmt = $pdo->prepare($query);
+    $stmt->execute([
+        'user_id' => $userId,
+        'file_name' => $file['name'],
+        'file_path' => $filePath,
+        'file_type' => $file['type'],
+        'file_size' => $file['size'],
+    ]);
+
+    echo 'File uploaded successfully!';
+}
+?>
+
+
 <h5 class="mb-3 fw-bold text-center">Step 2: Upload Your Design File (PSD)</h5>
 <p class="text-muted text-center">
     Upload your final design layout. <strong>Only PSD files</strong> are accepted for accurate processing.
 </p>
 
-<form action="upload.php" method="POST" enctype="multipart/form-data" class="upload-design-form mt-4">
+<form action ="" method="POST" enctype="multipart/form-data" class="upload-design-form mt-4">
 
     <div class="row justify-content-center">
         <!-- Upload Box -->

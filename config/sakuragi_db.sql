@@ -74,7 +74,7 @@ CREATE TABLE `employees` (
   `user_id` bigint(20) NOT NULL,
   `branch_id` bigint(20) NOT NULL,
   `position` varchar(100) NOT NULL,
-  `department` enum('Tailoring','Printing','Customer Service','Admin') NOT NULL,
+  `department` enum('Tailoring','Printing','Customer','Admin') NOT NULL,
   `shift` enum('Morning','Afternoon','Evening') NOT NULL,
   `hire_date` date NOT NULL,
   `salary` decimal(10,2) NOT NULL,
@@ -172,7 +172,9 @@ CREATE TABLE `orders` (
   `status` enum('Pending','In Progress','Completed','Cancelled','Refunded') DEFAULT 'Pending',
   `total_price` decimal(10,2) NOT NULL,
   `payment_status` enum('Pending','Paid','Refunded') DEFAULT 'Pending',
-  `expected_completion` date DEFAULT NULL
+  `expected_completion` date DEFAULT NULL,
+  `design_file_id` bigint(20) DEFAULT NULL,
+  `service_id` bigint(20) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 -- --------------------------------------------------------
@@ -182,12 +184,21 @@ CREATE TABLE `orders` (
 --
 
 CREATE TABLE `order_details` (
-  `order_detail_id` bigint(20) NOT NULL,
+  `order_detail_id` bigint(20) NOT NULL AUTO_INCREMENT,
   `order_id` bigint(20) NOT NULL,
-  `product_id` bigint(20) NOT NULL,
+  `service_id` bigint(20) NOT NULL,
   `quantity` int(11) NOT NULL,
   `unit_price` decimal(10,2) NOT NULL,
-  `subtotal` decimal(10,2) GENERATED ALWAYS AS (`quantity` * `unit_price`) STORED
+  `subtotal` decimal(10,2) GENERATED ALWAYS AS (`quantity` * `unit_price`) STORED,
+  `size` varchar(50) DEFAULT NULL,
+  `customization_details` text DEFAULT NULL,
+  `notes` text DEFAULT NULL,
+  `created_at` timestamp DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (`order_detail_id`),
+  KEY `order_id` (`order_id`),
+  KEY `service_id` (`service_id`),
+  CONSTRAINT `order_details_ibfk_1` FOREIGN KEY (`order_id`) REFERENCES `orders` (`order_id`),
+  CONSTRAINT `order_details_ibfk_2` FOREIGN KEY (`service_id`) REFERENCES `services` (`service_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 -- --------------------------------------------------------
@@ -211,31 +222,50 @@ CREATE TABLE `order_workflow` (
 --
 
 CREATE TABLE `payments` (
-  `payment_id` bigint(20) NOT NULL,
-  `order_id` bigint(20) NOT NULL,
-  `payment_date` datetime DEFAULT current_timestamp(),
-  `amount` decimal(10,2) NOT NULL,
-  `currency` varchar(3) DEFAULT 'PHP',
-  `payment_method` enum('Cash','Card','Online Transfer','Crypto') NOT NULL,
-  `status` enum('Pending','Completed','Failed','Refunded') DEFAULT 'Pending'
+    `payment_id` bigint(20) NOT NULL AUTO_INCREMENT,
+    `order_id` bigint(20) NOT NULL,
+    `payment_date` datetime DEFAULT current_timestamp(),
+    `amount` decimal(10,2) NOT NULL,
+    `payment_method` enum('GCash','Bank Transfer','Cash') NOT NULL,
+    `reference_number` varchar(100) DEFAULT NULL,
+    `proof_file_name` varchar(255) DEFAULT NULL,
+    `proof_file_path` varchar(255) DEFAULT NULL,
+    `status` enum('Pending Verification','Verified','Rejected') DEFAULT 'Pending Verification',
+    `verified_by` bigint(20) DEFAULT NULL,
+    `verified_at` datetime DEFAULT NULL,
+    `admin_notes` text DEFAULT NULL,
+    PRIMARY KEY (`payment_id`),
+    KEY `order_id` (`order_id`),
+    KEY `verified_by` (`verified_by`),
+    CONSTRAINT `payments_ibfk_1` FOREIGN KEY (`order_id`) REFERENCES `orders` (`order_id`),
+    CONSTRAINT `payments_ibfk_2` FOREIGN KEY (`verified_by`) REFERENCES `users` (`user_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 -- --------------------------------------------------------
-
 --
--- Table structure for table `products`
+-- Table structure for table `services`
 --
 
-CREATE TABLE `products` (
-  `product_id` bigint(20) NOT NULL,
-  `product_name` varchar(255) NOT NULL,
-  `description` text DEFAULT NULL,
-  `price` decimal(10,2) NOT NULL,
-  `category` enum('Embroidery','Sublimation','Screen Printing','Alterations','Patches') NOT NULL
+CREATE TABLE `services` (
+  `service_id` BIGINT(20) NOT NULL AUTO_INCREMENT,
+  `service_name` VARCHAR(255) NOT NULL,
+  `service_description` TEXT DEFAULT NULL,
+  `service_price` DECIMAL(10,2) NOT NULL,
+  `service_category` ENUM('Embroidery', 'Sublimation', 'Screen Printing', 'Alterations', 'Patches') NOT NULL,
+  `is_active` BOOLEAN DEFAULT TRUE,
+  PRIMARY KEY (`service_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 -- --------------------------------------------------------
-
+--
+--
+--
+CREATE TABLE sizes_pricing (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    size VARCHAR(50) NOT NULL, 
+    quantity INT NOT NULL,    
+    price DECIMAL(10, 2) NOT NULL 
+);
 --
 -- Table structure for table `shipping`
 --
@@ -266,8 +296,24 @@ CREATE TABLE `suppliers` (
   `materials_supplied` text NOT NULL,
   PRIMARY KEY (`supplier_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
-
-
+--
+--
+--
+CREATE TABLE uploads (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    user_id INT NOT NULL, 
+    file_name VARCHAR(255) NOT NULL, 
+    file_path VARCHAR(255) NOT NULL, 
+    file_type VARCHAR(50) NOT NULL, 
+    file_size BIGINT NOT NULL, 
+    uploaded_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP, 
+    order_id bigint(20) DEFAULT NULL,
+    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
+    FOREIGN KEY (order_id) REFERENCES orders(order_id)
+);
+--
+--
+--
 -- --------------------------------------------------------
 
 --
@@ -292,8 +338,13 @@ CREATE TABLE `users` (
 
 INSERT INTO `users` (`user_id`, `branch_id`, `full_name`, `email`, `password`, `phone_number`, `role`, `status`, `created_at`) VALUES
 (1, NULL, 'Fe Anne L. Malasarte', 'fe@example.com', '$2y$10$va1D.8msOF/WcP/ReyQ/CODkQGlnd7G1ZDOFTuTHCelmlknp0JOWS', '09758373702', 'customer', 'Active', '2025-04-29 07:06:43'),
-(2, NULL, 'admin', 'admin@example.com', '$2y$10$tuHBZXcGSM8bMupz1fN1V.kLI55u0GdphzhuSlIQJQYeq3OSmK1Cm', '12344321', 'admin', 'Active', '2025-04-29 08:02:21'),
-(3, NULL, 'employee', 'employee@example.com', '$2y$10$5OO4Qf4q8Wq5XKasRP4X4uQk19rnUFPk5eSKSyBWV7/Q8Ve0TOc12', '09758373702', 'employee', 'Active', '2025-04-30 15:40:19');
+(2, NULL, 'admin', 'admin@example.com', '$2y$10$tuHBZXcGSM8bMupz1fN1V.kLI55u0GdphzhuSlIQJQYeq3OSmK1Cm', '12344321', 'customer', 'Active', '2025-04-29 08:02:21'),
+(3, NULL, 'employee', 'employee@example.com', '$2y$10$5OO4Qf4q8Wq5XKasRP4X4uQk19rnUFPk5eSKSyBWV7/Q8Ve0TOc12', '09758373702', 'customer', 'Active', '2025-04-30 15:40:19'),
+(4, NULL, 'Cjay Lao', 'a@gmail.com', '$2y$10$nFmm5sanK4RIYc8e9e7ag.QOpWgjTq4w31y8YUbyZ3BvrxL3UJDDS', '0953478378', 'admin', 'Active', '2025-05-07 02:05:44'),
+(5, NULL, 'Jay Employee', 'e@gmail.com', '$2y$10$NlrQL.v8Yij1QIeF/HM1u.7PwVQyRTOgEPKQ5i6cKYOxF1s0ntrAO', '09237182378', 'employee', 'Active', '2025-05-07 02:06:10'),
+(6, NULL, 'Customer Jay', 'C@gmail.com', '$2y$10$R./38BJtTrFoqnAgNQjjUeAnzbBCtticH0DRDd5.k2whEoZ0Ykona', '1230981293', 'customer', 'Active', '2025-05-07 02:06:30'),
+(7, NULL, 'Jay lao', 'jay@gmail.com', '$2y$10$PzNfPugpKlNPRxgj/NqoaueCq3jv39opVHcuvpfZGz8u9gZvlQaqS', '132190831298', 'customer', 'Active', '2025-05-07 02:40:36');
+
 
 --
 -- Indexes for dumped tables
@@ -322,7 +373,26 @@ VALUES
 ('Premier Supply Group', 'Michael Johnson', '1122334455', 'premier1@premiersupply.com', '789 Premier Blvd.', 'Material 5, Material 6'),
 ('NextGen Suppliers', 'Emily Davis', '2233445566', 'nextgen1@nextgensuppliers.com', '321 NextGen Rd.', 'Material 7, Material 8'),
 ('Reliable Supply Hub', 'David Wilson', '3344556677', 'reliable1@reliablesupply.com', '654 Reliable Ln.', 'Material 9, Material 10');
-
+--
+--
+--
+-- Insert services into the table
+INSERT INTO `services` (`service_id`, `service_name`, `service_description`, `service_price`, `service_category`) 
+VALUES
+(NULL, 'Embroidery', 'High-quality embroidery services for custom designs.', 500.00, 'Embroidery'),
+(NULL, 'Sublimation', 'Custom sublimation printing for vibrant designs.', 750.00, 'Sublimation'),
+(NULL, 'Screen Printing', 'Durable screen printing for various materials.', 600.00, 'Screen Printing'),
+(NULL, 'Alterations', 'Professional alterations for a perfect fit.', 300.00, 'Alterations'),
+(NULL, 'Patches', 'Custom patches for clothing and accessories.', 400.00, 'Patches');
+--
+--
+--
+--
+INSERT INTO sizes_pricing (size, quantity, price) VALUES
+('Small', 1, 200.00),
+('Medium', 1, 200.00),
+('Large', 1, 200.00);
+--
 --
 -- Indexes for table `attendance`
 --
@@ -407,7 +477,7 @@ ALTER TABLE `orders`
 ALTER TABLE `order_details`
   ADD PRIMARY KEY (`order_detail_id`),
   ADD KEY `order_id` (`order_id`),
-  ADD KEY `product_id` (`product_id`);
+  ADD KEY `service_id` (`service_id`);
 
 --
 -- Indexes for table `order_workflow`
@@ -425,10 +495,10 @@ ALTER TABLE `payments`
   ADD KEY `order_id` (`order_id`);
 
 --
--- Indexes for table `products`
+-- Indexes for table `services`
 --
-ALTER TABLE `products`
-  ADD PRIMARY KEY (`product_id`);
+ALTER TABLE `services`
+  ADD PRIMARY KEY (`service_id`);
 
 --
 -- Indexes for table `shipping`
@@ -536,10 +606,10 @@ ALTER TABLE `payments`
   MODIFY `payment_id` bigint(20) NOT NULL AUTO_INCREMENT;
 
 --
--- AUTO_INCREMENT for table `products`
+-- AUTO_INCREMENT for table `services`
 --
-ALTER TABLE `products`
-  MODIFY `product_id` bigint(20) NOT NULL AUTO_INCREMENT;
+ALTER TABLE `services`
+  MODIFY `service_id` bigint(20) NOT NULL AUTO_INCREMENT;
 
 --
 -- AUTO_INCREMENT for table `shipping`
@@ -630,14 +700,15 @@ ALTER TABLE `notifications`
 ALTER TABLE `orders`
   ADD CONSTRAINT `orders_ibfk_1` FOREIGN KEY (`branch_id`) REFERENCES `branches` (`branch_id`),
   ADD CONSTRAINT `orders_ibfk_2` FOREIGN KEY (`user_id`) REFERENCES `users` (`user_id`),
-  ADD CONSTRAINT `orders_ibfk_3` FOREIGN KEY (`employee_id`) REFERENCES `employees` (`employee_id`);
+  ADD CONSTRAINT `orders_ibfk_3` FOREIGN KEY (`employee_id`) REFERENCES `employees` (`employee_id`),
+  ADD CONSTRAINT `fk_service` FOREIGN KEY (`service_id`) REFERENCES `services` (`service_id`);
 
 --
 -- Constraints for table `order_details`
 --
 ALTER TABLE `order_details`
   ADD CONSTRAINT `order_details_ibfk_1` FOREIGN KEY (`order_id`) REFERENCES `orders` (`order_id`),
-  ADD CONSTRAINT `order_details_ibfk_2` FOREIGN KEY (`product_id`) REFERENCES `products` (`product_id`);
+  ADD CONSTRAINT `order_details_ibfk_2` FOREIGN KEY (`service_id`) REFERENCES `services` (`service_id`);
 
 --
 -- Constraints for table `order_workflow`
@@ -668,3 +739,7 @@ COMMIT;
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
 /*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
+CREATE INDEX idx_orders_status ON orders(status);
+CREATE INDEX idx_orders_payment_status ON orders(payment_status);
+CREATE INDEX idx_payments_status ON payments(status);
+CREATE INDEX idx_uploads_order ON uploads(order_id);

@@ -8,8 +8,9 @@ require_once '../../includes/sidebar_admin.php';
 require_once __DIR__ . '/../../controller/EmployeesController.php';
 ?>
 
-<link rel="stylesheet" href="/../public/assets/css/adminemployee.css" />';
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />';
+<link rel="stylesheet" href="/../public/assets/css/adminemployee.css" />
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+
 <main class="main-content">
     <h1>Manage Employees</h1>
 
@@ -31,7 +32,7 @@ require_once __DIR__ . '/../../controller/EmployeesController.php';
                 </select>
             </div>
         </div>
-        <button onclick="exportTableToCSV('inventoryTable', 'employee.csv')" class="btn-export">
+        <button onclick="exportTableToCSV('employeeTable', 'employee.csv')" class="btn-export">
             <i class="fas fa-download"></i> Export CSV
         </button>
         <button onclick="showAddEmployeeModal()" class="btn-export">
@@ -48,7 +49,7 @@ require_once __DIR__ . '/../../controller/EmployeesController.php';
                     <th onclick="sortTableByColumn('employeeTable', 2)">Department</th>
                     <th onclick="sortTableByColumn('employeeTable', 3)">Branch</th>
                     <th onclick="sortTableByColumn('employeeTable', 4)">Hire Date</th>
-                    <th onclick="sortTableByColumn('employeeTable', 5)">Shift</th> <!-- Shift Column -->
+                    <th onclick="sortTableByColumn('employeeTable', 5)">Shift</th>
                     <th onclick="sortTableByColumn('employeeTable', 6)">Status</th>
                     <th>Actions</th>
                 </tr>
@@ -180,7 +181,7 @@ require_once __DIR__ . '/../../controller/EmployeesController.php';
 </div>
 
 <!-- Delete Employee Modal -->
-<div id="deleteEmployeeModal" class="modal"">
+<div id="deleteEmployeeModal" class="modal">
     <div class="modal-content">
         <span onclick="closeDeleteEmployeeModal()">[Close]</span>
         <h2>Delete Employee</h2>
