@@ -241,20 +241,34 @@ function updateCost(element) {
     calculateTotalCost();
 }
 
+// Initialize a counter for row additions if it doesn't exist
+if (typeof window.rowAddCounter === 'undefined') {
+    window.rowAddCounter = 0;
+}
+
 function addManualRow() {
     const tbody = document.getElementById('manualTableBody');
+    
+    // Increment counter each time a row is added
+    window.rowAddCounter++;
+    
+    // Determine which size should be selected based on the counter
+    // Cycle through Medium, Large, Small in that order
+    const sizePattern = ['Medium', 'Large', 'Small'];
+    const defaultSize = sizePattern[(window.rowAddCounter - 1) % 3]; // Use modulo to cycle through the array
+    
     const newRow = document.createElement('tr');
     newRow.innerHTML = `
         <td>
             <select class="form-control" name="size[]">
-                <option value="Small">Small</option>
-                <option value="Medium">Medium</option>
-                <option value="Large">Large</option>
+                <option value="Small" ${defaultSize === 'Small' ? 'selected' : ''}>Small</option>
+                <option value="Medium" ${defaultSize === 'Medium' ? 'selected' : ''}>Medium</option>
+                <option value="Large" ${defaultSize === 'Large' ? 'selected' : ''}>Large</option>
             </select>
         </td>
         <td>
             <input type="number" class="form-control" name="quantity[]" min="1" 
-                   placeholder="e.g., 12" value="0">
+                   placeholder="e.g., 12" >
         </td>
         <td class="cost-cell">₱0.00</td>
         <td>
@@ -325,6 +339,28 @@ function updateCost(element) {
 }
 
 
+function updatePaymentAmount() {
+    try {
+        const orderData = JSON.parse(sessionStorage.getItem('orderSummaryData'));
+        if (orderData && orderData.totals) {
+            // Fetch service price and shirt total from session storage
+            const servicePrice = orderData.totals.servicePrice || 0;
+            const shirtTotal = orderData.totals.shirtTotal || 0;
+
+            // Calculate the grand total
+            const grandTotal = servicePrice + shirtTotal;
+
+            // Update the displayed amount in Step 5
+            const amountToPayElement = document.getElementById('amountToPay');
+            if (amountToPayElement) {
+                amountToPayElement.textContent = `₱${grandTotal.toFixed(2)}`;
+            }
+        }
+    } catch (error) {
+        console.error('Error updating payment amount:', error);
+    }
+}
+
 //---------------------------------------------------------------------------------------------------------------------------------------//
 //---------------------------------------------------------------------------------------------------------------------------------------//
 //---------------------------------------------------------------------------------------------------------------------------------------//
@@ -333,6 +369,7 @@ function updateCost(element) {
 function displayOrderSummary() {
     const orderData = JSON.parse(sessionStorage.getItem('orderSummaryData'));
     const serviceData = JSON.parse(sessionStorage.getItem('selectedService'));
+    const orderItems = JSON.parse(sessionStorage.getItem('orderItems'));
     const designFile = sessionStorage.getItem('uploadedDesign');
     
     if (!orderData || !serviceData) {
@@ -340,7 +377,7 @@ function displayOrderSummary() {
         return;
     }
 
-    // Update service details with actual selected service data
+    // Update service details
     document.getElementById('serviceSummary').innerHTML = `
         <p><strong>Service:</strong> ${serviceData.name}</p>
         <p><strong>Category:</strong> ${serviceData.category}</p>
@@ -348,7 +385,7 @@ function displayOrderSummary() {
         <p><strong>Description:</strong> ${serviceData.description}</p>
     `;
 
-    // Show only file name for uploaded design
+    // Show design file info
     document.getElementById('designSummary').innerHTML = designFile ? 
         `<p><strong>File:</strong> ${designFile}</p>` : 
         '<p class="text-muted">No design file uploaded</p>';
@@ -356,29 +393,48 @@ function displayOrderSummary() {
     let totalItems = 0;
     let shirtTotal = 0;
 
-    // Update table body
+    // Update table body with items from orderItems
     const tableBody = document.getElementById('summaryTableBody');
-    tableBody.innerHTML = orderData.items.map(item => {
-        const quantity = parseInt(item.quantity);
-        const cost = parseFloat(item.cost.replace('₱', ''));
-        totalItems += quantity;
-        shirtTotal += cost;
+    if (orderItems && orderItems.items) {
+        tableBody.innerHTML = orderItems.items.map(item => {
+            const quantity = parseInt(item.quantity);
+            const cost = parseFloat(item.cost);
+            totalItems += quantity;
+            shirtTotal += cost;
 
-        return `
-            <tr>
-                <td>${item.size}</td>
-                <td>${quantity}</td>
-                <td>₱${(cost/quantity).toFixed(2)}</td>
-                <td>₱${cost.toFixed(2)}</td>
-            </tr>
-        `;
-    }).join('');
+            return `
+                <tr>
+                    <td>${item.size}</td>
+                    <td>${quantity}</td>
+                    <td>₱${item.pricePerUnit.toFixed(2)}</td>
+                    <td>₱${cost.toFixed(2)}</td>
+                </tr>
+            `;
+        }).join('');
+    }
+
+    // Calculate grand total
+    const grandTotal = shirtTotal + parseFloat(serviceData.price);
 
     // Update summary totals
     document.getElementById('totalItems').textContent = totalItems;
     document.getElementById('shirtTotal').textContent = `₱${shirtTotal.toFixed(2)}`;
     document.getElementById('servicePrice').textContent = `₱${serviceData.price.toFixed(2)}`;
-    document.getElementById('grandTotal').textContent = `₱${(shirtTotal + parseFloat(serviceData.price)).toFixed(2)}`;
+    document.getElementById('grandTotal').textContent = `₱${grandTotal.toFixed(2)}`;
+
+    // Store the complete order summary
+    const orderSummary = {
+        service: serviceData,
+        items: orderItems?.items || [],
+        design: designFile,
+        totals: {
+            totalItems: totalItems,
+            shirtTotal: shirtTotal,
+            servicePrice: parseFloat(serviceData.price),
+            grandTotal: grandTotal
+        }
+    };
+    sessionStorage.setItem('orderSummaryData', JSON.stringify(orderSummary));
 }
 
 document.addEventListener('DOMContentLoaded', () => {
@@ -604,3 +660,130 @@ function prevStep() {
 }
 
 document.addEventListener('DOMContentLoaded', updateStepper);
+
+// Function to populate order summary in step 5
+function populateStep5OrderSummary() {
+    try {
+        const orderData = JSON.parse(sessionStorage.getItem('orderSummaryData'));
+        if (!orderData) return;
+
+        // Update service details
+        document.getElementById('selectedService').textContent = orderData.service.name;
+        document.getElementById('servicePrice').textContent = `₱${orderData.totals.servicePrice.toFixed(2)}`;
+        document.getElementById('serviceFee').textContent = `₱${orderData.totals.servicePrice.toFixed(2)}`;
+
+        // Clear existing items table
+        const tableBody = document.getElementById('orderItemsTable');
+        tableBody.innerHTML = '';
+
+        // Populate items table
+        orderData.items.forEach(item => {
+            if (item.quantity > 0) {
+                const row = document.createElement('tr');
+                const itemPrice = 100; // Base price per item
+                const subtotal = item.quantity * itemPrice;
+                
+                row.innerHTML = `
+                    <td>${item.size}</td>
+                    <td>${item.quantity}</td>
+                    <td>₱${itemPrice.toFixed(2)}</td>
+                    <td>₱${subtotal.toFixed(2)}</td>
+                `;
+                tableBody.appendChild(row);
+            }
+        });
+
+        // Update totals
+        document.getElementById('totalItems').textContent = orderData.totals.totalItems;
+        document.getElementById('itemsTotal').textContent = `₱${orderData.totals.shirtTotal.toFixed(2)}`;
+        document.getElementById('grandTotal').textContent = `₱${orderData.totals.grandTotal.toFixed(2)}`;
+        
+        // Update payment amount
+        const amountToPayElement = document.getElementById('amountToPay');
+        if (amountToPayElement) {
+            amountToPayElement.textContent = `₱${orderData.totals.grandTotal.toFixed(2)}`;
+        }
+    } catch (error) {
+        console.error('Error populating order summary:', error);
+    }
+}
+
+// Add to the existing handleStep function
+function handleStep(stepNumber) {
+    // ...existing code...
+    
+    if (stepNumber === 5) {
+        populateStep5OrderSummary();
+    }
+    
+    // ...rest of existing code...
+}
+
+// Add styles for order summary
+document.head.insertAdjacentHTML('beforeend', `
+    <style>
+        .order-summary-card {
+            background-color: #fff;
+            border-radius: 8px;
+            padding: 20px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .summary-section {
+            margin-bottom: 1rem;
+        }
+        .service-info {
+            background-color: #f8f9fa;
+            padding: 10px;
+            border-radius: 4px;
+        }
+        .summary-row {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 0.5rem;
+        }
+        .table {
+            margin-bottom: 0;
+        }
+        .table th, .table td {
+            padding: 0.5rem;
+        }
+        .text-primary {
+            color: #0d6efd;
+        }
+    </style>
+`);
+
+// Update the updatePaymentAmount function
+function updatePaymentAmount() {
+    try {
+        const orderData = JSON.parse(sessionStorage.getItem('orderSummaryData'));
+        if (orderData && orderData.totals) {
+            // Fetch service price and shirt total from session storage
+            const servicePrice = orderData.totals.servicePrice || 0;
+            const shirtTotal = orderData.totals.shirtTotal || 0;
+
+            // Calculate the grand total
+            const grandTotal = servicePrice + shirtTotal;
+
+            // Update the displayed amount in Step 5
+            const amountToPayElement = document.getElementById('amountToPay');
+            if (amountToPayElement) {
+                amountToPayElement.textContent = `₱${grandTotal.toFixed(2)}`;
+            }
+        }
+    } catch (error) {
+        console.error('Error updating payment amount:', error);
+    }
+}
+
+// Clear or update orderSummaryData when a new order is initiated
+function initializeNewOrder() {
+    sessionStorage.removeItem('orderSummaryData');
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+    // Call initializeNewOrder when the user starts a new order
+    if (document.querySelector('#step1.active')) {
+        initializeNewOrder();
+    }
+});

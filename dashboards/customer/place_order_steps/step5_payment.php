@@ -1,3 +1,7 @@
+<?php
+require_once __DIR__ . '../../../../config/db_connect.php';
+require_once __DIR__ . '../../../../config/session_handler.php';
+?>
 
 <!DOCTYPE html>
 <html lang="en">
@@ -11,70 +15,214 @@
 
 <div class="container payment-container">
     <h5 class="mb-3 fw-bold text-center">Step 5: Payment</h5>
-    <p class="text-muted text-center mb-4">
-        Select your GCash payment method and enter your reference number to confirm your order.
-    </p>
+    <p class="text-muted text-center mb-4">Please complete your payment and upload the proof of payment to proceed.</p>
 
-    <div class="payment-container sakuragi-card">
-        <h5 class="mb-3 text-primary">Pay via GCash</h5>
-
-        <!-- QR Code Section -->
-        <div class="gcash-section mt-4">
-            <h6 class="mb-3 fw-semibold">GCash QR Code</h6>
-            <div class="qr-wrapper text-center">
-                <img src="../../../public/assets/images/gcash-qr.png" alt="GCash QR Code" class="gcash-qr-sm mb-3">
+    <div class="row g-4">
+        <!-- Payment Methods & Instructions -->
+        <div class="col-md-6">
+            <div class="card h-100">
+                <div class="card-body">
+                    <div id="paymentDetails" class="mt-4">
+                        <div class="payment-info">
+                            <div class="qr-code text-center mb-3">
+                                <img src="../../../public/assets/images/gcash-qr.png" 
+                                     alt="GCash QR Code" class="img-fluid gcash-qr-sm">
+                            </div>
+                            <div class="account-details">
+                                <p class="mb-2"><strong>Account Name:</strong> Sakuragi Tailoring</p>
+                                <p class="mb-2"><strong>GCash Number:</strong> 09912391238</p>
+                                <p class="mb-0 text-primary"><strong>Amount to Pay:</strong> <span id="amountToPay">₱0.00</span></p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
 
-        <!-- Reference Number Input -->
-        <div class="mt-4">
-            <label for="referenceNumber" class="form-label">GCash Reference Number</label>
-            <input type="text" class="form-control" id="referenceNumber" placeholder="Enter reference number">
-            <small id="refFeedback" class="text-muted">Enter your GCash transaction number</small>
-        </div>
-
         <!-- Payment Proof Upload -->
-        <div class="upload-payment-proof mt-4">
-            <h6 class="text-primary mb-3">Upload Payment Screenshot</h6>
-            <input type="file" id="paymentProof" class="form-control" accept="image/*" onchange="handlePaymentProof()">
-            <div id="paymentPreview" class="mt-3"></div>
+        <div class="col-md-6">
+            <div class="card h-100">
+                <div class="card-body">
+                    <h6 class="card-title mb-4">Upload Payment Proof</h6>
+                    
+                    <div class="upload-instructions alert alert-info mb-4">
+                        <p class="mb-2"><strong>Instructions:</strong></p>
+                        <ol class="mb-0">
+                            <li>Complete your payment using the details provided</li>
+                            <li>Take a screenshot of your payment confirmation</li>
+                            <li>Upload the screenshot below</li>
+                            <li>Enter the reference number from your payment</li>
+                        </ol>
+                    </div>
+
+                    <div class="payment-upload-area p-4 text-center" id="uploadPlaceholder">
+                        <input type="file" id="paymentProof" class="d-none" accept="image/*" onchange="handlePaymentImageUpload(this)">
+                        <label for="paymentProof" class="mb-0" style="cursor: pointer;">
+                            <div class="mb-3">📸</div>
+                            <p class="mb-0">Click to upload payment proof</p>
+                            <small class="text-muted d-block">Supported formats: JPG, PNG (Max: 5MB)</small>
+                        </label>
+                    </div>
+
+                    <div id="paymentImagePreview" class="text-center mt-3 d-none">
+                        <img src="" alt="Payment proof preview" class="img-fluid mb-2">
+                        <button class="btn btn-danger btn-sm mt-2" onclick="removePaymentImage()">Remove Image</button>
+                    </div>
+
+                    <div class="mt-4">
+                        <label class="form-label">Payment Reference Number</label>
+                        <input type="text" class="form-control" id="referenceNumber" placeholder="Enter GCash reference number">
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
 </div>
 
-<style>
-.payment-container {
-    max-width: 850px;
-    margin: 40px auto;
-    background: #fff;
-    padding: 36px;
-    border-radius: 16px;
-    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.08);
-}
-
-.gcash-qr-sm {
-    width: 360px;
-    height: auto;
-    border-radius: 10px;
-    border: 1px solid #ddd;
-    padding: 10px;
-}
-</style>
-
 <script>
-function handlePaymentProof() {
-    const file = document.getElementById('paymentProof').files[0];
-    if (file) {
-        const reader = new FileReader();
-        reader.onload = function(e) {
-            document.getElementById('paymentPreview').innerHTML = `
-                <img src="${e.target.result}" class="img-fluid mt-3" style="max-height: 300px">
-            `;
-        };
-        reader.readAsDataURL(file);
+document.addEventListener('DOMContentLoaded', function() {
+    updatePaymentAmount();
+    updatePaymentDetails('GCash');
+});
+
+function updatePaymentAmount() {
+    const orderData = JSON.parse(sessionStorage.getItem('orderSummaryData'));
+    if (orderData && orderData.totals) {
+        document.getElementById('amountToPay').textContent = `₱${orderData.totals.grandTotal.toFixed(2)}`;
+    }
+}
+
+function handlePaymentImageUpload(input) {
+    const file = input.files[0];
+    if (!file) return;
+
+    // Validate file size (5MB)
+    if (file.size > 5 * 1024 * 1024) {
+        alert('File size exceeds the maximum limit of 5MB');
+        input.value = '';
+        return;
+    }
+
+    // Validate file type
+    if (!file.type.startsWith('image/')) {
+        alert('Please upload an image file (JPG or PNG)');
+        input.value = '';
+        return;
+    }
+
+    const reader = new FileReader();
+    reader.onload = function(e) {
+        const preview = document.getElementById('paymentImagePreview');
+        const placeholder = document.getElementById('uploadPlaceholder');
+        preview.querySelector('img').src = e.target.result;
+        preview.classList.remove('d-none');
+        placeholder.classList.add('d-none');
+    };
+    reader.readAsDataURL(file);
+}
+
+function removePaymentImage() {
+    const input = document.getElementById('paymentProof');
+    const preview = document.getElementById('paymentImagePreview');
+    const placeholder = document.getElementById('uploadPlaceholder');
+    
+    input.value = '';
+    preview.classList.add('d-none');
+    preview.querySelector('img').src = '';
+    placeholder.classList.remove('d-none');
+}
+
+function updatePaymentDetails(method) {
+    const detailsDiv = document.getElementById('paymentDetails');
+    const orderData = JSON.parse(sessionStorage.getItem('orderSummaryData'));
+    const amount = orderData?.totals?.grandTotal || 0;
+    
+    if (method === 'GCash') {
+        detailsDiv.innerHTML = `
+            <div class="payment-info">
+                <div class="qr-code text-center mb-3">
+                    <img src="../../../public/assets/images/gcash-qr.png" 
+                         alt="GCash QR Code" class="img-fluid gcash-qr-sm">
+                </div>
+                <div class="account-details">
+                    <p class="mb-2"><strong>Account Name:</strong> Sakuragi Tailoring</p>
+                    <p class="mb-2"><strong>GCash Number:</strong> 09123456789</p>
+                    <p class="mb-0 text-primary"><strong>Amount to Pay:</strong> ₱${amount.toFixed(2)}</p>
+                </div>
+            </div>`;
+    } else {
+        detailsDiv.innerHTML = `
+            <div class="payment-info">
+                <div class="account-details">
+                    <p class="mb-2"><strong>Bank:</strong> BDO</p>
+                    <p class="mb-2"><strong>Account Name:</strong> Sakuragi Tailoring</p>
+                    <p class="mb-2"><strong>Account Number:</strong> 1234 5678 9012</p>
+                    <p class="mb-0 text-primary"><strong>Amount to Pay:</strong> ₱${amount.toFixed(2)}</p>
+                </div>
+            </div>`;
     }
 }
 </script>
+
+<style>
+.payment-container {
+    max-width: 850px;
+    margin: 0 auto;
+}
+
+.payment-upload-area {
+    border: 2px dashed #dee2e6;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.payment-upload-area:hover {
+    border-color: #0B5CF9;
+    background-color: #f8f9fa;
+}
+
+.gcash-qr-sm {
+    max-width: 200px;
+    border-radius: 8px;
+    border: 1px solid #dee2e6;
+    padding: 8px;
+    background: white;
+}
+
+.payment-info {
+    background-color: #f8f9fa;
+    border-radius: 8px;
+    padding: 1.5rem;
+}
+
+.account-details p {
+    font-size: 0.95rem;
+}
+
+#paymentImagePreview img {
+    max-width: 100%;
+    max-height: 300px;
+    object-fit: contain;
+}
+
+.form-check-input:checked {
+    background-color: #0B5CF9;
+    border-color: #0B5CF9;
+}
+
+.upload-instructions ol {
+    padding-left: 1rem;
+}
+
+.upload-instructions li {
+    margin-bottom: 0.5rem;
+}
+
+.upload-instructions li:last-child {
+    margin-bottom: 0;
+}
+</style>
 
 </body>
 </html>
