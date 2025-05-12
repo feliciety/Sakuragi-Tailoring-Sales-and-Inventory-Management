@@ -2,51 +2,87 @@
 require_once __DIR__ . '/../../../config/db_connect.php';
 require_once __DIR__ . '/../../../config/session_handler.php';
 
-if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_FILES['image'])) {
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    if (!isset($_FILES['image'])) {
+        http_response_code(400);
+        echo json_encode([
+            'success' => false,
+            'error' => 'No file uploaded',
+        ]);
+        exit();
+    }
+
     $file = $_FILES['image'];
     $allowedTypes = ['image/vnd.adobe.photoshop', 'application/zip'];
 
-    // Validate file type
+    // Validate file
     if (!in_array($file['type'], $allowedTypes)) {
-        die('Invalid file type. Only PSD and ZIP files are allowed.');
+        http_response_code(400);
+        echo json_encode([
+            'success' => false,
+            'error' => 'Invalid file type. Only PSD and ZIP files are allowed.',
+        ]);
+        exit();
     }
 
-    // Validate file size (e.g., max 10MB)
     if ($file['size'] > 10 * 1024 * 1024) {
-        die('File size exceeds the maximum limit of 10MB.');
+        http_response_code(400);
+        echo json_encode([
+            'success' => false,
+            'error' => 'File size exceeds the maximum limit of 10MB.',
+        ]);
+        exit();
     }
 
-    // Check if the user is logged in
-    if (!isset($_SESSION['user_id'])) {
-        die('You must be logged in to upload files.');
-    }
-
-    // Get the logged-in user's ID
-    $userId = $_SESSION['user_id'];
-
-    // Generate a unique file name and save the file
-    $uploadDir = __DIR__ . '/uploads/';
+    // Process upload
+    $uploadDir = __DIR__ . '/../../../public/uploads/design/';
     if (!is_dir($uploadDir)) {
         mkdir($uploadDir, 0777, true);
     }
-    $filePath = $uploadDir . uniqid() . '-' . basename($file['name']);
+
+    $uniqueName = uniqid() . '-' . basename($file['name']);
+    $filePath = $uploadDir . $uniqueName;
+
     if (!move_uploaded_file($file['tmp_name'], $filePath)) {
-        die('Failed to upload the file.');
+        http_response_code(400);
+        echo json_encode([
+            'success' => false,
+            'error' => 'Failed to move uploaded file',
+        ]);
+        exit();
     }
 
-    // Use the uploads table to store design files
-    $query = "INSERT INTO uploads (user_id, file_name, file_path, file_type, file_size) 
-              VALUES (:user_id, :file_name, :file_path, :file_type, :file_size)";
-    $stmt = $pdo->prepare($query);
+    // Store in database
+    $stmt = $pdo->prepare("
+        INSERT INTO uploads (
+            user_id, 
+            file_name, 
+            file_path, 
+            file_type, 
+            file_size
+        ) VALUES (
+            :user_id, 
+            :file_name, 
+            :file_path, 
+            :file_type, 
+            :file_size
+        )
+    ");
+
     $stmt->execute([
-        'user_id' => $userId,
+        'user_id' => $_SESSION['user_id'],
         'file_name' => $file['name'],
-        'file_path' => $filePath,
+        'file_path' => '../../../../uploads/design/' . $uniqueName,
         'file_type' => $file['type'],
         'file_size' => $file['size'],
     ]);
 
-    echo 'File uploaded successfully!';
+    echo json_encode([
+        'success' => true,
+        'filename' => $file['name'],
+        'path' => '../../../../uploads/design/' . $uniqueName,
+    ]);
+    exit();
 }
 ?>
 
@@ -133,3 +169,53 @@ textarea#description:focus {
 }
 
 </style>
+
+<script>
+function handleFileUpload() {
+    const fileInput = document.getElementById('image');
+    const file = fileInput.files[0];
+    const fileInfo = document.getElementById('fileInfoContainer');
+    
+    if (file) {
+        const formData = new FormData();
+        formData.append('image', file);
+
+        fetch(window.location.href, {
+            method: 'POST',
+            body: formData
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                // Store file info in session
+                sessionStorage.setItem('uploadedDesign', JSON.stringify({
+                    name: data.filename,
+                    path: data.path
+                }));
+                
+                // Show file info
+                fileInfo.classList.remove('d-none');
+                document.getElementById('fileNamePreview').textContent = file.name;
+                document.getElementById('fileSizePreview').textContent = 
+                    `${(file.size / (1024 * 1024)).toFixed(2)} MB`;
+            } else {
+                throw new Error(data.error);
+            }
+        })
+        .catch(error => {
+            alert(error.message || 'Upload failed. Please try again.');
+            fileInput.value = '';
+            fileInfo.classList.add('d-none');
+        });
+    }
+}
+
+function removeUploadedFile() {
+    const fileInput = document.getElementById('image');
+    const fileInfo = document.getElementById('fileInfoContainer');
+    
+    fileInput.value = '';
+    fileInfo.classList.add('d-none');
+    sessionStorage.removeItem('uploadedDesign');
+}
+</script>

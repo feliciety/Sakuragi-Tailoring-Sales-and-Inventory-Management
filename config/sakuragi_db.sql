@@ -183,7 +183,7 @@ CREATE TABLE `orders` (
 -- Table structure for table `order_details`
 --
 
-CREATE TABLE `order_details` (
+CREATE TABLE IF NOT EXISTS `order_details` (
   `order_detail_id` bigint(20) NOT NULL AUTO_INCREMENT,
   `order_id` bigint(20) NOT NULL,
   `service_id` bigint(20) NOT NULL,

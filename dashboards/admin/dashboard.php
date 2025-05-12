@@ -36,20 +36,20 @@ foreach ($orderStatuses as $status) {
     $statusCounts[] = (int) $stmt->fetchColumn();
 }
 
-// Top 5 Products
-$productNames = [];
-$productCounts = [];
+// Top 5 Services
+$serviceNames = [];
+$serviceCounts = [];
 $stmt = $pdo->query("
-    SELECT p.product_name, COUNT(od.product_id) AS order_count
-    FROM order_details od
-    JOIN products p ON p.product_id = od.product_id
-    GROUP BY od.product_id
+    SELECT s.service_name, COUNT(o.service_id) AS order_count
+    FROM services s
+    LEFT JOIN orders o ON s.service_id = o.service_id
+    GROUP BY s.service_id
     ORDER BY order_count DESC
     LIMIT 5
 ");
 while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
-    $productNames[] = $row['product_name'];
-    $productCounts[] = (int) $row['order_count'];
+    $serviceNames[] = $row['service_name'];
+    $serviceCounts[] = (int) $row['order_count'];
 }
 
 // Per Branch (temporary static)
@@ -132,7 +132,7 @@ $totalInventoryItems = (int) $stmt->fetchColumn();
         <section class="chart-grid-2x2">
             <div class="chart-card"><h2>📈 Orders - Last 7 Days</h2><canvas id="ordersChart"></canvas></div>
             <div class="chart-card"><h2>📊 Orders by Status</h2><canvas id="orderStatusChart"></canvas></div>
-            <div class="chart-card"><h2>🏆 Top 5 Products</h2><canvas id="topProductsChart"></canvas></div>
+            <div class="chart-card"><h2>🏆 Top 5 Services</h2><canvas id="topServicesChart"></canvas></div>
             <div class="chart-card"><h2>📍 Orders Per Branch</h2><canvas id="branchChart"></canvas></div>
         </section>
 
@@ -250,14 +250,14 @@ $totalInventoryItems = (int) $stmt->fetchColumn();
         }
     });
 
-    // Top 5 Products (Bar Chart)
-    new Chart(document.getElementById('topProductsChart'), {
+    // Top 5 Services (Bar Chart)
+    new Chart(document.getElementById('topServicesChart'), {
         type: 'bar',
         data: {
-            labels: <?= json_encode($productNames) ?>,
+            labels: <?= json_encode($serviceNames) ?>,
             datasets: [{
                 label: 'Orders',
-                data: <?= json_encode($productCounts) ?>,
+                data: <?= json_encode($serviceCounts) ?>,
                 backgroundColor: '#007bff',
                 borderColor: '#0056b3',
                 borderWidth: 1
