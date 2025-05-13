@@ -6,6 +6,7 @@ require_once '../../middleware/auth_required.php';
 require_once '../../includes/header.php';
 require_once '../../includes/sidebar_customer.php';
 require_once '../../controller/OrderController.php';
+
 if (get_user_role() !== ROLE_CUSTOMER) {
     header('Location: /dashboards/employee/dashboard.php');
     exit();
@@ -110,6 +111,59 @@ try {
         </div>
     </div>
 </main>
+
+<div id="orderModal" class="modal">
+    <div class="modal-content">
+        <span class="close" onclick="document.getElementById('orderModal').style.display='none'">&times;</span>
+        <h2>Order Details - <span id="modalOrderId"></span></h2>
+        <div id="orderModalContent">
+            <!-- Order details will be populated here by JavaScript -->
+        </div>
+    </div>
+</div>
+
+<script>
+function viewOrder(orderId) {
+    // Show modal
+    document.getElementById('orderModal').style.display = 'block';
+    document.getElementById('modalOrderId').textContent = 'ORD-' + orderId;
+    
+    // Fetch order details
+    fetch('fetch_order_details.php?id=' + orderId)
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                displayOrderDetails(data.order);
+            } else {
+                document.getElementById('orderModalContent').innerHTML = 
+                    '<div class="alert alert-danger">Error loading order details: ' + data.error + '</div>';
+            }
+        })
+        .catch(error => {
+            document.getElementById('orderModalContent').innerHTML = 
+                '<div class="alert alert-danger">Error loading order details. Please try again later.</div>';
+            console.error('Error:', error);
+        });
+}
+
+function displayOrderDetails(order) {
+    let html = '<div class="order-detail">';
+    html += '<h3>Order #ORD-' + order.order_id + '</h3>';
+    html += '<p><strong>Date:</strong> ' + new Date(order.order_date).toLocaleDateString() + '</p>';
+    html += '<p><strong>Status:</strong> ' + order.status + '</p>';
+    html += '<p><strong>Payment Status:</strong> ' + order.payment_status + '</p>';
+    html += '<p><strong>Expected Completion:</strong> ' + (order.expected_completion ? new Date(order.expected_completion).toLocaleDateString() : 'To be determined') + '</p>';
+    html += '<h4>Service Details</h4>';
+    html += '<p><strong>Service Name:</strong> ' + order.service_name + '</p>';
+    html += '<p><strong>Design Type:</strong> ' + (order.service_category === 'Embroidery' || order.service_category === 'Screen Printing' ? 'Standard' : 'N/A') + '</p>';
+    html += '<p><strong>Total Items:</strong> ' + (order.total_quantity || 0) + '</p>';
+    html += '<h4>Assigned Staff</h4>';
+    html += '<p>' + (order.employee_name ? order.employee_name : '<span class="text-muted">Not yet assigned</span>') + '</p>';
+    html += '</div>';
+    
+    document.getElementById('orderModalContent').innerHTML = html;
+}
+</script>
 
 <?php require_once '../../includes/footer.php'; ?>
 
