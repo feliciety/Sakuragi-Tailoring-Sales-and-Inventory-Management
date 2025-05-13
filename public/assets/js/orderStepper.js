@@ -4,10 +4,10 @@ function selectService(serviceName, element) {
     document.querySelectorAll('.service-card').forEach(card => {
         card.classList.remove('selected');
     });
-    
+
     // Add selected class to clicked card
     element.classList.add('selected');
-    
+
     // Get complete service data from the clicked card
     const serviceData = {
         id: parseInt(element.dataset.serviceId),
@@ -16,17 +16,17 @@ function selectService(serviceName, element) {
         category: element.dataset.category,
         description: element.querySelector('small').textContent
     };
-    
+
     // Store complete service data in sessionStorage
     sessionStorage.setItem('selectedService', JSON.stringify(serviceData));
-    
+
     // Also store in orderSummaryData
     const orderData = {
         service: serviceData,
         items: []
     };
     sessionStorage.setItem('orderSummaryData', JSON.stringify(orderData));
-    
+
     // Update service details display
     document.getElementById('service-details').innerHTML = `
         <div class="alert alert-info">
@@ -40,7 +40,7 @@ function selectService(serviceName, element) {
     // Update hidden inputs
     document.getElementById('selected_service').value = serviceData.id;
     document.getElementById('selected_service_price').value = serviceData.price;
-    
+
     // Log to verify data is being stored correctly
     console.log('Selected Service Data:', serviceData);
 }
@@ -53,32 +53,32 @@ function selectService(serviceName, element) {
 //---------------------------------------------------------------------------------------------------------------------------------------//
 //---------------------------------------------------------------------------------------------------------------------------------------//
 //step 2: Image Preview
-   // Handle file upload and preview
-    function handleFileUpload() {
-        const fileInput = document.getElementById('image');
-        const file = fileInput.files[0];
-        
-        if (file) {
-            // Store just the file name
-            sessionStorage.setItem('uploadedDesign', file.name);
-            
-            // Show file info
-            document.getElementById('fileInfoContainer').innerHTML = `
+// Handle file upload and preview
+function handleFileUpload() {
+    const fileInput = document.getElementById('image');
+    const file = fileInput.files[0];
+
+    if (file) {
+        // Store just the file name
+        sessionStorage.setItem('uploadedDesign', file.name);
+
+        // Show file info
+        document.getElementById('fileInfoContainer').innerHTML = `
                 <p class="mb-2">Selected file: ${file.name}</p>
             `;
-        }
     }
+}
 
-    // Remove uploaded file
-    function removeUploadedFile() {
-        const fileInput = document.getElementById('image');
-        const fileInfoContainer = document.getElementById('fileInfoContainer');
+// Remove uploaded file
+function removeUploadedFile() {
+    const fileInput = document.getElementById('image');
+    const fileInfoContainer = document.getElementById('fileInfoContainer');
 
-        // Clear file input and hide file info container
-        fileInput.value = '';
-        fileInfoContainer.classList.add('d-none');
-        fileInfoContainer.innerHTML = '';
-    }
+    // Clear file input and hide file info container
+    fileInput.value = '';
+    fileInfoContainer.classList.add('d-none');
+    fileInfoContainer.innerHTML = '';
+}
 
 function previewImage() {
     const file = document.getElementById('image').files[0];
@@ -102,26 +102,26 @@ function previewImage() {
 //---------------------------------------------------------------------------------------------------------------------------------------//
 // ⭐ Step 3: Design Type Selection Logic
 function selectDesignType(type) {
-        // Remove 'selected' from all cards
-        document.querySelectorAll('.design-type-card').forEach(card => {
-            card.classList.remove('selected');
-        });
-    
-        // Add 'selected' to the clicked one
-        const selectedCard = type === 'customizable'
-            ? document.querySelector('input#customizable').closest('.design-type-card')
-            : document.querySelector('input#standard').closest('.design-type-card');
-    
-        selectedCard.classList.add('selected');
-    
-        // Toggle visibility of related sections
-        document.getElementById('customizableSection').classList.toggle('d-none', type !== 'customizable');
-        document.getElementById('nonCustomizableSection').classList.toggle('d-none', type !== 'standard');
-    
-        // Update hidden input if needed
-        document.getElementById('customizable').checked = type === 'customizable';
-        document.getElementById('standard').checked = type === 'standard';
-    }
+    // Remove 'selected' from all cards
+    document.querySelectorAll('.design-type-card').forEach(card => {
+        card.classList.remove('selected');
+    });
+
+    // Add 'selected' to the clicked one
+    const selectedCard = type === 'customizable'
+        ? document.querySelector('input#customizable').closest('.design-type-card')
+        : document.querySelector('input#standard').closest('.design-type-card');
+
+    selectedCard.classList.add('selected');
+
+    // Toggle visibility of related sections
+    document.getElementById('customizableSection').classList.toggle('d-none', type !== 'customizable');
+    document.getElementById('nonCustomizableSection').classList.toggle('d-none', type !== 'standard');
+
+    // Update hidden input if needed
+    document.getElementById('customizable').checked = type === 'customizable';
+    document.getElementById('standard').checked = type === 'standard';
+}
 
 // ⭐ Handle Excel Upload and Convert to Editable Table
 function handleExcelUpload() {
@@ -129,7 +129,7 @@ function handleExcelUpload() {
     if (!file) return;
 
     const reader = new FileReader();
-    reader.onload = function(e) {
+    reader.onload = function (e) {
         const data = new Uint8Array(e.target.result);
         const workbook = XLSX.read(data, { type: 'array' });
         const worksheet = workbook.Sheets[workbook.SheetNames[0]];
@@ -194,7 +194,7 @@ function removeExcelRow(button) {
 }
 
 // ⭐ Search Filtering for Excel Table (Live Search)
-document.getElementById('excelSearch').addEventListener('keyup', function() {
+document.getElementById('excelSearch').addEventListener('keyup', function () {
     const filter = this.value.toLowerCase();
     document.querySelectorAll('#excelPreview table tbody tr').forEach(row => {
         const text = row.textContent.toLowerCase();
@@ -213,13 +213,13 @@ let sizePrices = {
 function calculateTotalCost() {
     let totalCost = 0;
     const rows = document.querySelectorAll('#manualTableBody tr');
-    
+
     rows.forEach(row => {
         const size = row.querySelector('select[name="size[]"]').value;
         const quantity = parseInt(row.querySelector('input[name="quantity[]"]').value) || 0;
         const pricePerUnit = sizePrices[size];
         const rowTotal = quantity * pricePerUnit;
-        
+
         // Update individual row cost
         row.querySelector('.cost-cell').textContent = `₱${rowTotal.toFixed(2)}`;
         totalCost += rowTotal;
@@ -248,15 +248,15 @@ if (typeof window.rowAddCounter === 'undefined') {
 
 function addManualRow() {
     const tbody = document.getElementById('manualTableBody');
-    
+
     // Increment counter each time a row is added
     window.rowAddCounter++;
-    
+
     // Determine which size should be selected based on the counter
     // Cycle through Medium, Large, Small in that order
     const sizePattern = ['Medium', 'Large', 'Small'];
     const defaultSize = sizePattern[(window.rowAddCounter - 1) % 3]; // Use modulo to cycle through the array
-    
+
     const newRow = document.createElement('tr');
     newRow.innerHTML = `
         <td>
@@ -280,18 +280,18 @@ function addManualRow() {
     const sizeSelect = newRow.querySelector('select[name="size[]"]');
     const quantityInput = newRow.querySelector('input[name="quantity[]"]');
     const removeButton = newRow.querySelector('button');
-    
+
     // Update event listeners to use direct function calls
     sizeSelect.addEventListener('change', () => {
         calculateTotalCost();
         updateDisplay();
     });
-    
+
     quantityInput.addEventListener('input', () => {
         calculateTotalCost();
         updateDisplay();
     });
-    
+
     removeButton.addEventListener('click', () => {
         newRow.remove();
         calculateTotalCost();
@@ -307,13 +307,13 @@ function addManualRow() {
 function updateDisplay() {
     const rows = document.querySelectorAll('#manualTableBody tr');
     let totalCost = 0;
-    
+
     rows.forEach(row => {
         const size = row.querySelector('select[name="size[]"]').value;
         const quantity = parseInt(row.querySelector('input[name="quantity[]"]').value) || 0;
         const pricePerUnit = sizePrices[size];
         const rowTotal = quantity * pricePerUnit;
-        
+
         row.querySelector('.cost-cell').textContent = `₱${rowTotal.toFixed(2)}`;
         totalCost += rowTotal;
     });
@@ -371,7 +371,7 @@ function displayOrderSummary() {
     const serviceData = JSON.parse(sessionStorage.getItem('selectedService'));
     const orderItems = JSON.parse(sessionStorage.getItem('orderItems'));
     const designFile = sessionStorage.getItem('uploadedDesign');
-    
+
     if (!orderData || !serviceData) {
         console.error('Missing order data');
         return;
@@ -386,8 +386,8 @@ function displayOrderSummary() {
     `;
 
     // Show design file info
-    document.getElementById('designSummary').innerHTML = designFile ? 
-        `<p><strong>File:</strong> ${designFile}</p>` : 
+    document.getElementById('designSummary').innerHTML = designFile ?
+        `<p><strong>File:</strong> ${designFile}</p>` :
         '<p class="text-muted">No design file uploaded</p>';
 
     let totalItems = 0;
@@ -484,20 +484,20 @@ function updateStepper() {
 
     let percentage = ((currentStep - 1) / (totalSteps - 1)) * 100;
 
-// Don't fill past Step 5
-if (currentStep === totalSteps) {
-    percentage = ((totalSteps - 2) / (totalSteps - 1)) * 100;
-}
-
-if (fillBar) {
-    if (window.innerWidth <= 576) {
-        fillBar.style.height = percentage + '%';
-        fillBar.style.width = '4px';
-    } else {
-        fillBar.style.width = percentage + '%';
-        fillBar.style.height = '4px';
+    // Don't fill past Step 5
+    if (currentStep === totalSteps) {
+        percentage = ((totalSteps - 2) / (totalSteps - 1)) * 100;
     }
-}
+
+    if (fillBar) {
+        if (window.innerWidth <= 576) {
+            fillBar.style.height = percentage + '%';
+            fillBar.style.width = '4px';
+        } else {
+            fillBar.style.width = percentage + '%';
+            fillBar.style.height = '4px';
+        }
+    }
 
 
     // Show/hide the correct step content box
@@ -515,10 +515,10 @@ function nextStep() {
     if (currentStep === 3) {
         // Get service data from step 1
         const serviceData = JSON.parse(sessionStorage.getItem('selectedService'));
-        
+
         // Get design file from step 2
         const designFile = sessionStorage.getItem('uploadedDesign');
-        
+
         // Get size and quantity data from step 3
         const items = Array.from(document.querySelectorAll('#manualTableBody tr')).map(row => {
             const size = row.querySelector('select[name="size[]"]').value;
@@ -571,7 +571,7 @@ function nextStep() {
         // Store payment method before proceeding
         const paymentMethod = document.querySelector('input[name="payment_method"]:checked')?.value;
         const paymentProof = document.getElementById('paymentProof')?.files[0];
-        
+
         sessionStorage.setItem('paymentMethod', paymentMethod);
         if (paymentProof) {
             // Handle payment proof upload if needed
@@ -608,18 +608,35 @@ function submitFinalOrder() {
         // Get all required data
         const orderData = JSON.parse(sessionStorage.getItem('orderSummaryData'));
         const paymentProof = document.getElementById('paymentProof')?.files[0];
+        const referenceNumber = document.getElementById('referenceNumber')?.value.trim();
 
         if (!orderData) {
             reject('Missing order data');
             return;
         }
 
+        if (!paymentProof) {
+            reject('Please upload payment proof to continue');
+            return;
+        }
+
         // Create FormData
         const formData = new FormData();
         formData.append('orderData', JSON.stringify(orderData));
-        
+
         if (paymentProof) {
             formData.append('payment_proof', paymentProof);
+        }
+
+        if (referenceNumber) {
+            formData.append('reference_number', referenceNumber);
+        }
+
+        // Show loading state
+        const submitBtn = document.getElementById('submitOrderBtn');
+        if (submitBtn) {
+            submitBtn.disabled = true;
+            submitBtn.innerHTML = '<span class="spinner-border spinner-border-sm"></span> Processing...';
         }
 
         // Updated path to point to the controller
@@ -627,28 +644,35 @@ function submitFinalOrder() {
             method: 'POST',
             body: formData
         })
-        .then(response => {
-            if (!response.ok) {
-                throw new Error('Network response was not ok');
-            }
-            return response.json();
-        })
-        .then(data => {
-            console.log('Server response:', data); // Debug log
-            if (data.success) {
-                // Clear session storage after successful order
-                sessionStorage.removeItem('orderSummaryData');
-                sessionStorage.removeItem('selectedService');
-                sessionStorage.removeItem('uploadedDesign');
-                resolve(data);
-            } else {
-                reject(data.error || 'Failed to submit order');
-            }
-        })
-        .catch(error => {
-            console.error('Submit error:', error);
-            reject(error.message || 'Network error occurred');
-        });
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                }
+                return response.json();
+            })
+            .then(data => {
+                console.log('Server response:', data);
+                if (data.success) {
+                    // Clear session storage after successful order
+                    sessionStorage.removeItem('orderSummaryData');
+                    sessionStorage.removeItem('selectedService');
+                    sessionStorage.removeItem('uploadedDesign');
+                    resolve(data);
+                } else {
+                    reject(data.error || 'Failed to submit order');
+                }
+            })
+            .catch(error => {
+                console.error('Submit error:', error);
+                reject(error.message || 'Network error occurred');
+            })
+            .finally(() => {
+                // Reset button states
+                if (submitBtn) {
+                    submitBtn.disabled = false;
+                    submitBtn.innerHTML = 'Complete Order';
+                }
+            });
     });
 }
 
@@ -682,7 +706,7 @@ function populateStep5OrderSummary() {
                 const row = document.createElement('tr');
                 const itemPrice = 100; // Base price per item
                 const subtotal = item.quantity * itemPrice;
-                
+
                 row.innerHTML = `
                     <td>${item.size}</td>
                     <td>${item.quantity}</td>
@@ -697,7 +721,7 @@ function populateStep5OrderSummary() {
         document.getElementById('totalItems').textContent = orderData.totals.totalItems;
         document.getElementById('itemsTotal').textContent = `₱${orderData.totals.shirtTotal.toFixed(2)}`;
         document.getElementById('grandTotal').textContent = `₱${orderData.totals.grandTotal.toFixed(2)}`;
-        
+
         // Update payment amount
         const amountToPayElement = document.getElementById('amountToPay');
         if (amountToPayElement) {
@@ -711,47 +735,14 @@ function populateStep5OrderSummary() {
 // Add to the existing handleStep function
 function handleStep(stepNumber) {
     // ...existing code...
-    
+
     if (stepNumber === 5) {
         populateStep5OrderSummary();
     }
-    
-    // ...rest of existing code...
+
 }
 
-// Add styles for order summary
-document.head.insertAdjacentHTML('beforeend', `
-    <style>
-        .order-summary-card {
-            background-color: #fff;
-            border-radius: 8px;
-            padding: 20px;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-        }
-        .summary-section {
-            margin-bottom: 1rem;
-        }
-        .service-info {
-            background-color: #f8f9fa;
-            padding: 10px;
-            border-radius: 4px;
-        }
-        .summary-row {
-            display: flex;
-            justify-content: space-between;
-            margin-bottom: 0.5rem;
-        }
-        .table {
-            margin-bottom: 0;
-        }
-        .table th, .table td {
-            padding: 0.5rem;
-        }
-        .text-primary {
-            color: #0d6efd;
-        }
-    </style>
-`);
+
 
 // Update the updatePaymentAmount function
 function updatePaymentAmount() {
@@ -787,3 +778,66 @@ document.addEventListener('DOMContentLoaded', () => {
         initializeNewOrder();
     }
 });
+
+function submitOrder() {
+    const orderData = JSON.parse(sessionStorage.getItem('orderSummaryData'));
+    const paymentProof = document.getElementById('paymentProof').files[0];
+    const referenceNumber = document.getElementById('referenceNumber').value.trim();
+
+    // Validate data
+    if (!orderData || !orderData.service || !orderData.items) {
+        showOrderStatus('error', 'Invalid order data');
+        return;
+    }
+
+    if (!paymentProof) {
+        showOrderStatus('error', 'Please upload payment proof');
+        return;
+    }
+
+    // Create FormData with proper structure
+    const formData = new FormData();
+    formData.append('orderData', JSON.stringify({
+        service: {
+            id: orderData.service.id,
+            name: orderData.service.name,
+            price: parseFloat(orderData.service.price)
+        },
+        items: orderData.items.map(item => ({
+            size: item.size,
+            quantity: parseInt(item.quantity),
+            pricePerUnit: parseFloat(item.pricePerUnit)
+        })),
+        totals: {
+            servicePrice: parseFloat(orderData.totals.servicePrice),
+            shirtTotal: parseFloat(orderData.totals.shirtTotal),
+            grandTotal: parseFloat(orderData.totals.grandTotal)
+        }
+    }));
+
+    formData.append('payment_proof', paymentProof);
+    if (referenceNumber) {
+        formData.append('reference_number', referenceNumber);
+    }
+
+    // Submit the order
+    fetch('../../../controller/customerController/submit_order.php', {
+        method: 'POST',
+        body: formData
+    })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                showOrderStatus('success', 'Order submitted successfully!');
+                // Clear storage and redirect
+                sessionStorage.clear();
+                window.location.href = '../../../dashboards/customer/place_order_steps/step6_success.php';
+            } else {
+                throw new Error(data.error || 'Failed to submit order');
+            }
+        })
+        .catch(error => {
+            showOrderStatus('error', error.message);
+            console.error('Order submission error:', error);
+        });
+}

@@ -183,23 +183,24 @@ CREATE TABLE `orders` (
 -- Table structure for table `order_details`
 --
 
-CREATE TABLE IF NOT EXISTS `order_details` (
-  `order_detail_id` bigint(20) NOT NULL AUTO_INCREMENT,
-  `order_id` bigint(20) NOT NULL,
-  `service_id` bigint(20) NOT NULL,
-  `quantity` int(11) NOT NULL,
-  `unit_price` decimal(10,2) NOT NULL,
-  `subtotal` decimal(10,2) GENERATED ALWAYS AS (`quantity` * `unit_price`) STORED,
-  `size` varchar(50) DEFAULT NULL,
-  `customization_details` text DEFAULT NULL,
-  `notes` text DEFAULT NULL,
-  `created_at` timestamp DEFAULT CURRENT_TIMESTAMP,
-  PRIMARY KEY (`order_detail_id`),
-  KEY `order_id` (`order_id`),
-  KEY `service_id` (`service_id`),
-  CONSTRAINT `order_details_ibfk_1` FOREIGN KEY (`order_id`) REFERENCES `orders` (`order_id`),
-  CONSTRAINT `order_details_ibfk_2` FOREIGN KEY (`service_id`) REFERENCES `services` (`service_id`)
+CREATE TABLE IF NOT EXISTS order_details (
+  order_detail_id bigint(20) NOT NULL AUTO_INCREMENT,
+  order_id bigint(20) NOT NULL,
+  service_id bigint(20) NOT NULL,
+  quantity int(11) NOT NULL,
+  unit_price decimal(10,2) NOT NULL,
+  subtotal decimal(10,2) GENERATED ALWAYS AS (quantity * unit_price) STORED,
+  size varchar(50) DEFAULT NULL,
+  customization_details text DEFAULT NULL,
+  notes text DEFAULT NULL,
+  created_at timestamp DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (order_detail_id),
+  KEY order_id (order_id),
+  KEY service_id (service_id),
+  CONSTRAINT order_details_ibfk_1 FOREIGN KEY (order_id) REFERENCES orders (order_id),
+  CONSTRAINT order_details_ibfk_2 FOREIGN KEY (service_id) REFERENCES services (service_id)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
 
 -- --------------------------------------------------------
 
@@ -307,10 +308,11 @@ CREATE TABLE uploads (
     file_type VARCHAR(50) NOT NULL, 
     file_size BIGINT NOT NULL, 
     uploaded_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP, 
-    order_id bigint(20) DEFAULT NULL,
-    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
-    FOREIGN KEY (order_id) REFERENCES orders(order_id)
+    order_id BIGINT(20) DEFAULT NULL,
+    FOREIGN KEY (user_id) REFERENCES users(user_id) ON DELETE CASCADE, 
+    FOREIGN KEY (order_id) REFERENCES orders(order_id) 
 );
+
 --
 --
 --

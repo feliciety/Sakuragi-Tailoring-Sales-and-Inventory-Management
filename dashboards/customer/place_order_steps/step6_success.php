@@ -1,3 +1,7 @@
+<?php
+require_once __DIR__ . '../../../../config/db_connect.php';
+require_once __DIR__ . '../../../../config/session_handler.php';
+?>
 <div class="order-complete-card text-center">
     <div class="emoji-wrapper">🎉</div>
     <h5 class="text-success fw-bold mb-3">Order Complete!</h5>

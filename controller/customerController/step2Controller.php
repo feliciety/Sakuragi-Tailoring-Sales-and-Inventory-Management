@@ -8,11 +8,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_FILES['image'])) {
     // Validate file type
     if (!in_array($file['type'], $allowedTypes)) {
         die('Invalid file type. Only PSD and ZIP files are allowed.');
-    }
-
-    // Validate file size (e.g., max 10MB)
-    if ($file['size'] > 10 * 1024 * 1024) {
-        die('File size exceeds the maximum limit of 10MB.');
+    } // Validate file size (e.g., max 500MB)
+    if ($file['size'] > 500 * 1024 * 1024) {
+        die('File size exceeds the maximum limit of 500MB.');
     }
 
     // Generate a unique file name and save the file
