@@ -12,38 +12,12 @@ if (get_user_role() !== ROLE_CUSTOMER) {
     exit();
 }
 
-// Fetch customer's orders from the database
-try {
-    $stmt = $pdo->prepare("
-        SELECT 
-            o.order_id, 
-            o.order_date, 
-            o.status, 
-            o.payment_status,
-            o.expected_completion,
-            s.service_name,
-            s.service_category,
-            u.full_name AS employee_name,
-            COUNT(od.order_detail_id) AS item_count,
-            SUM(od.quantity) AS total_quantity
-        FROM 
-            orders o
-        JOIN 
-            services s ON o.service_id = s.service_id
-        LEFT JOIN 
-            users u ON o.employee_id = u.user_id
-        LEFT JOIN
-            order_details od ON o.order_id = od.order_id
-        WHERE 
-            o.user_id = :user_id
-        GROUP BY
-            o.order_id
-        ORDER BY 
-            o.order_date DESC
-    ");
+// Initialize the OrderController with the PDO connection
+$orderController = new OrderController($pdo);
 
-    $stmt->execute(['user_id' => $_SESSION['user_id']]);
-    $orders = $stmt->fetchAll(PDO::FETCH_ASSOC);
+// Fetch customer's orders using the OrderController
+try {
+    $orders = $orderController->getCustomerOrders($_SESSION['user_id']);
 } catch (PDOException $e) {
     // Log error
     error_log('Error fetching orders: ' . $e->getMessage());
@@ -51,6 +25,7 @@ try {
 }
 ?>
 
+<link rel="stylesheet" href="../../public/assets/css/order.css">
 <main class="main-content">
     <h5 class="page-title">My Orders</h5>
     <p class="page-subtext">Track your orders, design type, status, and staff handling them.</p>
@@ -71,7 +46,8 @@ try {
                         <th>Payment</th>
                         <th>Check</th>
                     </tr>
-                </thead>                <tbody>
+                </thead>
+                <tbody>
                     <?php if (empty($orders)): ?>
                         <tr>
                             <td colspan="10" class="text-center">No orders found</td>
@@ -98,7 +74,8 @@ try {
 ] ?></span></td>
                                 <td><span class="badge status <?= strtolower($order['payment_status']) ?>"><?= $order[
     'payment_status'
-] ?></span></td>                                <td>
+] ?></span></td>
+                                <td>
                                     <button type="button" class="btn-view" onclick="viewOrder(<?= $order[
                                         'order_id'
                                     ] ?>)">View</button>
@@ -112,58 +89,27 @@ try {
     </div>
 </main>
 
+<!-- Order Details Modal -->
 <div id="orderModal" class="modal">
     <div class="modal-content">
-        <span class="close" onclick="document.getElementById('orderModal').style.display='none'">&times;</span>
-        <h2>Order Details - <span id="modalOrderId"></span></h2>
-        <div id="orderModalContent">
-            <!-- Order details will be populated here by JavaScript -->
+        <div class="modal-header">
+            <h5 class="modal-title">Order #<span id="modalOrderId"></span></h5>
+            <button type="button" class="close-modal" onclick="closeModal()">&times;</button>
+        </div>
+        <div class="modal-body" id="orderModalContent">
+            <!-- Content will be loaded dynamically -->
+            <div class="loading-indicator">
+                <div class="spinner"></div>
+                <p>Loading order details...</p>
+            </div>
+        </div>
+        <div class="modal-footer">
+            <button type="button" class="modal-btn" onclick="closeModal()">Close</button>
         </div>
     </div>
 </div>
 
-<script>
-function viewOrder(orderId) {
-    // Show modal
-    document.getElementById('orderModal').style.display = 'block';
-    document.getElementById('modalOrderId').textContent = 'ORD-' + orderId;
-    
-    // Fetch order details
-    fetch('fetch_order_details.php?id=' + orderId)
-        .then(response => response.json())
-        .then(data => {
-            if (data.success) {
-                displayOrderDetails(data.order);
-            } else {
-                document.getElementById('orderModalContent').innerHTML = 
-                    '<div class="alert alert-danger">Error loading order details: ' + data.error + '</div>';
-            }
-        })
-        .catch(error => {
-            document.getElementById('orderModalContent').innerHTML = 
-                '<div class="alert alert-danger">Error loading order details. Please try again later.</div>';
-            console.error('Error:', error);
-        });
-}
-
-function displayOrderDetails(order) {
-    let html = '<div class="order-detail">';
-    html += '<h3>Order #ORD-' + order.order_id + '</h3>';
-    html += '<p><strong>Date:</strong> ' + new Date(order.order_date).toLocaleDateString() + '</p>';
-    html += '<p><strong>Status:</strong> ' + order.status + '</p>';
-    html += '<p><strong>Payment Status:</strong> ' + order.payment_status + '</p>';
-    html += '<p><strong>Expected Completion:</strong> ' + (order.expected_completion ? new Date(order.expected_completion).toLocaleDateString() : 'To be determined') + '</p>';
-    html += '<h4>Service Details</h4>';
-    html += '<p><strong>Service Name:</strong> ' + order.service_name + '</p>';
-    html += '<p><strong>Design Type:</strong> ' + (order.service_category === 'Embroidery' || order.service_category === 'Screen Printing' ? 'Standard' : 'N/A') + '</p>';
-    html += '<p><strong>Total Items:</strong> ' + (order.total_quantity || 0) + '</p>';
-    html += '<h4>Assigned Staff</h4>';
-    html += '<p>' + (order.employee_name ? order.employee_name : '<span class="text-muted">Not yet assigned</span>') + '</p>';
-    html += '</div>';
-    
-    document.getElementById('orderModalContent').innerHTML = html;
-}
-</script>
+<script src="../../public/assets/js/order.js"></script>
 
 <?php require_once '../../includes/footer.php'; ?>
 

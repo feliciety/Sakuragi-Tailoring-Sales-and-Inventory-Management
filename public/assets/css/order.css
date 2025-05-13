@@ -1,0 +1,379 @@
+/* ========== Page Headings ========== */
+.page-title {
+    text-align: center;
+    font-size: 2rem;
+    margin-top: 1rem;
+    margin-bottom: 0.5rem;
+    color: #0B5CF9;
+    font-weight: 700;
+}
+
+.page-subtext {
+    text-align: center;
+    color: #666;
+    font-size: 1rem;
+    margin-bottom: 2rem;
+}
+
+/* ========== Table Container ========== */
+.my-orders-container {
+    background: #ffffff;
+    border-radius: 16px;
+    padding: 32px;
+    margin: 0 auto;
+    max-width: 1200px;
+    box-shadow: 0 6px 24px rgba(0, 0, 0, 0.06);
+}
+
+.table-wrapper {
+    overflow-x: auto;
+}
+
+/* ========== Table ========== */
+.my-orders-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.95rem;
+    min-width: 1000px;
+}
+
+.my-orders-table thead {
+    background: linear-gradient(90deg, #0B5CF9, #4D8CFF);
+    color: #ffffff;
+}
+
+.my-orders-table th,
+.my-orders-table td {
+    padding: 14px 20px;
+    border: 1px solid #e0e6ed;
+    text-align: left;
+}
+
+.my-orders-table tbody tr:hover {
+    background-color: #f5f9ff;
+    transition: 0.2s ease;
+}
+
+/* ========== Status Badges ========== */
+.badge.status {
+    padding: 6px 12px;
+    border-radius: 30px;
+    font-size: 0.8rem;
+    font-weight: 600;
+    color: #fff;
+    display: inline-block;
+    text-align: center;
+    min-width: 80px;
+    text-transform: capitalize;
+}
+
+.badge.pending { background-color: #f39c12; }
+.badge.completed { background-color: #27ae60; }
+.badge.cancelled { background-color: #e74c3c; }
+.badge.unpaid { background-color: #e74c3c; }
+.badge.paid { background-color: #2ecc71; }
+
+/* ========== View Button ========== */
+.btn-view {
+    background-color: #ffffff;
+    color: #0B5CF9;
+    border: 2px solid #0B5CF9;
+    padding: 6px 14px;
+    font-size: 0.85rem;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.btn-view:hover {
+    background-color: #0B5CF9;
+    color: #ffffff;
+}
+
+/* ========== Modal Styles ========== */
+.modal {
+    display: none;
+    position: fixed;
+    z-index: 1050;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    overflow: auto;
+    background-color: rgba(0, 0, 0, 0.4);
+}
+
+.modal-content {
+    position: relative;
+    background-color: #fff;
+    margin: 5% auto;
+    padding: 0;
+    border-radius: 16px;
+    width: 80%;
+    max-width: 1000px;
+    box-shadow: 0 4px 24px rgba(0, 0, 0, 0.2);
+    animation: modalFadeIn 0.3s ease;
+}
+
+@keyframes modalFadeIn {
+    from {opacity: 0; transform: translateY(-20px);}
+    to {opacity: 1; transform: translateY(0);}
+}
+
+.modal-header {
+    padding: 20px 24px;
+    background: linear-gradient(90deg, #0B5CF9, #4D8CFF);
+    color: white;
+    border-top-left-radius: 16px;
+    border-top-right-radius: 16px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.modal-title {
+    margin: 0;
+    font-size: 1.5rem;
+    font-weight: 600;
+}
+
+.close-modal {
+    color: white;
+    font-size: 28px;
+    font-weight: bold;
+    cursor: pointer;
+    background: none;
+    border: none;
+    padding: 0;
+}
+
+.close-modal:hover {
+    opacity: 0.7;
+}
+
+.modal-body {
+    padding: 24px;
+    max-height: 70vh;
+    overflow-y: auto;
+}
+
+.order-status-section {
+    margin-bottom: 24px;
+}
+
+.card {
+    border-radius: 12px;
+    border: none;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+    overflow: hidden;
+    margin-bottom: 24px;
+}
+
+.card-header {
+    background: #f6f9fc;
+    padding: 16px 24px;
+    border-bottom: 1px solid #edf2f7;
+    font-weight: 600;
+}
+
+.card-body {
+    padding: 20px;
+}
+
+.modal-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: 0;
+}
+
+.modal-table th, 
+.modal-table td {
+    padding: 12px 16px;
+    border: 1px solid #e0e6ed;
+}
+
+.modal-table th {
+    background-color: #f8f9fa;
+    font-weight: 600;
+}
+
+.modal-footer {
+    padding: 16px 24px;
+    background-color: #f8f9fa;
+    border-bottom-left-radius: 16px;
+    border-bottom-right-radius: 16px;
+    text-align: right;
+}
+
+.modal-btn {
+    background-color: #0B5CF9;
+    color: white;
+    border: none;
+    border-radius: 6px;
+    padding: 10px 20px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.modal-btn:hover {
+    background-color: #0949c6;
+}
+
+.status-badge {
+    padding: 6px 12px;
+    border-radius: 30px;
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: #fff;
+    display: inline-block;
+    text-align: center;
+}
+
+.status-badge.pending { background-color: #f39c12; }
+.status-badge.in-progress { background-color: #3498db; }
+.status-badge.completed { background-color: #27ae60; }
+.status-badge.cancelled { background-color: #e74c3c; }
+.status-badge.paid { background-color: #2ecc71; }
+.status-badge.unpaid { background-color: #e74c3c; }
+.status-badge.refunded { background-color: #95a5a6; }
+
+/* Order Detail Styles from view_order.php */
+.order-detail-header {
+    text-align: center;
+    margin-bottom: 2rem;
+    position: relative;
+}
+
+.btn-back {
+    position: absolute;
+    left: 0;
+    top: 0;
+    color: #0B5CF9;
+    text-decoration: none;
+    font-size: 0.9rem;
+    display: inline-flex;
+    align-items: center;
+    transition: all 0.2s ease;
+}
+
+.btn-back:hover {
+    color: #0949c6;
+    text-decoration: underline;
+}
+
+.order-detail-container {
+    max-width: 1000px;
+    margin: 0 auto;
+}
+
+/* Status Card */
+.status-card {
+    display: flex;
+    align-items: center;
+    padding: 1.5rem;
+    border-radius: 12px;
+    background-color: #f8f9fa;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+}
+
+.status-card.pending {
+    background-color: #fff8e1;
+    border-left: 5px solid #f39c12;
+}
+
+.status-card.in-progress {
+    background-color: #e3f2fd;
+    border-left: 5px solid #3498db;
+}
+
+.status-card.completed {
+    background-color: #e8f5e9;
+    border-left: 5px solid #27ae60;
+}
+
+.status-card.cancelled {
+    background-color: #ffebee;
+    border-left: 5px solid #e74c3c;
+}
+
+.icon-wrapper {
+    width: 60px;
+    height: 60px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    margin-right: 20px;
+    flex-shrink: 0;
+}
+
+.status-card.pending .icon-wrapper {
+    background-color: #f39c12;
+    color: white;
+}
+
+.status-card.in-progress .icon-wrapper {
+    background-color: #3498db;
+    color: white;
+}
+
+.status-card.completed .icon-wrapper {
+    background-color: #27ae60;
+    color: white;
+}
+
+.status-card.cancelled .icon-wrapper {
+    background-color: #e74c3c;
+    color: white;
+}
+
+.status-details h6 {
+    font-size: 1.2rem;
+    margin-bottom: 0.5rem;
+}
+
+.status-text {
+    font-weight: 600;
+}
+
+.payment-status {
+    padding: 4px 10px;
+    border-radius: 20px;
+    font-size: 0.8rem;
+    font-weight: 600;
+    color: #fff;
+}
+
+.payment-status.paid {
+    background-color: #2ecc71;
+}
+
+.payment-status.pending {
+    background-color: #f39c12;
+}
+
+.payment-status.refunded {
+    background-color: #95a5a6;
+}
+
+/* ========== Spinner Styles ========== */
+.spinner {
+    width: 40px;
+    height: 40px;
+    margin: 0 auto;
+    border: 4px solid rgba(0, 0, 0, 0.1);
+    border-left-color: #0B5CF9;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+.loading-indicator {
+    text-align: center;
+    padding: 2rem 0;
+}
