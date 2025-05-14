@@ -3,12 +3,14 @@ require_once __DIR__ . '../../../../config/db_connect.php';
 require_once __DIR__ . '../../../../config/session_handler.php';
 ?>
 
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <title>Sakuragi Tailoring | Step 5: Payment</title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="../../../public/assets/css/order.css">
     <link rel="stylesheet" href="../../../public/assets/bootstrap/css/bootstrap.min.css">
 </head>
 <body>
@@ -81,83 +83,8 @@ require_once __DIR__ . '../../../../config/session_handler.php';
     </div>
 </div>
 
-<script>
-document.addEventListener('DOMContentLoaded', function() {
-    updatePaymentDetails('GCash');
-});
 
-function handlePaymentImageUpload(input) {
-    const file = input.files[0];
-    if (!file) return;    // Validate file size (500MB)
-    if (file.size > 500 * 1024 * 1024) {
-        alert('File size exceeds the maximum limit of 500MB');
-        input.value = '';
-        return;
-    }
-
-    // Validate file type
-    if (!file.type.startsWith('image/')) {
-        alert('Please upload an image file (JPG or PNG)');
-        input.value = '';
-        return;
-    }
-
-    const reader = new FileReader();
-    reader.onload = function(e) {
-        const preview = document.getElementById('paymentImagePreview');
-        const placeholder = document.getElementById('uploadPlaceholder');
-        
-        preview.querySelector('img').src = e.target.result;
-        preview.classList.remove('d-none');
-        placeholder.classList.add('d-none');
-    };
-    reader.readAsDataURL(file);
-}
-
-function removePaymentImage() {
-    const input = document.getElementById('paymentProof');
-    const preview = document.getElementById('paymentImagePreview');
-    const placeholder = document.getElementById('uploadPlaceholder');
-    
-    input.value = '';
-    preview.classList.add('d-none');
-    preview.querySelector('img').src = '';
-    placeholder.classList.remove('d-none');
-}
-
-function updatePaymentDetails(method) {
-    const detailsDiv = document.getElementById('paymentDetails');
-    const orderData = JSON.parse(sessionStorage.getItem('orderSummaryData'));
-    const amount = orderData?.totals?.grandTotal || 0;
-    
-    if (method === 'GCash') {
-        detailsDiv.innerHTML = `
-            <div class="payment-info">
-                <div class="qr-code text-center mb-3">
-                    <img src="../../../public/assets/images/gcash-qr.png" 
-                         alt="GCash QR Code" class="img-fluid gcash-qr-sm">
-                </div>
-                <div class="account-details">
-                    <p class="mb-2"><strong>Account Name:</strong> Sakuragi Tailoring</p>
-                    <p class="mb-2"><strong>GCash Number:</strong> 09123456789</p>
-                </div>
-            </div>`;
-    } else {
-        detailsDiv.innerHTML = `
-            <div class="payment-info">
-                <div class="account-details">
-                    <p class="mb-2"><strong>Bank:</strong> BDO</p>
-                    <p class="mb-2"><strong>Account Name:</strong> Sakuragi Tailoring</p>
-                    <p class="mb-2"><strong>Account Number:</strong> 1234 5678 9012</p>
-                    <p class="mb-0 text-primary"><strong>Amount to Pay:</strong> ₱${amount.toFixed(2)}</p>
-                </div>
-            </div>`;
-    }
-}
-</script>
-
-<style>
-.payment-container {
+<style>payment-container {
     max-width: 850px;
     margin: 0 auto;
 }
@@ -215,6 +142,5 @@ function updatePaymentDetails(method) {
     margin-bottom: 0;
 .upload-instructions li:last-child {
     margin-bottom: 0;
-}
-</style>
-</html></body></html>
+}</style>
+</html></body>

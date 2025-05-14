@@ -377,3 +377,164 @@
     text-align: center;
     padding: 2rem 0;
 }
+
+
+
+
+
+
+
+/*
+//---------------------------------------------------------------------------------------------------------------------------------------//
+//---------------------------------------------------------------------------------------------------------------------------------------//
+//------------------------------------------ STEP 2: DESIGN FILE UPLOAD STYLES ------------------------------------------------------//
+//---------------------------------------------------------------------------------------------------------------------------------------//
+//---------------------------------------------------------------------------------------------------------------------------------------//
+*/
+.upload-drop-area {
+    border: 3px dashed #ccc;
+    border-radius: 16px;
+    padding: 50px 20px;
+    background-color: #f9f9f9;
+    transition: all 0.3s ease;
+}
+
+.upload-drop-area.highlight {
+    border-color: #0B5CF9;
+    background-color: #e8f0ff;
+}
+
+.upload-icon {
+    font-size: 48px;
+    color: #0B5CF9;
+    transition: transform 0.3s ease;
+}
+
+.upload-drop-area:hover {
+    border-color: #0B5CF9;
+    background-color: #f1f1ff;
+}
+
+.upload-drop-area:hover .upload-icon {
+    transform: scale(1.1);
+}
+
+.preview-wrapper {
+    max-width: 300px;
+    margin: 0 auto;
+}
+
+#imagePreview {
+    max-height: 200px;
+    object-fit: contain;
+    border: 2px solid #dee2e6;
+    border-radius: 8px;
+    padding: 8px;
+}
+
+.file-icon {
+    max-height: 100px !important;
+    max-width: 100px !important;
+    padding: 15px !important;
+}
+
+.progress {
+    height: 10px;
+    border-radius: 5px;
+    margin-top: 5px;
+}
+
+.progress-bar {
+    background-color: #0B5CF9;
+}
+
+#fileDetails {
+    background-color: #f8f9fa;
+    border-radius: 8px;
+    padding: 15px;
+    margin: 0 auto;
+    max-width: 300px;
+    text-align: left;
+}
+
+#fileDetails p {
+    margin-bottom: 8px;
+}
+
+.alert {
+    border-radius: 8px;
+}
+
+
+
+
+
+/*
+//---------------------------------------------------------------------------------------------------------------------------------------//
+//---------------------------------------------------------------------------------------------------------------------------------------//
+//------------------------------------------ STEP 5: Payment Styles💳 ------------------------------------------------------//
+//---------------------------------------------------------------------------------------------------------------------------------------//
+//---------------------------------------------------------------------------------------------------------------------------------------//
+*/
+
+
+
+payment-container {
+    max-width: 850px;
+    margin: 0 auto;
+}
+
+.payment-upload-area {
+    border: 2px dashed #dee2e6;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.payment-upload-area:hover {
+    border-color: #0B5CF9;
+    background-color: #f8f9fa;
+}
+
+.gcash-qr-sm {
+    max-width: 200px;
+    border-radius: 8px;
+    border: 1px solid #dee2e6;
+    padding: 8px;
+    background: white;
+}
+
+.payment-info {
+    background-color: #f8f9fa;
+    border-radius: 8px;
+    padding: 1.5rem;
+}
+
+.account-details p {
+    font-size: 0.95rem;
+}
+
+#paymentImagePreview img {
+    max-width: 100%;
+    max-height: 300px;
+    object-fit: contain;
+}
+
+.form-check-input:checked {
+    background-color: #0B5CF9;
+    border-color: #0B5CF9;
+}
+
+}upload-instructions ol {
+    padding-left: 1rem;
+.upload-instructions ol {
+    padding-left: 1rem;
+}upload-instructions li {
+    margin-bottom: 0.5rem;
+.upload-instructions li {
+    margin-bottom: 0.5rem;
+}upload-instructions li:last-child {
+    margin-bottom: 0;
+.upload-instructions li:last-child {
+    margin-bottom: 0;
+}

@@ -68,10 +68,10 @@ CREATE TABLE `branches` (
 --
 
 INSERT INTO `branches` (`branch_id`, `branch_name`, `location`, `phone_number`) VALUES
-(0, 'Main', '123 Main St', '0921612456'),
-(0, 'Davao', '456 Davao St', '0987654321'),
-(0, 'Kidapawan', '789 Kidapawan St', '0921654652'),
-(0, 'Tagum', '123 Tagum St', '09123456789');
+(1, 'Main', '123 Main St', '0921612456'),
+(2, 'Davao', '456 Davao St', '0987654321'),
+(3, 'Kidapawan', '789 Kidapawan St', '0921654652'),
+(4, 'Tagum', '123 Tagum St', '09123456789');
 
 -- --------------------------------------------------------
 
@@ -280,6 +280,7 @@ CREATE TABLE `payments` (
   `verified_by` bigint(20) DEFAULT NULL,
   `verified_at` datetime DEFAULT NULL,
   `admin_notes` text DEFAULT NULL
+  CONSTRAINT `payments_ibfk_1` FOREIGN KEY (`order_id`) REFERENCES `orders` (`order_id`) ON DELETE CASCADE,
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 
@@ -381,7 +382,7 @@ INSERT INTO `suppliers` (`supplier_id`, `supplier_name`, `contact_person`, `phon
 --
 
 CREATE TABLE `uploads` (
-  `id` int(11) NOT NULL,
+  `uploads_id` int(11) NOT NULL,
   `user_id` bigint(20) NOT NULL,
   `file_name` varchar(255) NOT NULL,
   `file_path` varchar(255) NOT NULL,
@@ -726,7 +727,7 @@ ALTER TABLE `order_workflow`
 -- Constraints for table `payments`
 --
 ALTER TABLE `payments`
-  ADD CONSTRAINT `payments_ibfk_1` FOREIGN KEY (`order_id`) REFERENCES `orders` (`order_id`),
+  ADD CONSTRAINT `payments_ibfk_1` FOREIGN KEY (`order_id`) REFERENCES `orders` (`order_id`) ON DELETE CASCADE,
   ADD CONSTRAINT `payments_ibfk_2` FOREIGN KEY (`verified_by`) REFERENCES `users` (`user_id`);
 
 --

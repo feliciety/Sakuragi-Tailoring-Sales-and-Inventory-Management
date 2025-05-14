@@ -6,6 +6,9 @@ require_once __DIR__ . '/../../middleware/role_admin_only.php';
 require_once __DIR__ . '/../../includes/header.php';
 require_once __DIR__ . '/../../includes/sidebar_admin.php';
 
+$stmt = $pdo->query('SELECT COUNT(*) FROM orders');
+$totalOrders = (int) $stmt->fetchColumn();
+
 // Orders per day (last 7 days)
 $chartLabels = [];
 $chartData = [];
@@ -52,9 +55,27 @@ while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
     $serviceCounts[] = (int) $row['order_count'];
 }
 
-// Per Branch (temporary static)
-$branchLabels = ['Main', 'Davao', 'Tagum', 'Kidapawan'];
-$branchCounts = [20, 12, 9, 7];
+$branchLabels = [];
+$branchCounts = [];
+
+$stmt = $pdo->query("
+    SELECT b.branch_name, COUNT(o.order_id) as order_count
+    FROM branches b
+    LEFT JOIN orders o ON b.branch_id = o.branch_id
+    GROUP BY b.branch_id
+    ORDER BY b.branch_id ASC
+");
+
+while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
+    $branchLabels[] = $row['branch_name'];
+    $branchCounts[] = (int) $row['order_count'];
+}
+
+// If no data was found, provide empty arrays or default values
+if (empty($branchLabels)) {
+    $branchLabels = ['No branches found'];
+    $branchCounts = [0];
+}
 
 // Order Timelines
 $orderTimelineLabels = [];
@@ -80,6 +101,32 @@ $activeEmployeesCount = (int) $stmt->fetchColumn();
 // Fetch total inventory items
 $stmt = $pdo->query('SELECT COUNT(*) AS total_items FROM inventory');
 $totalInventoryItems = (int) $stmt->fetchColumn();
+
+// Calculate total sales from completed orders
+$stmt = $pdo->query('SELECT SUM(total_price) FROM orders WHERE status = "Completed" AND payment_status = "Paid"');
+$totalSales = (float) $stmt->fetchColumn();
+// If no completed orders yet, set to 0
+$totalSales = $totalSales ?: 0;
+
+// Recent orders for dashboard
+$recentOrders = [];
+$stmt = $pdo->query("
+    SELECT 
+        o.order_id,
+        u.full_name,
+        o.status,
+        o.total_price,
+        o.order_date
+    FROM 
+        orders o
+    JOIN 
+        users u ON o.user_id = u.user_id
+    ORDER BY 
+        o.order_date DESC
+    LIMIT 5
+");
+
+$recentOrders = $stmt->fetchAll(PDO::FETCH_ASSOC);
 ?>
 
 <main class="main-content admin-dashboard">
@@ -87,11 +134,10 @@ $totalInventoryItems = (int) $stmt->fetchColumn();
         <h1>Welcome, <?= $_SESSION['full_name'] ?> (Admin)</h1>
 
         <section class="dashboard-cards">
-  <div class="card card-blue">
-    <div class="card-content">
+  <div class="card card-blue">    <div class="card-content">
       <div class="card-text">
         <h3>Total Orders</h3>
-        <p>123</p>
+        <p><?= $totalOrders ?></p>
       </div>
       <div class="card-icon"><i class="fa-solid fa-cart-shopping"></i></div>
     </div>
@@ -106,12 +152,11 @@ $totalInventoryItems = (int) $stmt->fetchColumn();
       <div class="card-icon"><i class="fa-solid fa-boxes-stacked"></i></div>
     </div>
   </div>
-
   <div class="card card-yellow">
     <div class="card-content">
       <div class="card-text">
         <h3>Total Sales</h3>
-        <p>₱ 75,000</p>
+        <p>₱ <?= number_format($totalSales, 2) ?></p>
       </div>
       <div class="card-icon"><i class="fa-solid fa-peso-sign"></i></div>
     </div>
@@ -139,8 +184,35 @@ $totalInventoryItems = (int) $stmt->fetchColumn();
         <section class="recent-orders">
             <h2>📝 Recent Orders</h2>
             <table>
-                <thead><tr><th>Order #</th><th>Customer</th><th>Status</th><th>Total</th><th>Date</th></tr></thead>
-                <tbody><tr><td>#10012</td><td>Jane D.</td><td>In Progress</td><td>₱1,200</td><td>2025-04-28</td></tr></tbody>
+                <thead>
+                    <tr>
+                        <th>Order #</th>
+                        <th>Customer</th>
+                        <th>Status</th>
+                        <th>Total</th>
+                        <th>Date</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <?php if (empty($recentOrders)): ?>
+                        <tr>
+                            <td colspan="5" class="text-center">No recent orders found</td>
+                        </tr>
+                    <?php else: ?>
+                        <?php foreach ($recentOrders as $order): ?>
+                            <tr>
+                                <td>#<?= $order['order_id'] ?></td>
+                                <td><?= htmlspecialchars($order['full_name']) ?></td>
+                                <td>
+                                    <span class="badge status-<?= strtolower($order['status']) ?>">
+                                        <?= $order['status'] ?>
+                                </td>
+                                <td>₱<?= number_format($order['total_price'], 2) ?></td>
+                                <td><?= date('Y-m-d', strtotime($order['order_date'])) ?></td>
+                            </tr>
+                        <?php endforeach; ?>
+                    <?php endif; ?>
+                </tbody>
             </table>
         </section>
 

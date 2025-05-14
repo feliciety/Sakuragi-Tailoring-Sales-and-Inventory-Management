@@ -1,4 +1,9 @@
-//Step 1: Service Selection
+//---------------------------------------------------------------------------------------------------------------------------------------//
+//---------------------------------------------------------------------------------------------------------------------------------------//
+//------------------------------------------ STEP 1: Services⭐ ------------------------------------------------------//
+//---------------------------------------------------------------------------------------------------------------------------------------//
+//---------------------------------------------------------------------------------------------------------------------------------------//
+
 function selectService(serviceName, element) {
     // Remove selected class from all cards
     document.querySelectorAll('.service-card').forEach(card => {
@@ -46,61 +51,200 @@ function selectService(serviceName, element) {
 }
 
 
+
 //---------------------------------------------------------------------------------------------------------------------------------------//
 //---------------------------------------------------------------------------------------------------------------------------------------//
+//------------------------------------------ STEP 2: Uplaods ⭐------------------------------------------------------//
 //---------------------------------------------------------------------------------------------------------------------------------------//
 //---------------------------------------------------------------------------------------------------------------------------------------//
-//---------------------------------------------------------------------------------------------------------------------------------------//
-//---------------------------------------------------------------------------------------------------------------------------------------//
-//step 2: Image Preview
-// Handle file upload and preview
+
 function handleFileUpload() {
     const fileInput = document.getElementById('image');
     const file = fileInput.files[0];
 
-    if (file) {
-        // Store just the file name
-        sessionStorage.setItem('uploadedDesign', file.name);
+    if (!file) return;
 
-        // Show file info
-        document.getElementById('fileInfoContainer').innerHTML = `
-                <p class="mb-2">Selected file: ${file.name}</p>
-            `;
+    // Validate file extension
+    const fileExtension = file.name.split('.').pop().toLowerCase();
+    if (fileExtension !== 'zip' && fileExtension !== 'psd') {
+        alert('Invalid file type. Only PSD and ZIP files are allowed.');
+        fileInput.value = '';
+        return;
     }
+
+    // Validate file size (500MB)
+    if (file.size > 500 * 1024 * 1024) {
+        alert('File size exceeds the maximum limit of 500MB.');
+        fileInput.value = '';
+        return;
+    }
+
+    // Store the file information in sessionStorage
+    const designData = {
+        fileName: file.name,
+        fileSize: file.size,
+        fileType: fileExtension.toUpperCase(),
+        uploadDate: new Date().toISOString()
+    };
+
+    // Update order data
+    updateOrderData({ design: designData });
+
+    // Show file info
+    document.getElementById('fileInfoContainer').innerHTML = `
+        <div class="alert alert-info">
+            <p class="mb-2"><strong>Selected file:</strong> ${file.name}</p>
+            <p class="mb-0"><strong>Size:</strong> ${(file.size / 1024 / 1024).toFixed(2)} MB</p>
+        </div>
+    `;
+    document.getElementById('fileInfoContainer').classList.remove('d-none');
+
+    // Show upload progress (simulated)
+    simulateUploadProgress();
+}
+
+function simulateUploadProgress() {
+    const progressContainer = document.getElementById('uploadProgressContainer');
+    const progressBar = document.getElementById('uploadProgressBar');
+    const percentageText = document.getElementById('uploadPercentage');
+    
+    // Reset progress
+    progressBar.style.width = '0%';
+    percentageText.textContent = '0%';
+    
+    // Show progress container
+    progressContainer.classList.remove('d-none');
+    
+    // Simulate upload progress
+    let progress = 0;
+    const progressInterval = setInterval(() => {
+        progress += Math.floor(Math.random() * 8) + 2; // Random increment between 2-10%
+        
+        if (progress >= 100) {
+            progress = 100;
+            clearInterval(progressInterval);
+            
+            // Complete upload
+            setTimeout(() => {
+                progressContainer.classList.add('d-none');
+                displayUploadedFile();
+            }, 500);
+        }
+        
+        // Update progress UI
+        progressBar.style.width = `${progress}%`;
+        percentageText.textContent = `${progress}%`;
+    }, 200);
+}
+
+function displayUploadedFile() {
+    const file = document.getElementById('image').files[0];
+    const fileExtension = file.name.split('.').pop().toLowerCase();
+    
+    // Set appropriate icon based on file type
+    const preview = document.getElementById('imagePreview');
+    if (fileExtension === 'zip') {
+        preview.src = 'data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA1MTIgNTEyIj48cGF0aCBkPSJNMjU2IDUxMmMxNDEuNCAwIDI1Ni0xMTQuNiAyNTYtMjU2UzM5Ny40IDAgMjU2IDAgMCAxMTQuNiAwIDI1NnMxMTQuNiAyNTYgMjU2IDI1NnptLTk5LTM2OGg2MHY0MGgtMjB2MjBoMjB2NDBoLTIwdjIwaDIwdjQwaC02MFYxNDR6bS04MCAxMjhoNjBWMTQ0aC02MHYxMjh6bTI0MC0xMjhIMjE3djEyOGgxMDBWMTQ0em0tNDAgMjBoNjB2ODhoLTYwdi04OHoiIGZpbGw9IiMwQjVDRjkiLz48L3N2Zz4=';
+        preview.classList.add('file-icon');
+    } else if (fileExtension === 'psd') {
+        preview.src = 'data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA1MTIgNTEyIj48cGF0aCBkPSJNMTA4LjEgOTYuMWMtNC4yLS4xLTguNy4xLTEzLjUuN0MyMC44IDEwMy40LS4xIDE0Ny44IDAgMjA1YzAgMTQ5LjQ4IDEyNC42IDE0Ni43NSAxMjQuNiAyMjUuMSAwIDMzIDI4LjggNTcuNyA2MS40IDU3LjcgOTYuNCAwIDEyNy0yMTguOCAxOTAuOC0yMTguOCAyNSAwIDQzLjQgMjEgNDMuNCA0NS4zIDAgMzQuOC0yNy4zIDc3LjItNjEuNCA3Ny4yLTIzIDAtMjkuNi0xMS4gNC44LTExLjcgMjcuNyAwIDQzLjQtMjQuMSA0My40LTUwLjggMC0yMS43LTEwLjUtMzcuMS0zMC4yLTM3LjEtOTcuNiAwLTEyNiAyMTguOC0xOTAuOCAyMTguOC0yNyAwLTU1LjgtMzAuMS01NS44LTY1LjVDMTMwLjIgMzU1LjMgNCAxMzcuMyA0IDEyNi44YzAtMTQuOSAxMS4zLTI4LjQgMjkuMi0zMC4xIDE5LjctMS45IDI5IDIyLjQuOTkgMjIuNC0xMC44IDAtMTYuMS02LjQtMTYuMS0xMy43IDAtNS43IDYuMi05LjE0IDE0LjYtOS4xNEgzM2MxOS42IDExLjE4IDIzLjIyLTE2LjM0IDc1LjEtMTYuMzR6IiBmaWxsPSIjMDAxZTM2Ii8+PC9zdmc+';
+        preview.classList.add('file-icon');
+    }
+    
+    // Update file details
+    document.getElementById('fileName').innerHTML = `<strong>File name:</strong> ${file.name}`;
+    document.getElementById('fileSize').innerHTML = `<strong>Size:</strong> ${(file.size / 1024 / 1024).toFixed(2)} MB`;
+    document.getElementById('fileType').innerHTML = `<strong>Type:</strong> ${fileExtension.toUpperCase()} file`;
+    
+    // Show preview container
+    document.getElementById('imagePreviewContainer').classList.remove('d-none');
+    
+    // Hide file info container
+    document.getElementById('fileInfoContainer').classList.add('d-none');
 }
 
 // Remove uploaded file
 function removeUploadedFile() {
     const fileInput = document.getElementById('image');
     const fileInfoContainer = document.getElementById('fileInfoContainer');
+    const imagePreviewContainer = document.getElementById('imagePreviewContainer');
+    const progressContainer = document.getElementById('uploadProgressContainer');
 
-    // Clear file input and hide file info container
+    // Clear file input and hide containers
     fileInput.value = '';
     fileInfoContainer.classList.add('d-none');
     fileInfoContainer.innerHTML = '';
+    imagePreviewContainer.classList.add('d-none');
+    progressContainer.classList.add('d-none');
+
+    // Clear design data from order
+    updateOrderData({ design: null });
 }
 
-function previewImage() {
-    const file = document.getElementById('image').files[0];
-    const reader = new FileReader();
+// Initialize drag and drop
+document.addEventListener('DOMContentLoaded', function() {
+    const dropArea = document.getElementById('uploadDropArea');
 
-    reader.onloadend = function () {
-        const imagePreview = document.getElementById('imagePreview');
-        imagePreview.src = reader.result;
-        document.getElementById('imagePreviewContainer').style.display = 'block';
+    ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
+        dropArea.addEventListener(eventName, preventDefaults, false);
+    });
+
+    function preventDefaults(e) {
+        e.preventDefault();
+        e.stopPropagation();
     }
 
-    if (file) {
-        reader.readAsDataURL(file);
-    } else {
-        document.getElementById('imagePreviewContainer').style.display = 'none';
+    ['dragenter', 'dragover'].forEach(eventName => {
+        dropArea.addEventListener(eventName, highlight, false);
+    });
+
+    ['dragleave', 'drop'].forEach(eventName => {
+        dropArea.addEventListener(eventName, unhighlight, false);
+    });
+
+    function highlight(e) {
+        dropArea.classList.add('highlight');
     }
+
+    function unhighlight(e) {
+        dropArea.classList.remove('highlight');
+    }
+
+    dropArea.addEventListener('drop', handleDrop, false);
+
+    function handleDrop(e) {
+        const dt = e.dataTransfer;
+        const files = dt.files;
+
+        if (files.length > 0) {
+            document.getElementById('image').files = files;
+            handleFileUpload();
+        }
+    }
+});
+
+// Helper function to update order data in session storage
+function updateOrderData(data) {
+    let orderData = {};
+    try {
+        const storedData = sessionStorage.getItem('orderSummaryData');
+        if (storedData) {
+            orderData = JSON.parse(storedData);
+        }
+    } catch (e) {
+        console.error('Error parsing order data', e);
+    }
+    
+    // Merge new data with existing data
+    orderData = { ...orderData, ...data };
+    sessionStorage.setItem('orderSummaryData', JSON.stringify(orderData));
 }
 //---------------------------------------------------------------------------------------------------------------------------------------//
 //---------------------------------------------------------------------------------------------------------------------------------------//
+//------------------------------------------ STEP 3: Customize ⭐------------------------------------------------------//
 //---------------------------------------------------------------------------------------------------------------------------------------//
 //---------------------------------------------------------------------------------------------------------------------------------------//
-// ⭐ Step 3: Design Type Selection Logic
+
 function selectDesignType(type) {
     // Remove 'selected' from all cards
     document.querySelectorAll('.design-type-card').forEach(card => {
@@ -363,9 +507,10 @@ function updatePaymentAmount() {
 
 //---------------------------------------------------------------------------------------------------------------------------------------//
 //---------------------------------------------------------------------------------------------------------------------------------------//
+//------------------------------------------ STEP 4: Summarize 📋 ------------------------------------------------------//
 //---------------------------------------------------------------------------------------------------------------------------------------//
 //---------------------------------------------------------------------------------------------------------------------------------------//
-// ⭐ Step 4 
+
 function displayOrderSummary() {
     const orderData = JSON.parse(sessionStorage.getItem('orderSummaryData'));
     const serviceData = JSON.parse(sessionStorage.getItem('selectedService'));
@@ -444,17 +589,90 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 //---------------------------------------------------------------------------------------------------------------------------------------//
 //---------------------------------------------------------------------------------------------------------------------------------------//
+//------------------------------------------ STEP 5: Payment 💳 ------------------------------------------------------//
 //---------------------------------------------------------------------------------------------------------------------------------------//
 //---------------------------------------------------------------------------------------------------------------------------------------//
-//⭐ Step 5
+
+document.addEventListener('DOMContentLoaded', function() {
+    updatePaymentDetails('GCash');
+});
+
+function handlePaymentImageUpload(input) {
+    const file = input.files[0];
+    if (!file) return;    // Validate file size (500MB)
+    if (file.size > 500 * 1024 * 1024) {
+        alert('File size exceeds the maximum limit of 500MB');
+        input.value = '';
+        return;
+    }
+
+    // Validate file type
+    if (!file.type.startsWith('image/')) {
+        alert('Please upload an image file (JPG or PNG)');
+        input.value = '';
+        return;
+    }
+
+    const reader = new FileReader();
+    reader.onload = function(e) {
+        const preview = document.getElementById('paymentImagePreview');
+        const placeholder = document.getElementById('uploadPlaceholder');
+        
+        preview.querySelector('img').src = e.target.result;
+        preview.classList.remove('d-none');
+        placeholder.classList.add('d-none');
+    };
+    reader.readAsDataURL(file);
+}
+
+function removePaymentImage() {
+    const input = document.getElementById('paymentProof');
+    const preview = document.getElementById('paymentImagePreview');
+    const placeholder = document.getElementById('uploadPlaceholder');
+    
+    input.value = '';
+    preview.classList.add('d-none');
+    preview.querySelector('img').src = '';
+    placeholder.classList.remove('d-none');
+}
+
+function updatePaymentDetails(method) {
+    const detailsDiv = document.getElementById('paymentDetails');
+    const orderData = JSON.parse(sessionStorage.getItem('orderSummaryData'));
+    const amount = orderData?.totals?.grandTotal || 0;
+    
+    if (method === 'GCash') {
+        detailsDiv.innerHTML = `
+            <div class="payment-info">
+                <div class="qr-code text-center mb-3">
+                    <img src="../../../public/assets/images/gcash-qr.png" 
+                         alt="GCash QR Code" class="img-fluid gcash-qr-sm">
+                </div>
+                <div class="account-details">
+                    <p class="mb-2"><strong>Account Name:</strong> Sakuragi Tailoring</p>
+                    <p class="mb-2"><strong>GCash Number:</strong> 09123456789</p>
+                </div>
+            </div>`;
+    } else {
+        detailsDiv.innerHTML = `
+            <div class="payment-info">
+                <div class="account-details">
+                    <p class="mb-2"><strong>Bank:</strong> BDO</p>
+                    <p class="mb-2"><strong>Account Name:</strong> Sakuragi Tailoring</p>
+                    <p class="mb-2"><strong>Account Number:</strong> 1234 5678 9012</p>
+                    <p class="mb-0 text-primary"><strong>Amount to Pay:</strong> ₱${amount.toFixed(2)}</p>
+                </div>
+            </div>`;
+    }
+}
 
 
+//---------------------------------------------------------------------------------------------------------------------------------------//
+//---------------------------------------------------------------------------------------------------------------------------------------//
+//------------------------------------------ Progress Indicator 📍 ------------------------------------------------------//
+//---------------------------------------------------------------------------------------------------------------------------------------//
+//---------------------------------------------------------------------------------------------------------------------------------------//
 
-//---------------------------------------------------------------------------------------------------------------------------------------//
-//---------------------------------------------------------------------------------------------------------------------------------------//
-//---------------------------------------------------------------------------------------------------------------------------------------//
-//---------------------------------------------------------------------------------------------------------------------------------------//
-//Progress Indicator
 
 let currentStep = 1;
 const totalSteps = 6;
@@ -779,9 +997,11 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 });
 
+// Update submitOrder function
 function submitOrder() {
     const orderData = JSON.parse(sessionStorage.getItem('orderSummaryData'));
     const paymentProof = document.getElementById('paymentProof').files[0];
+    const designFile = document.getElementById('image').files[0]; 
     const referenceNumber = document.getElementById('referenceNumber').value.trim();
 
     // Validate data
@@ -792,6 +1012,11 @@ function submitOrder() {
 
     if (!paymentProof) {
         showOrderStatus('error', 'Please upload payment proof');
+        return;
+    }
+
+    if (!designFile) {
+        showOrderStatus('error', 'Please upload a design file');
         return;
     }
 
@@ -816,6 +1041,8 @@ function submitOrder() {
     }));
 
     formData.append('payment_proof', paymentProof);
+    formData.append('design_file', designFile);
+    
     if (referenceNumber) {
         formData.append('reference_number', referenceNumber);
     }
@@ -825,19 +1052,18 @@ function submitOrder() {
         method: 'POST',
         body: formData
     })
-        .then(response => response.json())
-        .then(data => {
-            if (data.success) {
-                showOrderStatus('success', 'Order submitted successfully!');
-                // Clear storage and redirect
-                sessionStorage.clear();
-                window.location.href = '../../../dashboards/customer/place_order_steps/step6_success.php';
-            } else {
-                throw new Error(data.error || 'Failed to submit order');
-            }
-        })
-        .catch(error => {
-            showOrderStatus('error', error.message);
-            console.error('Order submission error:', error);
-        });
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            showOrderStatus('success', 'Order submitted successfully!');
+            // Clear storage and redirect
+            sessionStorage.clear();
+            window.location.href = '../../../dashboards/customer/place_order_steps/step6_success.php';
+        } else {
+            throw new Error(data.error || 'Failed to submit order');
+        }
+    })
+    .catch(error => {
+        showOrderStatus('error', error.message);
+    });
 }

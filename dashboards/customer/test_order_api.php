@@ -1,5 +1,4 @@
 <?php
-<?php
 ini_set('display_errors', 0);
 error_reporting(E_ALL);
 
@@ -10,7 +9,7 @@ require_once '../../middleware/auth_required.php';
 require_once '../../controller/OrderController.php';
 
 if (get_user_role() !== ROLE_CUSTOMER) {
-    echo "Unauthorized access";
+    echo 'Unauthorized access';
     exit();
 }
 
@@ -23,10 +22,10 @@ $orderController = new OrderController($pdo);
 // Try to fetch the order
 try {
     $order = $orderController->getOrderById($order_id, $user_id);
-    echo "<pre>";
+    echo '<pre>';
     print_r($order);
-    echo "</pre>";
+    echo '</pre>';
 } catch (Exception $e) {
-    echo "Error: " . $e->getMessage();
+    echo 'Error: ' . $e->getMessage();
 }
 ?>

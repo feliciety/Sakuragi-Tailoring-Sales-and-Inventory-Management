@@ -115,21 +115,57 @@ try {
     // 4. Handle design file upload
     if (isset($_FILES['design_file']) && $_FILES['design_file']['error'] === UPLOAD_ERR_OK) {
         $designFile = $_FILES['design_file'];
-        $uploadDir = __DIR__ . '/../../public/uploads/designs/';
+        $uploadDir = __DIR__ . '../../public/uploads/designs/';
 
         // Create directory if it doesn't exist
         if (!file_exists($uploadDir)) {
-            if (!mkdir($uploadDir, 0777, true)) {
+            if (!mkdir($uploadDir, 0755, true)) {
                 throw new Exception('Failed to create design uploads directory');
             }
         }
 
+        // Ensure directory is writable
+        if (!is_writable($uploadDir)) {
+            chmod($uploadDir, 0755);
+            if (!is_writable($uploadDir)) {
+                throw new Exception('Design uploads directory is not writable');
+            }
+        }
+
+        // Validate file type
+        $allowedExtensions = ['psd', 'zip'];
+        $fileExtension = strtolower(pathinfo($designFile['name'], PATHINFO_EXTENSION));
+
+        if (!in_array($fileExtension, $allowedExtensions)) {
+            throw new Exception('Invalid design file type. Only PSD and ZIP files are allowed.');
+        }
+
+        // Validate file size (max 500MB)
+        if ($designFile['size'] > 500 * 1024 * 1024) {
+            throw new Exception('Design file size exceeds the maximum limit of 500MB.');
+        }
+
         $fileName = uniqid() . '_' . basename($designFile['name']);
         $filePath = $uploadDir . $fileName;
+        $relativeFilePath = 'uploads/designs/' . $fileName;
 
         if (!move_uploaded_file($designFile['tmp_name'], $filePath)) {
             throw new Exception('Failed to upload design file');
         }
+
+        // Insert into uploads table
+        $stmt = $pdo->prepare(
+            'INSERT INTO uploads (user_id, file_name, file_path, file_type, file_size, order_id) 
+             VALUES (?, ?, ?, ?, ?, ?)'
+        );
+        $stmt->execute([
+            $_SESSION['user_id'],
+            $designFile['name'],
+            $relativeFilePath,
+            $designFile['type'],
+            $designFile['size'],
+            $order_id,
+        ]);
 
         // Update order with design file path
         $stmt = $pdo->prepare("
@@ -137,7 +173,7 @@ try {
             SET design_file_path = ? 
             WHERE order_id = ?
         ");
-        $stmt->execute(['uploads/design/' . $fileName, $order_id]);
+        $stmt->execute([$relativeFilePath, $order_id]);
     }
 
     $pdo->commit();
