@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: May 15, 2025 at 05:04 PM
+-- Generation Time: May 15, 2025 at 08:45 PM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.2.12
 
@@ -125,7 +125,8 @@ INSERT INTO `employees` (`employee_id`, `user_id`, `branch_id`, `hire_date`, `sa
 (9, 12, 2, '2025-05-24', 747474.00, 2, 1, 1),
 (11, 16, 2, '2025-05-15', 0.00, 1, 3, 2),
 (12, 18, 2, '2025-05-15', 0.00, 2, 1, 1),
-(13, 20, 2, '2025-05-15', 0.00, 4, 1, 1);
+(13, 20, 2, '2025-05-15', 0.00, 4, 1, 1),
+(14, 22, 4, '2025-05-15', 0.00, 4, 3, 1);
 
 -- --------------------------------------------------------
 
@@ -792,7 +793,8 @@ INSERT INTO `users` (`user_id`, `branch_id`, `full_name`, `email`, `password`, `
 (12, 2, 'janice pempito', 'janice@example.com', '$2y$10$7cT.zdPcDZ0fNgn/Ua2dfODeFLijKmLiUv6bKWfLIBaho7XyyWeqa', '09758373702', 'employee', 'Active', '2025-05-05 21:06:15'),
 (16, 2, 'joevn', 'joevn838@sakuragi.com', '$2y$10$Tn6nby9MzbRiNqz6mcCXd.fQBT.R/gBuD8RzT9BqAwQPWrk.6/tCK', '09346001341', 'employee', 'Active', '2025-05-15 03:47:32'),
 (18, 2, 'Janna Malasarte', 'jannamalasarte587@sakuragi.com', '$2y$10$/Awi2LLtzLvr9HRroYDPOe1UR18R2DeYXHruP7fhnjXD3B2xoVMoC', '09111701730', 'employee', 'Active', '2025-05-15 03:48:40'),
-(20, 2, 'jeff lance malasarte', 'jefflancemalasarte279@sakuragi.com', '$2y$10$UqoETDs1f9.xlDxurwIhGenekm3jtOuME1aY2w7ZB29sevArjaxOi', '09159059179', 'employee', 'Active', '2025-05-15 08:54:02');
+(20, 2, 'jeff lance malasarte', 'jefflancemalasarte279@sakuragi.com', '$2y$10$UqoETDs1f9.xlDxurwIhGenekm3jtOuME1aY2w7ZB29sevArjaxOi', '09159059179', 'employee', 'Active', '2025-05-15 08:54:02'),
+(22, 4, 'Nathan Bamino', 'nathanbamino540@sakuragi.com', '$2y$10$A0LYZXU9eIK9QnfoBHYUWOQLFl1LEzjBG7EMFGNJPvu3GsYV9n/1O', '09632400347', 'employee', 'Active', '2025-05-15 15:08:20');
 
 --
 -- Indexes for dumped tables
@@ -1029,7 +1031,7 @@ ALTER TABLE `departments`
 -- AUTO_INCREMENT for table `employees`
 --
 ALTER TABLE `employees`
-  MODIFY `employee_id` bigint(20) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=14;
+  MODIFY `employee_id` bigint(20) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=15;
 
 --
 -- AUTO_INCREMENT for table `feedback`
@@ -1155,7 +1157,7 @@ ALTER TABLE `supply_types`
 -- AUTO_INCREMENT for table `users`
 --
 ALTER TABLE `users`
-  MODIFY `user_id` bigint(20) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=22;
+  MODIFY `user_id` bigint(20) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=23;
 
 --
 -- Constraints for dumped tables
