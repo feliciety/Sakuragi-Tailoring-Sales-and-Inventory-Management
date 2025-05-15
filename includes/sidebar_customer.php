@@ -10,7 +10,6 @@
       <li><a href="/dashboards/customer/dashboard.php" class="nav-link"><i class="fas fa-home"></i><span>Home</span></a></li>
       <li><a href="/dashboards/customer/place_order.php" class="nav-link"><i class="fas fa-plus-circle"></i><span>Place New Order</span></a></li>
       <li><a href="/dashboards/customer/my_orders.php" class="nav-link"><i class="fas fa-folder-open"></i><span>My Orders</span></a></li>
-      <li><a href="/dashboards/customer/services.php" class="nav-link"><i class="fas fa-th-list"></i><span>Our Services</span></a></li>
       <li><a href="/dashboards/customer/account.php" class="nav-link"><i class="fas fa-user-cog"></i><span>My Account</span></a></li>
     </ul>
   </nav>
