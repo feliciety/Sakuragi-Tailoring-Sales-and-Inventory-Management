@@ -3,9 +3,9 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: May 15, 2025 at 10:51 AM
+-- Generation Time: May 15, 2025 at 11:16 AM
 -- Server version: 10.4.32-MariaDB
--- PHP Version: 8.2.12
+-- PHP Version: 8.0.30
 
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
 START TRANSACTION;
@@ -289,7 +289,7 @@ INSERT INTO `inventory` (`inventory_id`, `branch_id`, `item_name`, `supplier_id`
 (178, 2, 'Packaging Tape - Custom Printed', 7, 14, 80, 20, '2025-05-15 04:18:34'),
 (179, 2, 'Gift Box - Foldable (5x5x5)', 7, 14, 90, 25, '2025-05-15 04:18:34'),
 (181, 2, 'Bucket Hat Blank - Beige', 6, 13, 45, 10, '2025-05-15 04:19:06'),
-(182, 2, 'Cotton Hoodie Blank - Gray (L)', 6, 13, 10, 10, '2025-05-15 06:20:28'),
+(182, 2, 'Cotton Hoodie Blank - Gray (L)', 6, 13, 85, 10, '2025-05-15 09:15:28'),
 (183, 2, 'Socks Blank - Mid Calf', 6, 13, 120, 30, '2025-05-15 04:19:06'),
 (184, 2, 'Long Sleeve Tee Blank - XL', 6, 13, 80, 20, '2025-05-15 04:19:06'),
 (185, 2, 'Baby Bib Blank - Cotton', 6, 13, 100, 25, '2025-05-15 04:19:06'),
@@ -326,6 +326,31 @@ INSERT INTO `inventory` (`inventory_id`, `branch_id`, `item_name`, `supplier_id`
 (216, 2, 'Digital Weighing Scale', 10, 14, 15, 5, '2025-05-15 04:19:06'),
 (217, 2, 'Paper Tags with Twine', 7, 14, 180, 40, '2025-05-15 04:19:06'),
 (218, 2, 'Shipping Label Stickers (4x6)', 7, 14, 300, 80, '2025-05-15 04:19:06');
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `inventory_stock_log`
+--
+
+CREATE TABLE `inventory_stock_log` (
+  `log_id` bigint(20) NOT NULL,
+  `inventory_id` bigint(20) NOT NULL,
+  `change_type` enum('in','out') NOT NULL,
+  `quantity` int(11) NOT NULL,
+  `supplier_id` bigint(20) DEFAULT NULL,
+  `note` varchar(255) DEFAULT NULL,
+  `created_at` timestamp NOT NULL DEFAULT current_timestamp()
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `inventory_stock_log`
+--
+
+INSERT INTO `inventory_stock_log` (`log_id`, `inventory_id`, `change_type`, `quantity`, `supplier_id`, `note`, `created_at`) VALUES
+(1, 182, 'in', 25, 6, '', '2025-05-15 09:15:20'),
+(2, 182, 'in', 25, 6, '', '2025-05-15 09:15:25'),
+(3, 182, 'out', 25, NULL, '', '2025-05-15 09:15:28');
 
 -- --------------------------------------------------------
 
@@ -749,6 +774,14 @@ ALTER TABLE `inventory`
   ADD KEY `fk_supply_type` (`supply_type_id`);
 
 --
+-- Indexes for table `inventory_stock_log`
+--
+ALTER TABLE `inventory_stock_log`
+  ADD PRIMARY KEY (`log_id`),
+  ADD KEY `inventory_id` (`inventory_id`),
+  ADD KEY `supplier_id` (`supplier_id`);
+
+--
 -- Indexes for table `invoices`
 --
 ALTER TABLE `invoices`
@@ -912,6 +945,12 @@ ALTER TABLE `inventory`
   MODIFY `inventory_id` bigint(20) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=219;
 
 --
+-- AUTO_INCREMENT for table `inventory_stock_log`
+--
+ALTER TABLE `inventory_stock_log`
+  MODIFY `log_id` bigint(20) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
+
+--
 -- AUTO_INCREMENT for table `invoices`
 --
 ALTER TABLE `invoices`
@@ -1038,6 +1077,13 @@ ALTER TABLE `inventory`
   ADD CONSTRAINT `fk_supply_type` FOREIGN KEY (`supply_type_id`) REFERENCES `supply_types` (`supply_type_id`),
   ADD CONSTRAINT `inventory_ibfk_1` FOREIGN KEY (`branch_id`) REFERENCES `branches` (`branch_id`),
   ADD CONSTRAINT `inventory_ibfk_2` FOREIGN KEY (`supplier_id`) REFERENCES `suppliers` (`supplier_id`);
+
+--
+-- Constraints for table `inventory_stock_log`
+--
+ALTER TABLE `inventory_stock_log`
+  ADD CONSTRAINT `inventory_stock_log_ibfk_1` FOREIGN KEY (`inventory_id`) REFERENCES `inventory` (`inventory_id`) ON DELETE CASCADE,
+  ADD CONSTRAINT `inventory_stock_log_ibfk_2` FOREIGN KEY (`supplier_id`) REFERENCES `suppliers` (`supplier_id`) ON DELETE SET NULL;
 
 --
 -- Constraints for table `invoices`

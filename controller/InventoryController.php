@@ -13,9 +13,10 @@ function getInventory($pdo)
       i.reorder_level,
       i.last_updated,
       s.supplier_name,
-      i.category AS supply_type
+      t.name AS supply_type
     FROM inventory i
     LEFT JOIN suppliers s ON i.supplier_id = s.supplier_id
+    LEFT JOIN supply_types t ON i.supply_type_id = t.supply_type_id
     WHERE i.branch_id = 2
     ORDER BY i.last_updated DESC
   ");
