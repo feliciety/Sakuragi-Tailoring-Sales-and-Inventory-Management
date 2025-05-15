@@ -283,7 +283,6 @@ CREATE TABLE `payments` (
   CONSTRAINT `payments_ibfk_1` FOREIGN KEY (`order_id`) REFERENCES `orders` (`order_id`) ON DELETE CASCADE,
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
-
 -- --------------------------------------------------------
 
 --
@@ -742,8 +741,81 @@ ALTER TABLE `shipping`
 ALTER TABLE `uploads`
   ADD CONSTRAINT `uploads_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `users` (`user_id`) ON DELETE CASCADE,
   ADD CONSTRAINT `uploads_ibfk_2` FOREIGN KEY (`order_id`) REFERENCES `orders` (`order_id`);
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `inventory_stock_log`
+--
+
+CREATE TABLE `inventory_stock_log` (
+  `log_id` bigint(20) NOT NULL AUTO_INCREMENT,
+  `inventory_id` bigint(20) NOT NULL,
+  `change_type` enum('in','out') NOT NULL,
+  `quantity` int(11) NOT NULL,
+  `supplier_id` bigint(20) DEFAULT NULL,
+  `note` varchar(255) DEFAULT NULL,
+  `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
+  PRIMARY KEY (`log_id`),
+  KEY `inventory_id` (`inventory_id`),
+  KEY `supplier_id` (`supplier_id`),
+  CONSTRAINT `inventory_stock_log_ibfk_1` FOREIGN KEY (`inventory_id`) REFERENCES `inventory` (`inventory_id`) ON DELETE CASCADE,
+  CONSTRAINT `inventory_stock_log_ibfk_2` FOREIGN KEY (`supplier_id`) REFERENCES `suppliers` (`supplier_id`) ON DELETE SET NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `inventory_stock_log`
+--
+
+INSERT INTO `inventory_stock_log` (`log_id`, `inventory_id`, `change_type`, `quantity`, `supplier_id`, `note`, `created_at`) VALUES
+(1, 1, 'in', 10, 1, 'Initial stock', '2025-05-01 10:00:00'),
+(2, 1, 'out', 5, NULL, 'Sample out', '2025-05-02 10:00:00'),
+(3, 2, 'in', 20, 2, 'Initial stock', '2025-05-01 10:00:00'),
+(4, 2, 'out', 10, NULL, 'Sample out', '2025-05-02 10:00:00'),
+(5, 3, 'in', 15, 3, 'Initial stock', '2025-05-01 10:00:00'),
+(6, 3, 'out', 5, NULL, 'Sample out', '2025-05-02 10:00:00'),
+(7, 4, 'in', 25, 4, 'Initial stock', '2025-05-01 10:00:00'),
+(8, 4, 'out', 10, NULL, 'Sample out', '2025-05-02 10:00:00'),
+(9, 5, 'in', 30, 5, 'Initial stock', '2025-05-01 10:00:00'),
+(10, 5, 'out', 15, NULL, 'Sample out', '2025-05-02 10:00:00');
+
+-- --------------------------------------------------------
+
+--
+-- Indexes for dumped tables
+--
+
+--
+-- Indexes for table `inventory_stock_log`
+--
+ALTER TABLE `inventory_stock_log`
+  ADD KEY `inventory_id` (`inventory_id`),
+  ADD KEY `supplier_id` (`supplier_id`);
+
+--
+-- AUTO_INCREMENT for dumped tables
+--
+
+--
+-- AUTO_INCREMENT for table `inventory_stock_log`
+--
+ALTER TABLE `inventory_stock_log`
+  MODIFY `log_id` bigint(20) NOT NULL AUTO_INCREMENT;
+
+--
+-- Constraints for dumped tables
+--
+
+--
+-- Constraints for table `inventory_stock_log`
+--
+ALTER TABLE `inventory_stock_log`
+  ADD CONSTRAINT `inventory_stock_log_ibfk_1` FOREIGN KEY (`inventory_id`) REFERENCES `inventory` (`inventory_id`) ON DELETE CASCADE,
+  ADD CONSTRAINT `inventory_stock_log_ibfk_2` FOREIGN KEY (`supplier_id`) REFERENCES `suppliers` (`supplier_id`) ON DELETE SET NULL;
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
 /*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
+
+

@@ -28,7 +28,7 @@ try {
     $result = $stmt->fetchAll(PDO::FETCH_ASSOC);
 } catch (PDOException $e) {
     $result = [];
-    error_log("DB error: " . $e->getMessage());
+    error_log('DB error: ' . $e->getMessage());
 }
 ?>
 
@@ -55,7 +55,8 @@ try {
         </tr>
       </thead>
       <tbody>
-        <?php if ($result): foreach ($result as $row): ?>
+        <?php if ($result):
+            foreach ($result as $row): ?>
           <tr data-employee-id="<?= $row['employee_id'] ?>">
             <td><?= htmlspecialchars($row['full_name']) ?></td>
             <td><?= $row['position'] ?></td>
@@ -73,9 +74,12 @@ try {
               </button>
             </td>
           </tr>
-        <?php endforeach; else: ?>
+        <?php endforeach;
+        else:
+             ?>
           <tr><td colspan="8" style="text-align:center;">No employees found.</td></tr>
-        <?php endif; ?>
+        <?php
+        endif; ?>
       </tbody>
     </table>
   </div>
