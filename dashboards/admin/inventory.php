@@ -97,7 +97,7 @@ $types = getSupplyTypes($pdo);
       <label>Category</label>
       <select name="category" required>
         <?php foreach ($types as $type): ?>
-          <option value="<?= $type['supply_type_id'] ?>"><?= $type['name'] ?></option>
+          <option value="<?= $type['name'] ?>"><?= $type['name'] ?></option>
         <?php endforeach; ?>
       </select>
       <label>Supplier</label>
@@ -131,8 +131,8 @@ $types = getSupplyTypes($pdo);
       <input type="hidden" name="supplier_id" id="stockInOutSupplierId">
       <input type="number" name="quantity" min="1" placeholder="Qty" required style="width: 80px;">
       <input type="text" name="note" placeholder="Note (optional)" style="width: 120px;">
-      <button type="submit" name="action" value="stock_in" class="stock-in" style="margin-bottom: 20px;"><i class="fas fa-arrow-down"></i> In</button>
-      <button type="submit" name="action" value="stock_out" class="stock-out" style="margin-bottom: 20px;"><i class="fas fa-arrow-up"></i> Out</button>
+      <button type="submit" name="action" value="stock_in" class="stock-in"><i class="fas fa-arrow-down"></i> In</button>
+      <button type="submit" name="action" value="stock_out" class="stock-out"><i class="fas fa-arrow-up"></i> Out</button>
     </form>
     <!-- Now the Update form is below -->
     <form method="POST" action="../../controller/InventoryController.php" style="margin-bottom: 16px;">
@@ -143,7 +143,7 @@ $types = getSupplyTypes($pdo);
       <label>Category</label>
       <select id="editType" name="category" required>
         <?php foreach ($types as $type): ?>
-          <option value="<?= $type['supply_type_id'] ?>"><?= $type['name'] ?></option>
+          <option value="<?= $type['name'] ?>"><?= $type['name'] ?></option>
         <?php endforeach; ?>
       </select>
       <label>Supplier</label>
@@ -347,24 +347,20 @@ document.addEventListener("DOMContentLoaded", () => {
 
 
 function downloadCSV() {
-  const table = document.querySelector("#inventoryTable");
-  const rows = Array.from(table.querySelectorAll("tbody tr")); // grab ALL rows
+  const rows = Array.from(document.querySelectorAll("#inventoryTable tbody tr"))
+    .filter(row => row.style.display !== "none");
 
   let csvContent = "data:text/csv;charset=utf-8,";
-
-  // Extract headers (excluding "Actions" column)
-  const headers = Array.from(table.querySelectorAll("thead th"))
-    .map(th => `"${th.textContent.trim()}"`).slice(0, 6); // assuming Actions is column 7
+  const headers = Array.from(document.querySelectorAll("#inventoryTable thead th"))
+    .map(th => `"${th.textContent.trim()}"`).slice(0, 6); // ignore "Actions" col
   csvContent += headers.join(",") + "\r\n";
 
-  // Extract all data rows (first 6 columns only)
   rows.forEach(row => {
     const cols = Array.from(row.querySelectorAll("td")).slice(0, 6);
     const line = cols.map(td => `"${td.textContent.trim()}"`).join(",");
     csvContent += line + "\r\n";
   });
 
-  // Download trigger
   const encodedUri = encodeURI(csvContent);
   const link = document.createElement("a");
   link.setAttribute("href", encodedUri);
