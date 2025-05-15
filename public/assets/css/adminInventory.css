@@ -14,7 +14,40 @@
   margin-right: 5px;
 }
 
+.stock-row button {
+  flex: 1;
+  min-width: 90px;
+  padding: 10px 16px;
+  font-size: 0.95rem;
+  border: none;
+  border-radius: 10px;
+  color: white;
+  cursor: pointer;
+  transition: background-color 0.25s ease, transform 0.2s ease;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.15);
+}
 
+.stock-row .stock-in {
+  background-color: #0d6efd;
+    box-shadow: 0 2px 0 #322eaf;
+}
+
+.stock-row .stock-in:hover {
+  background-color: #0a58ca;
+  transform: translateY(-1px);
+}
+
+.stock-row .stock-out {
+  
+  background-color: #fd7e14;
+      box-shadow: 0 2px 0 #a2602d;
+
+}
+
+.stock-row .stock-out:hover {
+  background-color: #e66e0d;
+  transform: translateY(-1px);
+}
 
 .table-controls {
   display: flex;

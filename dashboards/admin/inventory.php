@@ -10,6 +10,23 @@ require_once __DIR__ . '/../../controller/InventoryController.php';
 $inventoryItems = getInventory($pdo);
 $suppliers = getSuppliers($pdo);
 $types = getSupplyTypes($pdo);
+
+$stmt = $pdo->prepare("
+  SELECT 
+    i.inventory_id,
+    i.item_name,
+    i.quantity,
+    i.reorder_level,
+    i.last_updated,
+    s.supplier_name,
+    t.name AS supply_type
+  FROM inventory i
+  LEFT JOIN suppliers s ON i.supplier_id = s.supplier_id
+  LEFT JOIN supply_types t ON i.supply_type_id = t.supply_type_id
+  WHERE i.branch_id = 2
+  ORDER BY i.last_updated DESC
+");
+
 ?>
 
 <link rel="stylesheet" href="/../public/assets/css/adminInventory.css" />
@@ -41,45 +58,50 @@ $types = getSupplyTypes($pdo);
     <th onclick="sortTableByColumn(1)">Category</th>
     <th onclick="sortTableByColumn(2)">Supplier</th>
     <th onclick="sortTableByColumn(3)">Qty</th>
-    <th onclick="sortTableByColumn(4)">Status</th>  
-    <th onclick="sortTableByColumn(4)">Reorder Level</th>
-    <th onclick="sortTableByColumn(5)">Last Updated</th>
+    <th onclick="sortTableByColumn(4)">Reorder Level</th>  
+    <th onclick="sortTableByColumn(5)">Status</th>
+    <th onclick="sortTableByColumn(6)">Last Updated</th>
     <th>Actions</th>
   </tr>
 </thead>
-      <tbody>
-        <?php foreach ($inventoryItems as $item): ?>
-          <tr data-id="<?= $item['inventory_id'] ?>">
-            <td><?= htmlspecialchars($item['item_name']) ?></td>
-            <td>
-              <span class="category-badge category-<?= str_replace([' ', '&'], '', $item['supply_type']) ?>">
-                <?= htmlspecialchars($item['supply_type']) ?>
-              </span>
-            </td>
-            <td><?= htmlspecialchars($item['supplier_name']) ?></td>
-             <td><?= htmlspecialchars($item['quantity']) ?></td>
-            <td><?= $item['reorder_level'] ?></td>
-             <td>
-              <?php if ($item['quantity'] === 0): ?>
-                <span class="status-badge out">Out of Stock</span>
-              <?php elseif ($item['quantity'] < $item['reorder_level']): ?>
-                <span class="status-badge low">Low Stock</span>
-              <?php else: ?>
-                <span class="status-badge ok">In Stock</span>
-              <?php endif; ?>
-            </td>
-            <td><?= $item['last_updated'] ?></td>
-            <td class="action-buttons">
-              <button class="edit" onclick="showEditInventoryModal(<?= $item[
-                  'inventory_id'
-              ] ?>)"><i class="fas fa-pen"></i></button>
-              <button class="delete" onclick="showDeleteInventoryModal(<?= $item[
-                  'inventory_id'
-              ] ?>)"><i class="fas fa-trash"></i></button>
-            </td>
-          </tr>
-        <?php endforeach; ?>
-      </tbody>
+<tbody>
+  <?php foreach ($inventoryItems as $item): ?>
+    <tr data-id="<?= $item['inventory_id'] ?? '' ?>">
+      <td><?= htmlspecialchars($item['item_name'] ?? '') ?></td>
+      <td>
+        <span class="category-badge category-<?= str_replace([' ', '&'], '', $item['supply_type'] ?? 'Unknown') ?>">
+          <?= htmlspecialchars($item['supply_type'] ?? 'Unknown') ?>
+        </span>
+      </td>
+      <td><?= htmlspecialchars($item['supplier_name'] ?? '') ?></td>
+      <td><?= htmlspecialchars((string)($item['quantity'] ?? 0)) ?></td>
+      <td><?= htmlspecialchars((string)($item['reorder_level'] ?? 0)) ?></td>
+      <td>
+        <?php
+          $qty = $item['quantity'] ?? 0;
+          $reorder = $item['reorder_level'] ?? 0;
+        ?>
+        <?php if ($qty === 0): ?>
+          <span class="status-badge out">Out of Stock</span>
+        <?php elseif ($qty < $reorder): ?>
+          <span class="status-badge low">Low Stock</span>
+        <?php else: ?>
+          <span class="status-badge ok">In Stock</span>
+        <?php endif; ?>
+      </td>
+      <td><?= htmlspecialchars($item['last_updated'] ?? '-') ?></td>
+      <td class="action-buttons">
+        <button class="edit" onclick="showEditInventoryModal(<?= $item['inventory_id'] ?? 0 ?>)">
+          <i class="fas fa-pen"></i>
+        </button>
+        <button class="delete" onclick="showDeleteInventoryModal(<?= $item['inventory_id'] ?? 0 ?>)">
+          <i class="fas fa-trash"></i>
+        </button>
+      </td>
+    </tr>
+  <?php endforeach; ?>
+</tbody>
+
     </table>
     <div id="paginationControls" class="pagination-controls"></div>
   </div>
@@ -95,11 +117,12 @@ $types = getSupplyTypes($pdo);
       <label>Item Name</label>
       <input type="text" name="item_name" required>
       <label>Category</label>
-      <select name="category" required>
-        <?php foreach ($types as $type): ?>
-          <option value="<?= $type['name'] ?>"><?= $type['name'] ?></option>
-        <?php endforeach; ?>
-      </select>
+        <select name="supply_type_id" required>
+          <?php foreach ($types as $type): ?>
+            <option value="<?= $type['supply_type_id'] ?>"><?= $type['name'] ?></option>
+          <?php endforeach; ?>
+        </select>
+
       <label>Supplier</label>
       <select name="supplier_id" required>
         <?php foreach ($suppliers as $supplier): ?>
@@ -117,46 +140,55 @@ $types = getSupplyTypes($pdo);
     </form>
   </div>
 </div>
-
 <!-- Edit Modal -->
 <div id="editInventoryModal" class="modal edit">
   <div class="modal-content">
     <span class="close-btn" onclick="closeEditInventoryModal()">×</span>
     <h2 class="modal-title">Edit Inventory Item</h2>
-    <hr>
-    <!-- Stock In/Out Controls -->
-    <div style="font-weight: bold; margin-bottom: 8px;">Stock In / Stock Out</div>
-    <form method="POST" action="../../controller/InventoryController.php" style="display: flex; gap: 8px; align-items: flex-end;">
-      <input type="hidden" name="inventory_id" id="stockInOutInventoryId">
-      <input type="hidden" name="supplier_id" id="stockInOutSupplierId">
-      <input type="number" name="quantity" min="1" placeholder="Qty" required style="width: 80px;">
-      <input type="text" name="note" placeholder="Note (optional)" style="width: 120px;">
-      <button type="submit" name="action" value="stock_in" class="stock-in"><i class="fas fa-arrow-down"></i> In</button>
-      <button type="submit" name="action" value="stock_out" class="stock-out"><i class="fas fa-arrow-up"></i> Out</button>
-    </form>
-    <!-- Now the Update form is below -->
-    <form method="POST" action="../../controller/InventoryController.php" style="margin-bottom: 16px;">
+
+    <form method="POST" action="../../controller/InventoryController.php" class="edit-form">
       <input type="hidden" name="action" value="edit">
       <input type="hidden" id="editInventoryId" name="inventory_id">
+
       <label>Item Name</label>
       <input type="text" id="editItemName" name="item_name" required>
+
       <label>Category</label>
-      <select id="editType" name="category" required>
+      <select id="editType" name="supply_type_id" required>
         <?php foreach ($types as $type): ?>
-          <option value="<?= $type['name'] ?>"><?= $type['name'] ?></option>
+          <option value="<?= $type['supply_type_id'] ?>"><?= $type['name'] ?></option>
         <?php endforeach; ?>
       </select>
+
       <label>Supplier</label>
       <select id="editSupplier" name="supplier_id" required>
         <?php foreach ($suppliers as $supplier): ?>
           <option value="<?= $supplier['supplier_id'] ?>"><?= $supplier['supplier_name'] ?></option>
         <?php endforeach; ?>
       </select>
+
       <label>Reorder Level</label>
       <input type="number" id="editReorder" name="reorder_level" required>
-      <div class="modal-button-group">
-        <button type="submit" class="btn-primary">Update</button>
-        <button type="button" onclick="closeEditInventoryModal()">Cancel</button>
+
+      <hr style="margin: 20px 0;">
+
+      <label>Stock In / Out</label>
+      <input type="hidden" name="stock_inventory_id" id="stockInOutInventoryId">
+      <input type="hidden" name="stock_supplier_id" id="stockInOutSupplierId">
+
+      <div class="stock-row">
+        <input type="number" name="quantity" min="1" placeholder="Qty" style="flex: 1;" required>
+        <button type="submit" name="action" value="stock_in" class="stock-in">
+          <i class="fas fa-arrow-down"></i> In
+        </button>
+        <button type="submit" name="action" value="stock_out" class="stock-out">
+          <i class="fas fa-arrow-up"></i> Out
+        </button>
+      </div>
+
+      <div class="modal-button-group" style="margin-top: 20px;">
+        <button type="submit" name="action" value="edit" class="btn-primary">Update</button>
+        <button type="button" onclick="closeEditInventoryModal()" class="btn-cancel">Cancel</button>
       </div>
     </form>
   </div>
@@ -174,52 +206,6 @@ $types = getSupplyTypes($pdo);
       <div class="modal-button-group">
         <button type="submit" class="btn-primary">Yes, Delete</button>
         <button type="button" onclick="closeDeleteInventoryModal()">Cancel</button>
-      </div>
-    </form>
-  </div>
-</div>
-
-<!-- Stock In Modal -->
-<div id="stockInModal" class="modal">
-  <div class="modal-content">
-    <span class="close-btn" onclick="closeStockInModal()">×</span>
-    <h2>Stock In</h2>
-    <form method="POST" action="../../controller/InventoryController.php">
-      <input type="hidden" name="action" value="stock_in">
-      <input type="hidden" id="stockInInventoryId" name="inventory_id">
-      <label>Quantity In</label>
-      <input type="number" name="quantity" min="1" required>
-      <label>Supplier</label>
-      <select name="supplier_id" required>
-        <?php foreach ($suppliers as $supplier): ?>
-          <option value="<?= $supplier['supplier_id'] ?>"><?= $supplier['supplier_name'] ?></option>
-        <?php endforeach; ?>
-      </select>
-      <label>Note</label>
-      <input type="text" name="note" placeholder="Optional">
-      <div class="modal-button-group">
-        <button type="submit" class="btn-primary">Add Stock</button>
-        <button type="button" onclick="closeStockInModal()">Cancel</button>
-      </div>
-    </form>
-  </div>
-</div>
-
-<!-- Stock Out Modal -->
-<div id="stockOutModal" class="modal">
-  <div class="modal-content">
-    <span class="close-btn" onclick="closeStockOutModal()">×</span>
-    <h2>Stock Out</h2>
-    <form method="POST" action="../../controller/InventoryController.php">
-      <input type="hidden" name="action" value="stock_out">
-      <input type="hidden" id="stockOutInventoryId" name="inventory_id">
-      <label>Quantity Out</label>
-      <input type="number" name="quantity" min="1" required>
-      <label>Note</label>
-      <input type="text" name="note" placeholder="Reason for stock out">
-      <div class="modal-button-group">
-        <button type="submit" class="btn-primary">Remove Stock</button>
-        <button type="button" onclick="closeStockOutModal()">Cancel</button>
       </div>
     </form>
   </div>
@@ -247,7 +233,8 @@ function showEditInventoryModal(id) {
   document.getElementById('editItemName').value = cells[0].textContent.trim();
   document.getElementById('editType').value = getTypeIdByName(cells[1].textContent.trim());
   document.getElementById('editSupplier').value = getSupplierIdByName(cells[2].textContent.trim());
-  document.getElementById('editReorder').value = cells[5].textContent.trim();
+document.getElementById('editReorder').value = cells[4].textContent.trim();
+
   document.getElementById('stockInOutInventoryId').value = id;
   document.getElementById('stockInOutSupplierId').value = getSupplierIdByName(cells[2].textContent.trim());
   document.getElementById('editInventoryModal').style.display = 'flex';
@@ -347,20 +334,24 @@ document.addEventListener("DOMContentLoaded", () => {
 
 
 function downloadCSV() {
-  const rows = Array.from(document.querySelectorAll("#inventoryTable tbody tr"))
-    .filter(row => row.style.display !== "none");
+  const table = document.querySelector("#inventoryTable");
+  const rows = Array.from(table.querySelectorAll("tbody tr")); // grab ALL rows
 
   let csvContent = "data:text/csv;charset=utf-8,";
-  const headers = Array.from(document.querySelectorAll("#inventoryTable thead th"))
-    .map(th => `"${th.textContent.trim()}"`).slice(0, 6); // ignore "Actions" col
+
+  // Extract headers (excluding "Actions" column)
+  const headers = Array.from(table.querySelectorAll("thead th"))
+    .map(th => `"${th.textContent.trim()}"`).slice(0, 6); // assuming Actions is column 7
   csvContent += headers.join(",") + "\r\n";
 
+  // Extract all data rows (first 6 columns only)
   rows.forEach(row => {
     const cols = Array.from(row.querySelectorAll("td")).slice(0, 6);
     const line = cols.map(td => `"${td.textContent.trim()}"`).join(",");
     csvContent += line + "\r\n";
   });
 
+  // Download trigger
   const encodedUri = encodeURI(csvContent);
   const link = document.createElement("a");
   link.setAttribute("href", encodedUri);
