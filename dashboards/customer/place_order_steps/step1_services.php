@@ -55,9 +55,6 @@ foreach ($dbServices as $service) {
     <?php endforeach; ?>
 </div>
 
-<input type="hidden" name="selected_service" id="selected_service">
-<input type="hidden" name="selected_service_price" id="selected_service_price">
-<div id="service-details" class="text-center mt-4"></div>
 
 <style>
 .service-card {
