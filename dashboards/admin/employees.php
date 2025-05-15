@@ -37,10 +37,16 @@ try {
 
 <main class="main-content">
   <h1>Manage Employees</h1>
+  
   <div class="table-controls">
 <div class="search-wrapper">
   <input type="text" id="employeeSearch" placeholder="Search employee..." onkeyup="filterEmployeeTable()" />
 </div>
+
+<button onclick="downloadCSV()" class="btn-export">
+  <i class="fas fa-download"></i> Export CSV
+</button>
+
     <button onclick="showAddEmployeeModal()" class="btn-export">
       <i class="fas fa-user-plus"></i> Add Employee
     </button>
@@ -270,5 +276,31 @@ function sortTableByColumn(index) {
   rows.forEach(row => table.tBodies[0].appendChild(row));
   table.dataset.sortDir = asc ? "asc" : "desc";
 }
+
+function downloadCSV() {
+const table = document.querySelector("#employeeTable"); // ✅ Correct for employees
+  const rows = Array.from(table.querySelectorAll("tbody tr"));
+
+  let csvContent = "data:text/csv;charset=utf-8,";
+
+  const headers = Array.from(table.querySelectorAll("thead th"))
+    .map(th => `"${th.textContent.trim()}"`).slice(0, 6);
+  csvContent += headers.join(",") + "\\r\\n";
+
+  rows.forEach(row => {
+    const cols = Array.from(row.querySelectorAll("td")).slice(0, 6);
+    const line = cols.map(td => `"${td.textContent.trim()}"`).join(",");
+    csvContent += line + "\\r\\n";
+  });
+
+  const encodedUri = encodeURI(csvContent);
+  const link = document.createElement("a");
+  link.setAttribute("href", encodedUri);
+  link.setAttribute("download", "employee_data.csv");
+  document.body.appendChild(link);
+  link.click();
+  document.body.removeChild(link);
+}
+
 
 </script>

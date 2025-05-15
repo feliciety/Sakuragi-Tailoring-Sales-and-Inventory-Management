@@ -1,3 +1,21 @@
+
+.btn-export {
+  background: linear-gradient(135deg, #34db93, #29b99c);
+  color: white;
+  border: none;
+  padding: 10px 16px;
+  border-radius: 8px;
+  font-weight: bold;
+  cursor: pointer;
+  box-shadow: 0 2px 0 #1e8667;
+}
+
+.btn-export i {
+  margin-right: 5px;
+}
+
+
+
 .table-controls {
   display: flex;
   flex-wrap: wrap;
@@ -12,6 +30,12 @@
   flex-wrap: wrap;
   gap: 10px;
   align-items: center;
+}
+
+
+.search-wrapper {
+  flex: 1;
+  max-width: 100%;
 }
 
 #inventorySearch {
