@@ -66,8 +66,9 @@ if (get_user_role() !== ROLE_CUSTOMER) {
 
         <!-- Navigation -->
         <div class="step-navigation">
-            <button id="prevBtn" onclick="prevStep()" disabled>Back</button>
-            <button id="nextBtn" onclick="nextStep()">Next</button>
+            <button id="prevBtn" onclick="prevStep()">Back</button>
+              <button id="nextBtn" class="btn btn-secondary" onclick="nextStep()" disabled>Next</button>
+
         </div>
     </section>
 </main>
