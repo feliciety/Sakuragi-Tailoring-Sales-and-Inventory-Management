@@ -436,3 +436,17 @@
   font-weight: bold;
   box-shadow: 0 2px 4px rgba(0,0,0,0.1);
 }
+
+button.stock-in, button.stock-out {
+  background-color: #2563eb; /* Tailwind blue-600 */
+  color: #fff;
+  border: none;
+  padding: 6px 14px;
+  border-radius: 4px;
+  margin: 0 2px;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+button.stock-in:hover, button.stock-out:hover {
+  background-color: #1d4ed8; /* Tailwind blue-700 */
+}

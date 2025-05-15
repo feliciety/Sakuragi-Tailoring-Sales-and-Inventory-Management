@@ -36,17 +36,17 @@ $types = getSupplyTypes($pdo);
   <div class="table-responsive">
     <table id="inventoryTable" data-sort-dir="asc">
       <thead>
-        <tr>
-          <th onclick="sortTableByColumn(0)">Item Name</th>
-          <th onclick="sortTableByColumn(1)">Category</th>
-          <th onclick="sortTableByColumn(2)">Supplier</th>
-          <th onclick="sortTableByColumn(3)">Qty</th>
-          <th onclick="sortTableByColumn(4)">Status</th>  
-          <th onclick="sortTableByColumn(4)">Reorder Level</th>
-          <th onclick="sortTableByColumn(5)">Last Updated</th>
-          <th>Actions</th>
-        </tr>
-      </thead>
+  <tr>
+    <th onclick="sortTableByColumn(0)">Item Name</th>
+    <th onclick="sortTableByColumn(1)">Category</th>
+    <th onclick="sortTableByColumn(2)">Supplier</th>
+    <th onclick="sortTableByColumn(3)">Qty</th>
+    <th onclick="sortTableByColumn(4)">Status</th>  
+    <th onclick="sortTableByColumn(4)">Reorder Level</th>
+    <th onclick="sortTableByColumn(5)">Last Updated</th>
+    <th>Actions</th>
+  </tr>
+</thead>
       <tbody>
         <?php foreach ($inventoryItems as $item): ?>
           <tr data-id="<?= $item['inventory_id'] ?>">
@@ -55,12 +55,9 @@ $types = getSupplyTypes($pdo);
               <span class="category-badge category-<?= str_replace([' ', '&'], '', $item['supply_type']) ?>">
                 <?= htmlspecialchars($item['supply_type']) ?>
               </span>
-
             </td>
-
             <td><?= htmlspecialchars($item['supplier_name']) ?></td>
              <td><?= htmlspecialchars($item['quantity']) ?></td>
-           
             <td><?= $item['reorder_level'] ?></td>
              <td>
               <?php if ($item['quantity'] === 0): ?>
@@ -71,11 +68,14 @@ $types = getSupplyTypes($pdo);
                 <span class="status-badge ok">In Stock</span>
               <?php endif; ?>
             </td>
-
             <td><?= $item['last_updated'] ?></td>
             <td class="action-buttons">
-              <button class="edit" onclick="showEditInventoryModal(<?= $item['inventory_id'] ?>)"><i class="fas fa-pen"></i></button>
-              <button class="delete" onclick="showDeleteInventoryModal(<?= $item['inventory_id'] ?>)"><i class="fas fa-trash"></i></button>
+              <button class="edit" onclick="showEditInventoryModal(<?= $item[
+                  'inventory_id'
+              ] ?>)"><i class="fas fa-pen"></i></button>
+              <button class="delete" onclick="showDeleteInventoryModal(<?= $item[
+                  'inventory_id'
+              ] ?>)"><i class="fas fa-trash"></i></button>
             </td>
           </tr>
         <?php endforeach; ?>
@@ -95,9 +95,9 @@ $types = getSupplyTypes($pdo);
       <label>Item Name</label>
       <input type="text" name="item_name" required>
       <label>Category</label>
-      <select name="supply_type_id" required>
+      <select name="category" required>
         <?php foreach ($types as $type): ?>
-          <option value="<?= $type['supply_type_id'] ?>"><?= $type['name'] ?></option>
+          <option value="<?= $type['name'] ?>"><?= $type['name'] ?></option>
         <?php endforeach; ?>
       </select>
       <label>Supplier</label>
@@ -123,15 +123,15 @@ $types = getSupplyTypes($pdo);
   <div class="modal-content">
     <span class="close-btn" onclick="closeEditInventoryModal()">×</span>
     <h2 class="modal-title">Edit Inventory Item</h2>
-    <form method="POST" action="../../controller/InventoryController.php">
+    <form method="POST" action="../../controller/InventoryController.php" style="margin-bottom: 16px;">
       <input type="hidden" name="action" value="edit">
       <input type="hidden" id="editInventoryId" name="inventory_id">
       <label>Item Name</label>
       <input type="text" id="editItemName" name="item_name" required>
       <label>Category</label>
-      <select id="editType" name="supply_type_id" required>
+      <select id="editType" name="category" required>
         <?php foreach ($types as $type): ?>
-          <option value="<?= $type['supply_type_id'] ?>"><?= $type['name'] ?></option>
+          <option value="<?= $type['name'] ?>"><?= $type['name'] ?></option>
         <?php endforeach; ?>
       </select>
       <label>Supplier</label>
@@ -140,14 +140,23 @@ $types = getSupplyTypes($pdo);
           <option value="<?= $supplier['supplier_id'] ?>"><?= $supplier['supplier_name'] ?></option>
         <?php endforeach; ?>
       </select>
-      <label>Quantity</label>
-      <input type="number" id="editQuantity" name="quantity" required>
       <label>Reorder Level</label>
       <input type="number" id="editReorder" name="reorder_level" required>
       <div class="modal-button-group">
         <button type="submit" class="btn-primary">Update</button>
         <button type="button" onclick="closeEditInventoryModal()">Cancel</button>
       </div>
+    </form>
+    <hr>
+    <!-- Stock In/Out Controls -->
+    <div style="font-weight: bold; margin-bottom: 8px;">Stock In / Stock Out</div>
+    <form method="POST" action="../../controller/InventoryController.php" style="display: flex; gap: 8px; align-items: flex-end;">
+      <input type="hidden" name="inventory_id" id="stockInOutInventoryId">
+      <input type="hidden" name="supplier_id" id="stockInOutSupplierId"> <!-- Add this line -->
+      <input type="number" name="quantity" min="1" placeholder="Qty" required style="width: 80px;">
+      <input type="text" name="note" placeholder="Note (optional)" style="width: 120px;">
+      <button type="submit" name="action" value="stock_in" class="stock-in"><i class="fas fa-arrow-down"></i> In</button>
+      <button type="submit" name="action" value="stock_out" class="stock-out"><i class="fas fa-arrow-up"></i> Out</button>
     </form>
   </div>
 </div>
@@ -164,6 +173,52 @@ $types = getSupplyTypes($pdo);
       <div class="modal-button-group">
         <button type="submit" class="btn-primary">Yes, Delete</button>
         <button type="button" onclick="closeDeleteInventoryModal()">Cancel</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- Stock In Modal -->
+<div id="stockInModal" class="modal">
+  <div class="modal-content">
+    <span class="close-btn" onclick="closeStockInModal()">×</span>
+    <h2>Stock In</h2>
+    <form method="POST" action="../../controller/InventoryController.php">
+      <input type="hidden" name="action" value="stock_in">
+      <input type="hidden" id="stockInInventoryId" name="inventory_id">
+      <label>Quantity In</label>
+      <input type="number" name="quantity" min="1" required>
+      <label>Supplier</label>
+      <select name="supplier_id" required>
+        <?php foreach ($suppliers as $supplier): ?>
+          <option value="<?= $supplier['supplier_id'] ?>"><?= $supplier['supplier_name'] ?></option>
+        <?php endforeach; ?>
+      </select>
+      <label>Note</label>
+      <input type="text" name="note" placeholder="Optional">
+      <div class="modal-button-group">
+        <button type="submit" class="btn-primary">Add Stock</button>
+        <button type="button" onclick="closeStockInModal()">Cancel</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- Stock Out Modal -->
+<div id="stockOutModal" class="modal">
+  <div class="modal-content">
+    <span class="close-btn" onclick="closeStockOutModal()">×</span>
+    <h2>Stock Out</h2>
+    <form method="POST" action="../../controller/InventoryController.php">
+      <input type="hidden" name="action" value="stock_out">
+      <input type="hidden" id="stockOutInventoryId" name="inventory_id">
+      <label>Quantity Out</label>
+      <input type="number" name="quantity" min="1" required>
+      <label>Note</label>
+      <input type="text" name="note" placeholder="Reason for stock out">
+      <div class="modal-button-group">
+        <button type="submit" class="btn-primary">Remove Stock</button>
+        <button type="button" onclick="closeStockOutModal()">Cancel</button>
       </div>
     </form>
   </div>
@@ -191,8 +246,9 @@ function showEditInventoryModal(id) {
   document.getElementById('editItemName').value = cells[0].textContent.trim();
   document.getElementById('editType').value = getTypeIdByName(cells[1].textContent.trim());
   document.getElementById('editSupplier').value = getSupplierIdByName(cells[2].textContent.trim());
-  document.getElementById('editQuantity').value = cells[3].textContent.trim();
-  document.getElementById('editReorder').value = cells[4].textContent.trim();
+  document.getElementById('editReorder').value = cells[5].textContent.trim();
+  document.getElementById('stockInOutInventoryId').value = id;
+  document.getElementById('stockInOutSupplierId').value = getSupplierIdByName(cells[2].textContent.trim());
   document.getElementById('editInventoryModal').style.display = 'flex';
 }
 function closeEditInventoryModal() {
@@ -204,6 +260,20 @@ function showDeleteInventoryModal(id) {
 }
 function closeDeleteInventoryModal() {
   document.getElementById('deleteInventoryModal').style.display = 'none';
+}
+function showStockInModal(id) {
+  document.getElementById('stockInInventoryId').value = id;
+  document.getElementById('stockInModal').style.display = 'flex';
+}
+function closeStockInModal() {
+  document.getElementById('stockInModal').style.display = 'none';
+}
+function showStockOutModal(id) {
+  document.getElementById('stockOutInventoryId').value = id;
+  document.getElementById('stockOutModal').style.display = 'flex';
+}
+function closeStockOutModal() {
+  document.getElementById('stockOutModal').style.display = 'none';
 }
 function getTypeIdByName(name) {
   return typeIdMap[name] || "";
