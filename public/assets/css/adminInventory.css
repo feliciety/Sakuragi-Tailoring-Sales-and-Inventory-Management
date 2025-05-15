@@ -1,25 +1,363 @@
+.table-controls {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+  gap: 12px;
+}
 
+.search-actions-group {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  align-items: center;
+}
+
+#inventorySearch {
+  width: 100%;
+  max-width: 450px;
+  padding: 10px 14px;
+  margin-bottom: -15px;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  font-size: 14px;
+  outline: none;
+  transition: 0.2s ease-in-out;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.04);
+  background-color: #fff;
+  font-family: 'Segoe UI', sans-serif;
+}
+
+#inventorySearch::placeholder {
+  color: #aaa;
+}
+
+#inventorySearch:focus {
+  border-color: #3498db;
+  box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.15);
+}
+
+
+.low-stock-badge {
+  margin-left: 5px;
+  color: red;
+  font-size: 14px;
+  vertical-align: middle;
+}
+
+.status-badge {
+    padding: 5px 12px;
+  border-radius: 12px;
+  font-size: 12px;
+  font-weight: 600;
+  color: #fff;
+}
+.status-badge.ok { background-color: #5ac386; }
+.status-badge.low { background-color: #eab867; }
+.status-badge.out { background-color: #e5695b; }
+
+
+.category-badge {
+  display: inline-block;
+  padding: 5px 12px;
+  border-radius: 50px;
+  font-size: 13px;
+  font-weight: 600;
+  text-transform: capitalize;
+  color: white;
+  background-color: #7f8c8d; /* fallback default */
+}
+
+.category-AdhesiveBacking {
+  background-color: #FFD6A5;
+  color: #5C3D00;
+}
+
+.category-CuttingMats {
+  background-color: #A0E7E5;
+  color: #014B50;
+}
+
+.category-EmbroideryBacking {
+  background-color: #FFADAD;
+  color: #6E0000;
+}
+
+.category-Fabric {
+  background-color: #B5EAD7;
+  color: #005C38;
+}
+
+.category-GarmentBlanks {
+  background-color: #FFDAC1;
+  color: #7B3E00;
+}
+
+.category-HeatPressSheets {
+  background-color: #C7CEEA;
+  color: #1C296D;
+}
+
+.category-HoopsFrames {
+  background-color: #FFFACD;
+  color: #a07e04;
+}
+
+.category-Ink {
+  background-color: #D0F4DE;
+  color: #1D5A33;
+}
+
+.category-NeedlesScissors {
+  background-color: #E2F0CB;
+  color: #3C5500;
+}
+
+.category-PackagingSupplies {
+  background-color: #FBC4AB;
+  color: #6D2E00;
+}
+
+.category-Thread {
+  background-color: #D5AAFF;
+  color: #4B0070;
+}
+
+.category-TransferPaper {
+  background-color: #FFB5E8;
+  color: #670044;
+}
+
+.category-Vinyl {
+  background-color: #C9F0FF;
+  color: #004B69;
+}
+
+.category-ZippersButtons {
+  background-color: #FFC6FF;
+  color: #5A0066;
+}
+
+
+/* Modal Styling */
 .modal {
-    display: none;
-    position: fixed;
-    z-index: 1000;
-    left: 0;
-    top: 0;
-    width: 100%;
-    height: 100%;
-    overflow: auto;
-    background-color: rgba(0, 0, 0, 0.4);
+  display: none;
+  position: fixed;
+  z-index: 1000;
+  left: 0; top: 0;
+  width: 100%; height: 100%;
+  background-color: rgba(0, 0, 0, 0.4);
+  justify-content: center;
+  align-items: center;
 }
 
 .modal-content {
-    background-color: #fff;
-    margin: 10% auto;
-    padding: 20px;
-    border: 1px solid #888;
-    width: 30%;
-    border-radius: 8px;
+  background: white;
+  padding: 25px 30px;
+  border-radius: 10px;
+  width: 95%;
+  max-width: 500px;
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.1);
+  position: relative;
 }
 
+.close-btn {
+  position: absolute;
+  top: 12px;
+  right: 15px;
+  font-size: 20px;
+  color: #777;
+  cursor: pointer;
+}
+
+.modal-title {
+  font-size: 22px;
+  font-weight: bold;
+  margin-bottom: 20px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.modal-title i {
+  font-size: 22px;
+  color: inherit;
+}
+
+/* Input + Select Unified Design */
+.modal-content form input[type="text"],
+.modal-content form input[type="number"],
+.modal-content form select {
+  width: 100%;
+  padding: 10px 14px;
+  font-size: 14px;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  background-color: #fdfdfd;
+  transition: border 0.2s, box-shadow 0.2s;
+  margin-bottom: 14px;
+}
+
+.modal-content form input:focus,
+.modal-content form select:focus {
+  border-color: #3498db;
+  box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.15);
+  outline: none;
+}
+
+.modal-subtext {
+  font-size: 14px;
+  color: #666;
+  margin-bottom: 20px;
+}
+
+/* Form Layout */
+.modal-content form label {
+  display: block;
+  font-size: 14px;
+  margin-top: 12px;
+  margin-bottom: 4px;
+  color: #494949;
+}
+
+.modal-content form input[type="text"],
+.modal-content form select {
+  width: 100%;
+  padding: 10px 12px;
+  font-size: 14px;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  background-color: #fafafa;
+  transition: border-color 0.2s;
+}
+
+.modal-content form input:focus,
+.modal-content form select:focus {
+  border-color: #3498db;
+  outline: none;
+}
+/* Button Group Alignment */
+.modal-button-group {
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+  margin-top: 25px;
+}
+
+.modal-button-group button {
+  padding: 10px 20px;
+  border-radius: 8px;
+  font-weight: 600;
+  font-size: 14px;
+  border: none;
+  cursor: pointer;
+  transition: 0.2s ease;
+}
+
+.modal-button-group .btn-primary {
+  background-color: #3498db;
+  color: #fff;
+  box-shadow: 0 2px 0 #2980b9;
+}
+
+.modal-button-group .btn-primary:hover {
+  background-color: #2980b9;
+}
+
+.modal-button-group button[type="button"] {
+  background-color: #e0e0e0;
+  color: #333;
+}
+
+.modal-button-group button[type="button"]:hover {
+  background-color: #d0d0d0;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .table-controls {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .btn-export {
+    width: 100%;
+  }
+
+  #employeeTable th,
+  #employeeTable td {
+    font-size: 13px;
+    padding: 10px;
+  }
+
+  .modal-button-group {
+    flex-direction: column;
+  }
+
+  .modal-button-group button {
+    width: 100%;
+  }
+}
+
+
+.modal.add .modal-title::before {
+  content: "➕ ";
+  color: #2ecc71;
+}
+
+.modal.edit .modal-title::before {
+  content: "✏️ ";
+  color: #3498db;
+}
+.modal.delete .modal-title::before {
+  content: "❌ ";
+  color: #e74c3c;
+}
+
+
+.modal.delete .modal-content {
+  border-left: 5px solid #e74c3c;
+}
+
+.modal.delete .modal-title {
+  color: #e74c3c;
+}
+
+.modal.delete .btn-primary {
+  background-color: #e74c3c;
+  box-shadow: 0 2px 0 #c0392b;
+}
+
+.modal.delete .btn-primary:hover {
+  background-color: #c0392b;
+}
+.modal.edit .modal-content {
+  border-left: 5px solid #3498db;
+}
+.modal.edit .modal-title {
+  color: #3498db;
+}
+.modal.edit .btn-primary {
+  background-color: #3498db;
+  box-shadow: 0 2px 0 #2980b9;
+}
+.modal.edit .btn-primary:hover {
+  background-color: #2980b9;
+}
+.modal.add .modal-content {
+  border-left: 5px solid #2ecc71;
+}
+.modal.add .modal-title {
+  color: #2ecc71;
+}
+.modal.add .btn-primary {
+  background-color: #2ecc71;
+  box-shadow: 0 2px 0 #27ae60;
+}
+.modal.add .btn-primary:hover {
+  background-color: #27ae60;
+}
 .close {
     color: #aaa;
     float: right;
@@ -63,4 +401,38 @@
 
 .btn-save:hover {
     background-color: #0056b3;
+}
+
+.pagination-controls {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  justify-content: center;
+  margin-top: 20px;
+  margin-bottom: 20px;
+}
+
+.pagination-controls button {
+  padding: 8px 10px;
+  border: 1px solid #ccc;
+  background-color: #f9f9f9;
+  color: #333;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: 500;
+  transition: background 0.2s ease, color 0.2s ease, transform 0.1s ease;
+}
+
+.pagination-controls button:hover {
+  background-color: #e6f0fa;
+  border-color: #3498db;
+  color: #3498db;
+}
+
+.pagination-controls button.active {
+  background-color: #3498db;
+  color: white;
+  border-color: #2980b9;
+  font-weight: bold;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
 }

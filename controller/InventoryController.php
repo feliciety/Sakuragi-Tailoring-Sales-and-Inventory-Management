@@ -1,65 +1,105 @@
 <?php
-// Handle form submission for updating inventory
-if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['inventory_id'], $_POST['quantity'])) {
-    $inventoryId = $_POST['inventory_id'];
+require_once __DIR__ . '/../config/db_connect.php';
+
+// 🔁 Fetch all inventory records
+function getInventory($pdo) {
+  $stmt = $pdo->prepare("
+    SELECT 
+      i.inventory_id,
+      i.item_name,
+      i.quantity,
+      i.reorder_level,
+      i.last_updated,
+      s.supplier_name,
+      t.name AS supply_type
+    FROM inventory i
+    LEFT JOIN suppliers s ON i.supplier_id = s.supplier_id
+    LEFT JOIN supply_types t ON i.supply_type_id = t.supply_type_id
+    WHERE i.branch_id = 2
+    ORDER BY i.last_updated DESC
+  ");
+  $stmt->execute();
+  return $stmt->fetchAll(PDO::FETCH_ASSOC);
+}
+
+// 📦 Get all suppliers
+function getSuppliers($pdo) {
+  $stmt = $pdo->prepare("SELECT supplier_id, supplier_name FROM suppliers ORDER BY supplier_name");
+  $stmt->execute();
+  return $stmt->fetchAll(PDO::FETCH_ASSOC);
+}
+
+// 📂 Get all supply types
+function getSupplyTypes($pdo) {
+  $stmt = $pdo->prepare("SELECT supply_type_id, name FROM supply_types ORDER BY name");
+  $stmt->execute();
+  return $stmt->fetchAll(PDO::FETCH_ASSOC);
+}
+
+// ✏️ Handle form submissions
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+  $action = $_POST['action'] ?? null;
+
+  if ($action === 'add') {
+    $item_name = $_POST['item_name'];
+    $supplier_id = $_POST['supplier_id'];
+    $supply_type_id = $_POST['supply_type_id'];
     $quantity = $_POST['quantity'];
+    $reorder_level = $_POST['reorder_level'];
 
-    if (!is_numeric($quantity) || $quantity < 0) {
-        die('Invalid quantity value.');
-    }
+    $stmt = $pdo->prepare("
+      INSERT INTO inventory (branch_id, item_name, supplier_id, supply_type_id, quantity, reorder_level)
+      VALUES (2, :item_name, :supplier_id, :supply_type_id, :quantity, :reorder_level)
+    ");
+    $stmt->execute([
+      'item_name' => $item_name,
+      'supplier_id' => $supplier_id,
+      'supply_type_id' => $supply_type_id,
+      'quantity' => $quantity,
+      'reorder_level' => $reorder_level
+    ]);
 
-    try {
-        $stmt = $pdo->prepare("
-            UPDATE inventory
-            SET quantity = :quantity,
-                last_updated = NOW()
-            WHERE inventory_id = :inventory_id
-        ");
-        $stmt->execute([
-            ':quantity' => $quantity,
-            ':inventory_id' => $inventoryId,
-        ]);
+    header('Location: ../dashboards/admin/inventory.php');
+    exit();
+  }
 
-        header('Location: inventory.php');
-        exit();
-    } catch (PDOException $e) {
-        die('Error updating inventory: ' . $e->getMessage());
-    }
+  if ($action === 'edit') {
+    $id = $_POST['inventory_id'];
+    $item_name = $_POST['item_name'];
+    $supplier_id = $_POST['supplier_id'];
+    $supply_type_id = $_POST['supply_type_id'];
+    $quantity = $_POST['quantity'];
+    $reorder_level = $_POST['reorder_level'];
+
+    $stmt = $pdo->prepare("
+      UPDATE inventory
+      SET item_name = :item_name,
+          supplier_id = :supplier_id,
+          supply_type_id = :supply_type_id,
+          quantity = :quantity,
+          reorder_level = :reorder_level
+      WHERE inventory_id = :id
+    ");
+    $stmt->execute([
+      'item_name' => $item_name,
+      'supplier_id' => $supplier_id,
+      'supply_type_id' => $supply_type_id,
+      'quantity' => $quantity,
+      'reorder_level' => $reorder_level,
+      'id' => $id
+    ]);
+
+    header('Location: ../dashboards/admin/inventory.php');
+    exit();
+  }
+
+  if ($action === 'delete') {
+    $id = $_POST['inventory_id'];
+
+    $stmt = $pdo->prepare("DELETE FROM inventory WHERE inventory_id = :id");
+    $stmt->execute(['id' => $id]);
+
+    header('Location: ../dashboards/admin/inventory.php');
+    exit();
+  }
 }
-
-// Fetch inventory data
-$stmt = $pdo->query(
-    "SELECT i.inventory_id, i.item_name, i.category, s.supplier_name, i.quantity, i.last_updated,
-            CASE
-                WHEN i.quantity <= i.reorder_level THEN 'Low'
-                ELSE 'Sufficient'
-            END AS status
-     FROM inventory i
-     JOIN suppliers s ON i.supplier_id = s.supplier_id"
-);
-
-$inventoryItems = $stmt->fetchAll(PDO::FETCH_ASSOC);
-?>
-
-<!-- Load centralized table script -->
-<script src="/assets/js/tables.js"></script>
-<script>
-function openEditModal(inventoryId, itemName, quantity) {
-    document.getElementById('inventory_id').value = inventoryId;
-    document.getElementById('item_name').value = itemName;
-    document.getElementById('quantity').value = quantity;
-    document.getElementById('editModal').style.display = 'block';
-}
-
-function closeModal() {
-    document.getElementById('editModal').style.display = 'none';
-}
-
-// Close the modal when clicking outside of it
-window.onclick = function(event) {
-    var modal = document.getElementById('editModal');
-    if (event.target == modal) {
-        modal.style.display = 'none';
-    }
-}
-</script>
