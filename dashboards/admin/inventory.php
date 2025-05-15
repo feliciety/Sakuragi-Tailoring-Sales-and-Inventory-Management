@@ -346,20 +346,24 @@ document.addEventListener("DOMContentLoaded", () => {
 
 
 function downloadCSV() {
-  const rows = Array.from(document.querySelectorAll("#inventoryTable tbody tr"))
-    .filter(row => row.style.display !== "none");
+  const table = document.querySelector("#inventoryTable");
+  const rows = Array.from(table.querySelectorAll("tbody tr")); // grab ALL rows
 
   let csvContent = "data:text/csv;charset=utf-8,";
-  const headers = Array.from(document.querySelectorAll("#inventoryTable thead th"))
-    .map(th => `"${th.textContent.trim()}"`).slice(0, 6); // ignore "Actions" col
+
+  // Extract headers (excluding "Actions" column)
+  const headers = Array.from(table.querySelectorAll("thead th"))
+    .map(th => `"${th.textContent.trim()}"`).slice(0, 6); // assuming Actions is column 7
   csvContent += headers.join(",") + "\r\n";
 
+  // Extract all data rows (first 6 columns only)
   rows.forEach(row => {
     const cols = Array.from(row.querySelectorAll("td")).slice(0, 6);
     const line = cols.map(td => `"${td.textContent.trim()}"`).join(",");
     csvContent += line + "\r\n";
   });
 
+  // Download trigger
   const encodedUri = encodeURI(csvContent);
   const link = document.createElement("a");
   link.setAttribute("href", encodedUri);
