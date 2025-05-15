@@ -35,8 +35,9 @@ function getSuppliers($pdo)
 // 📂 Get all supply types (return enum values for category)
 function getSupplyTypes($pdo)
 {
-    // Manually return the enum values for 'category' in inventory
-    return [['name' => 'Fabric'], ['name' => 'Thread'], ['name' => 'Ink'], ['name' => 'Accessories']];
+    $stmt = $pdo->prepare('SELECT supply_type_id, name FROM supply_types ORDER BY name');
+    $stmt->execute();
+    return $stmt->fetchAll(PDO::FETCH_ASSOC);
 }
 
 // ✏️ Handle form submissions
@@ -47,18 +48,18 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if ($action === 'add') {
         $item_name = $_POST['item_name'];
         $supplier_id = $_POST['supplier_id'];
-        $category = $_POST['category'];
+        $supply_type_id = $_POST['category']; // category is actually supply_type_id
         $quantity = $_POST['quantity'];
         $reorder_level = $_POST['reorder_level'];
 
         $stmt = $pdo->prepare("
-      INSERT INTO inventory (branch_id, item_name, supplier_id, category, quantity, reorder_level)
-      VALUES (2, :item_name, :supplier_id, :category, :quantity, :reorder_level)
+      INSERT INTO inventory (branch_id, item_name, supplier_id, supply_type_id, quantity, reorder_level)
+      VALUES (2, :item_name, :supplier_id, :supply_type_id, :quantity, :reorder_level)
     ");
         $stmt->execute([
             'item_name' => $item_name,
             'supplier_id' => $supplier_id,
-            'category' => $category,
+            'supply_type_id' => $supply_type_id,
             'quantity' => $quantity,
             'reorder_level' => $reorder_level,
         ]);
@@ -70,24 +71,21 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $id = $_POST['inventory_id'];
         $item_name = $_POST['item_name'];
         $supplier_id = $_POST['supplier_id'];
-        $category = $_POST['category'];
-        $quantity = $_POST['quantity'];
+        $supply_type_id = $_POST['category']; // category is actually supply_type_id
         $reorder_level = $_POST['reorder_level'];
 
         $stmt = $pdo->prepare("
       UPDATE inventory
       SET item_name = :item_name,
           supplier_id = :supplier_id,
-          category = :category,
-          quantity = :quantity,
+          supply_type_id = :supply_type_id,
           reorder_level = :reorder_level
       WHERE inventory_id = :id
     ");
         $stmt->execute([
             'item_name' => $item_name,
             'supplier_id' => $supplier_id,
-            'category' => $category,
-            'quantity' => $quantity,
+            'supply_type_id' => $supply_type_id,
             'reorder_level' => $reorder_level,
             'id' => $id,
         ]);

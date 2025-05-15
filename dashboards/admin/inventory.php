@@ -97,7 +97,7 @@ $types = getSupplyTypes($pdo);
       <label>Category</label>
       <select name="category" required>
         <?php foreach ($types as $type): ?>
-          <option value="<?= $type['name'] ?>"><?= $type['name'] ?></option>
+          <option value="<?= $type['supply_type_id'] ?>"><?= $type['name'] ?></option>
         <?php endforeach; ?>
       </select>
       <label>Supplier</label>
@@ -123,6 +123,18 @@ $types = getSupplyTypes($pdo);
   <div class="modal-content">
     <span class="close-btn" onclick="closeEditInventoryModal()">×</span>
     <h2 class="modal-title">Edit Inventory Item</h2>
+    <hr>
+    <!-- Stock In/Out Controls -->
+    <div style="font-weight: bold; margin-bottom: 8px;">Stock In / Stock Out</div>
+    <form method="POST" action="../../controller/InventoryController.php" style="display: flex; gap: 8px; align-items: flex-end;">
+      <input type="hidden" name="inventory_id" id="stockInOutInventoryId">
+      <input type="hidden" name="supplier_id" id="stockInOutSupplierId">
+      <input type="number" name="quantity" min="1" placeholder="Qty" required style="width: 80px;">
+      <input type="text" name="note" placeholder="Note (optional)" style="width: 120px;">
+      <button type="submit" name="action" value="stock_in" class="stock-in" style="margin-bottom: 20px;"><i class="fas fa-arrow-down"></i> In</button>
+      <button type="submit" name="action" value="stock_out" class="stock-out" style="margin-bottom: 20px;"><i class="fas fa-arrow-up"></i> Out</button>
+    </form>
+    <!-- Now the Update form is below -->
     <form method="POST" action="../../controller/InventoryController.php" style="margin-bottom: 16px;">
       <input type="hidden" name="action" value="edit">
       <input type="hidden" id="editInventoryId" name="inventory_id">
@@ -131,7 +143,7 @@ $types = getSupplyTypes($pdo);
       <label>Category</label>
       <select id="editType" name="category" required>
         <?php foreach ($types as $type): ?>
-          <option value="<?= $type['name'] ?>"><?= $type['name'] ?></option>
+          <option value="<?= $type['supply_type_id'] ?>"><?= $type['name'] ?></option>
         <?php endforeach; ?>
       </select>
       <label>Supplier</label>
@@ -146,17 +158,6 @@ $types = getSupplyTypes($pdo);
         <button type="submit" class="btn-primary">Update</button>
         <button type="button" onclick="closeEditInventoryModal()">Cancel</button>
       </div>
-    </form>
-    <hr>
-    <!-- Stock In/Out Controls -->
-    <div style="font-weight: bold; margin-bottom: 8px;">Stock In / Stock Out</div>
-    <form method="POST" action="../../controller/InventoryController.php" style="display: flex; gap: 8px; align-items: flex-end;">
-      <input type="hidden" name="inventory_id" id="stockInOutInventoryId">
-      <input type="hidden" name="supplier_id" id="stockInOutSupplierId"> <!-- Add this line -->
-      <input type="number" name="quantity" min="1" placeholder="Qty" required style="width: 80px;">
-      <input type="text" name="note" placeholder="Note (optional)" style="width: 120px;">
-      <button type="submit" name="action" value="stock_in" class="stock-in"><i class="fas fa-arrow-down"></i> In</button>
-      <button type="submit" name="action" value="stock_out" class="stock-out"><i class="fas fa-arrow-up"></i> Out</button>
     </form>
   </div>
 </div>
