@@ -7,23 +7,36 @@ require_once '../../includes/header.php';
 require_once '../../includes/sidebar_admin.php';
 require_once __DIR__ . '/../../controller/EmployeesController.php';
 
+
 // Fetch employee list
 try {
-    $stmt = $pdo->prepare("
-        SELECT 
-            e.user_id AS employee_id,
-            u.full_name,
-            e.position,
-            e.department,
-            e.status,
-            e.hire_date,
-            e.shift,
-            b.branch_name
-        FROM employees e
-        JOIN users u ON e.user_id = u.user_id
-        LEFT JOIN branches b ON e.branch_id = b.branch_id
-        ORDER BY u.full_name ASC
-    ");
+$stmt = $pdo->prepare("
+    SELECT 
+        e.user_id AS employee_id,
+        u.full_name,
+        p.position_name,
+        d.department_name,
+        s.shift_name,
+        st.status_name,
+        e.hire_date,
+        b.branch_name
+    FROM employees e
+    JOIN users u ON e.user_id = u.user_id
+    LEFT JOIN branches b ON e.branch_id = b.branch_id
+    LEFT JOIN positions p ON e.position_id = p.position_id
+    LEFT JOIN departments d ON p.department_id = d.department_id
+    LEFT JOIN shifts s ON e.shift_id = s.shift_id
+    LEFT JOIN statuses st ON e.status_id = st.status_id
+    ORDER BY u.full_name ASC
+");
+
+// Load dropdown data from DB
+$positions = $pdo->query("SELECT position_id, position_name FROM positions")->fetchAll(PDO::FETCH_ASSOC);
+$shifts = $pdo->query("SELECT shift_id, shift_name FROM shifts")->fetchAll(PDO::FETCH_ASSOC);
+$statuses = $pdo->query("SELECT status_id, status_name FROM statuses")->fetchAll(PDO::FETCH_ASSOC);
+$departments = $pdo->query("SELECT department_id, department_name FROM departments")->fetchAll(PDO::FETCH_ASSOC);
+
+
     $stmt->execute();
     $result = $stmt->fetchAll(PDO::FETCH_ASSOC);
 } catch (PDOException $e) {
@@ -63,23 +76,24 @@ try {
       <tbody>
         <?php if ($result):
             foreach ($result as $row): ?>
-          <tr data-employee-id="<?= $row['employee_id'] ?>">
-            <td><?= htmlspecialchars($row['full_name']) ?></td>
-            <td><?= $row['position'] ?></td>
-            <td><?= $row['department'] ?></td>
-            <td><?= $row['branch_name'] ?></td>
-            <td><?= $row['hire_date'] ?></td>
-            <td><?= $row['shift'] ?></td>
-            <td><span class="status <?= strtolower($row['status']) ?>"><?= $row['status'] ?></span></td>
-            <td class="action-buttons">
-              <button class="edit" onclick="showEditEmployeeModal(<?= $row['employee_id'] ?>)">
-                <i class="fas fa-pen"></i>
-              </button>
-              <button class="delete" onclick="showDeleteEmployeeModal(<?= $row['employee_id'] ?>)">
-                <i class="fas fa-trash"></i>
-              </button>
-            </td>
-          </tr>
+         <tr data-employee-id="<?= $row['employee_id'] ?>">
+          <td><?= htmlspecialchars($row['full_name']) ?></td>
+          <td><?= htmlspecialchars($row['position_name']) ?></td>
+          <td><?= htmlspecialchars($row['department_name']) ?></td>
+          <td><?= htmlspecialchars($row['branch_name']) ?></td>
+          <td><?= htmlspecialchars($row['hire_date']) ?></td>
+          <td><?= htmlspecialchars($row['shift_name']) ?></td>
+          <td><span class="status <?= strtolower($row['status_name']) ?>"><?= $row['status_name'] ?></span></td>
+          <td class="action-buttons">
+            <button class="edit" onclick="showEditEmployeeModal(<?= $row['employee_id'] ?>)">
+              <i class="fas fa-pen"></i>
+            </button>
+            <button class="delete" onclick="showDeleteEmployeeModal(<?= $row['employee_id'] ?>)">
+              <i class="fas fa-trash"></i>
+            </button>
+          </td>
+        </tr>
+
         <?php endforeach;
         else:
              ?>
@@ -103,37 +117,22 @@ try {
       <label>Full Name</label>
       <input type="text" name="full_name" placeholder="e.g. Jane Doe" required>
         <label>Position</label>
-            <select name="position" required>
-                <option value=""> Select Position </option>
-                <option value="Tailor">Tailor</option>
-                <option value="Senior Tailor">Senior Tailor</option>
-                <option value="Alteration Specialist">Alteration Specialist</option>
-                <option value="Pattern Maker">Pattern Maker</option>
-                <option value="Sublimation Technician">Sublimation Technician</option>
-                <option value="Screen Printing Operator">Screen Printing Operator</option>
-                <option value="Print Finisher">Print Finisher</option>
-                <option value="Embroidery Machine Operator">Embroidery Machine Operator</option>
-                <option value="Embroidery Technician">Embroidery Technician</option>
-                <option value="Quality Control Inspector">Quality Control Inspector</option>
-                <option value="Packing Staff">Packing Staff</option>
-                <option value="Production Staff">Production Staff</option>
-                <option value="Shop Assistant">Shop Assistant</option>
-                <option value="Floor Supervisor">Floor Supervisor</option>
-                <option value="Inventory Clerk">Inventory Clerk</option>
-                <option value="Admin Assistant">Admin Assistant</option>
-                <option value="HR Staff">HR Staff</option>
-                <option value="Accountant">Accountant</option>
-                <option value="Operations Manager">Operations Manager</option>
-            </select>
+<select name="position_id" required>
+  <option value="">Select Position</option>
+  <?php foreach ($positions as $pos): ?>
+    <option value="<?= $pos['position_id'] ?>"><?= htmlspecialchars($pos['position_name']) ?></option>
+  <?php endforeach; ?>
+</select>
 
-      <label>Department</label>
-      <select name="department" required>
-        <option value="">Select</option>
-        <option value="Tailoring">Tailoring</option>
-        <option value="Printing">Printing</option>
-        <option value="Customer Service">Customer Service</option>
-        <option value="Admin">Admin</option>
-      </select>
+<label>Department</label>
+<select name="department_id" required>
+  <option value="">Select Department</option>
+  <?php foreach ($departments as $dept): ?>
+    <option value="<?= $dept['department_id'] ?>"><?= htmlspecialchars($dept['department_name']) ?></option>
+  <?php endforeach; ?>
+</select>
+
+
       <label>Branch</label>
       <select name="branch_name" required>
         <option value="">Select</option>
@@ -142,19 +141,22 @@ try {
         <option value="Kidapawan">Kidapawan</option>
         <option value="Tagum">Tagum</option>
       </select>
-      <label>Shift</label>
-      <select name="shift" required>
-        <option value="">Select</option>
-        <option value="Morning">Morning</option>
-        <option value="Afternoon">Afternoon</option>
-        <option value="Night">Night</option>
-      </select>
-      <label>Status</label>
-      <select name="status" required>
-        <option value="Active">Active</option>
-        <option value="Resigned">Resigned</option>
-        <option value="Terminated">Terminated</option>
-      </select>
+   <label>Shift</label>
+<select name="shift_id" required>
+  <option value="">Select Shift</option>
+  <?php foreach ($shifts as $shift): ?>
+    <option value="<?= $shift['shift_id'] ?>"><?= htmlspecialchars($shift['shift_name']) ?></option>
+  <?php endforeach; ?>
+</select>
+
+     <label>Status</label>
+<select name="status_id" required>
+  <option value="">Select Status</option>
+  <?php foreach ($statuses as $status): ?>
+    <option value="<?= $status['status_id'] ?>"><?= htmlspecialchars($status['status_name']) ?></option>
+  <?php endforeach; ?>
+</select>
+
       <div class="modal-button-group">
         <button type="submit" class="btn-primary">Save</button>
         <button type="button" onclick="closeAddEmployeeModal()">Cancel</button>
@@ -169,43 +171,58 @@ try {
     <span class="close-btn" onclick="closeEditEmployeeModal()">×</span>
     <h2 class="modal-title">Edit Employee</h2>
     <form method="POST" action="../../controller/EmployeesController.php">
-      <input type="hidden" name="action" value="edit">
-      <input type="hidden" id="editEmployeeId" name="employee_id">
-      <label>Full Name</label>
-      <input type="text" id="editFullName" name="full_name" required>
-      <label>Position</label>
-      <input type="text" id="editPosition" name="position" required>
-      <label>Department</label>
-      <select id="editDepartment" name="department" required>
-        <option value="Tailoring">Tailoring</option>
-        <option value="Printing">Printing</option>
-        <option value="Customer Service">Customer Service</option>
-        <option value="Admin">Admin</option>
-      </select>
-      <label>Branch</label>
-      <select id="editBranch" name="branch_name" required>
-        <option value="Main">Main</option>
-        <option value="Davao">Davao</option>
-        <option value="Kidapawan">Kidapawan</option>
-        <option value="Tagum">Tagum</option>
-      </select>
-      <label>Shift</label>
-      <select id="editShift" name="shift" required>
-        <option value="Morning">Morning</option>
-        <option value="Afternoon">Afternoon</option>
-        <option value="Night">Night</option>
-      </select>
-      <label>Status</label>
-      <select id="editStatus" name="status" required>
-        <option value="Active">Active</option>
-        <option value="Resigned">Resigned</option>
-        <option value="Terminated">Terminated</option>
-      </select>
-      <div class="modal-button-group">
-        <button type="submit" class="btn-primary">Update</button>
-        <button type="button" onclick="closeEditEmployeeModal()">Cancel</button>
-      </div>
-    </form>
+  <input type="hidden" name="action" value="edit">
+  <input type="hidden" id="editEmployeeId" name="employee_id">
+
+  <label>Full Name</label>
+  <input type="text" id="editFullName" name="full_name" required>
+
+  <label>Position</label>
+  <select id="editPositionId" name="position_id" required>
+    <option value="">Select Position</option>
+    <?php foreach ($positions as $pos): ?>
+      <option value="<?= $pos['position_id'] ?>"><?= htmlspecialchars($pos['position_name']) ?></option>
+    <?php endforeach; ?>
+  </select>
+
+  <label>Department</label>
+  <select id="editDepartmentId" name="department_id" required>
+    <option value="">Select Department</option>
+    <?php foreach ($departments as $dept): ?>
+      <option value="<?= $dept['department_id'] ?>"><?= htmlspecialchars($dept['department_name']) ?></option>
+    <?php endforeach; ?>
+  </select>
+
+  <label>Branch</label>
+  <select id="editBranch" name="branch_name" required>
+    <option value="Main">Main</option>
+    <option value="Davao">Davao</option>
+    <option value="Kidapawan">Kidapawan</option>
+    <option value="Tagum">Tagum</option>
+  </select>
+
+  <label>Shift</label>
+  <select id="editShiftId" name="shift_id" required>
+    <option value="">Select Shift</option>
+    <?php foreach ($shifts as $shift): ?>
+      <option value="<?= $shift['shift_id'] ?>"><?= htmlspecialchars($shift['shift_name']) ?></option>
+    <?php endforeach; ?>
+  </select>
+
+  <label>Status</label>
+  <select id="editStatusId" name="status_id" required>
+    <option value="">Select Status</option>
+    <?php foreach ($statuses as $status): ?>
+      <option value="<?= $status['status_id'] ?>"><?= htmlspecialchars($status['status_name']) ?></option>
+    <?php endforeach; ?>
+  </select>
+
+  <div class="modal-button-group">
+    <button type="submit" class="btn-primary">Update</button>
+    <button type="button" onclick="closeEditEmployeeModal()">Cancel</button>
+  </div>
+</form>
+
   </div>
 </div>
 
@@ -237,15 +254,31 @@ function closeAddEmployeeModal() {
 }
 function showEditEmployeeModal(id) {
   const row = document.querySelector(`tr[data-employee-id="${id}"]`);
+
   document.getElementById('editEmployeeId').value = id;
   document.getElementById('editFullName').value = row.cells[0].textContent.trim();
-  document.getElementById('editPosition').value = row.cells[1].textContent.trim();
-  document.getElementById('editDepartment').value = row.cells[2].textContent.trim();
-  document.getElementById('editBranch').value = row.cells[3].textContent.trim();
-  document.getElementById('editShift').value = row.cells[5].textContent.trim();
-  document.getElementById('editStatus').value = row.querySelector('.status').textContent.trim();
+
+  // Match by displayed text, then select corresponding <option>
+  setSelectByText('editPositionId', row.cells[1].textContent.trim());
+  setSelectByText('editDepartmentId', row.cells[2].textContent.trim());
+
+  setSelectByText('editShiftId', row.cells[5].textContent.trim());
+  setSelectByText('editStatusId', row.cells[6].textContent.trim());
+
   document.getElementById('editEmployeeModal').style.display = 'flex';
 }
+
+function setSelectByText(selectId, text) {
+  const select = document.getElementById(selectId);
+  for (let i = 0; i < select.options.length; i++) {
+    if (select.options[i].text.trim() === text) {
+      select.selectedIndex = i;
+      break;
+    }
+  }
+}
+
+
 function closeEditEmployeeModal() {
   document.getElementById('editEmployeeModal').style.display = 'none';
 }

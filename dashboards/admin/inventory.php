@@ -177,7 +177,7 @@ $stmt = $pdo->prepare("
       <input type="hidden" name="stock_supplier_id" id="stockInOutSupplierId">
 
       <div class="stock-row">
-        <input type="number" name="quantity" min="1" placeholder="Qty" style="flex: 1;" required>
+        <input type="number" name="quantity" min="1" placeholder="Qty" style="flex: 1;">
         <button type="submit" name="action" value="stock_in" class="stock-in">
           <i class="fas fa-arrow-down"></i> In
         </button>

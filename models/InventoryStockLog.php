@@ -9,7 +9,6 @@ class InventoryStockLog
     public $supplier_id; // nullable, for stock in
     public $note;
     public $created_at;
-    public $reorder_level; // new field
 
     public function __construct($data)
     {
@@ -20,6 +19,5 @@ class InventoryStockLog
         $this->supplier_id = $data['supplier_id'] ?? null;
         $this->note = $data['note'] ?? null;
         $this->created_at = $data['created_at'] ?? null;
-        $this->reorder_level = $data['reorder_level'] ?? null;
     }
 }

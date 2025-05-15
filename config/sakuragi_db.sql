@@ -3,9 +3,9 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: May 15, 2025 at 11:16 AM
+-- Generation Time: May 15, 2025 at 05:04 PM
 -- Server version: 10.4.32-MariaDB
--- PHP Version: 8.0.30
+-- PHP Version: 8.2.12
 
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
 START TRANSACTION;
@@ -75,6 +75,33 @@ INSERT INTO `branches` (`branch_id`, `branch_name`, `location`, `phone_number`) 
 -- --------------------------------------------------------
 
 --
+-- Table structure for table `departments`
+--
+
+CREATE TABLE `departments` (
+  `department_id` int(11) NOT NULL,
+  `department_name` varchar(50) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `departments`
+--
+
+INSERT INTO `departments` (`department_id`, `department_name`) VALUES
+(1, 'Tailoring'),
+(2, 'Printing'),
+(3, 'Embroidery'),
+(4, 'Quality Control'),
+(5, 'Packaging'),
+(6, 'Production'),
+(7, 'Sales & Customer Service'),
+(8, 'Inventory'),
+(9, 'Administration'),
+(10, 'Operations');
+
+-- --------------------------------------------------------
+
+--
 -- Table structure for table `employees`
 --
 
@@ -82,25 +109,23 @@ CREATE TABLE `employees` (
   `employee_id` bigint(20) NOT NULL,
   `user_id` bigint(20) NOT NULL,
   `branch_id` bigint(20) NOT NULL,
-  `position` varchar(100) NOT NULL,
-  `department` enum('Tailoring','Printing','Customer Service','Admin') NOT NULL,
-  `shift` enum('Morning','Afternoon','Night') NOT NULL,
   `hire_date` date NOT NULL,
   `salary` decimal(10,2) NOT NULL,
-  `status` enum('Active','Resigned','Terminated') DEFAULT 'Active'
+  `position_id` int(11) DEFAULT NULL,
+  `shift_id` int(11) DEFAULT NULL,
+  `status_id` int(11) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Dumping data for table `employees`
 --
 
-INSERT INTO `employees` (`employee_id`, `user_id`, `branch_id`, `position`, `department`, `shift`, `hire_date`, `salary`, `status`) VALUES
-(4, 7, 2, 'Assistant Tailor', 'Printing', 'Morning', '2025-05-06', 99999999.99, 'Active'),
-(6, 9, 2, 'Tailor', 'Tailoring', 'Morning', '2025-05-06', 74775.00, 'Active'),
-(8, 11, 3, 'Assistant Tailor', 'Customer Service', 'Afternoon', '2025-05-06', 2828867.00, 'Active'),
-(9, 12, 2, 'Tailor', 'Tailoring', 'Morning', '2025-05-24', 747474.00, 'Resigned'),
-(11, 16, 2, 'Assistant Tailor', 'Printing', 'Night', '2025-05-15', 0.00, 'Resigned'),
-(12, 18, 2, 'Tailor', 'Printing', 'Morning', '2025-05-15', 0.00, 'Active');
+INSERT INTO `employees` (`employee_id`, `user_id`, `branch_id`, `hire_date`, `salary`, `position_id`, `shift_id`, `status_id`) VALUES
+(8, 11, 3, '2025-05-06', 2828867.00, 1, 2, 1),
+(9, 12, 2, '2025-05-24', 747474.00, 2, 1, 1),
+(11, 16, 2, '2025-05-15', 0.00, 1, 3, 2),
+(12, 18, 2, '2025-05-15', 0.00, 2, 1, 1),
+(13, 20, 2, '2025-05-15', 0.00, 4, 1, 1);
 
 -- --------------------------------------------------------
 
@@ -288,15 +313,11 @@ INSERT INTO `inventory` (`inventory_id`, `branch_id`, `item_name`, `supplier_id`
 (177, 2, 'Hang Tag String with Pin', 7, 14, 250, 60, '2025-05-15 04:18:34'),
 (178, 2, 'Packaging Tape - Custom Printed', 7, 14, 80, 20, '2025-05-15 04:18:34'),
 (179, 2, 'Gift Box - Foldable (5x5x5)', 7, 14, 90, 25, '2025-05-15 04:18:34'),
-(181, 2, 'Bucket Hat Blank - Beige', 6, 13, 45, 10, '2025-05-15 04:19:06'),
-(182, 2, 'Cotton Hoodie Blank - Gray (L)', 6, 13, 85, 10, '2025-05-15 09:15:28'),
-(183, 2, 'Socks Blank - Mid Calf', 6, 13, 120, 30, '2025-05-15 04:19:06'),
+(183, 2, 'Socks Blank - Mid Calf', 6, 13, 120, 30, '2025-05-15 09:46:09'),
 (184, 2, 'Long Sleeve Tee Blank - XL', 6, 13, 80, 20, '2025-05-15 04:19:06'),
 (185, 2, 'Baby Bib Blank - Cotton', 6, 13, 100, 25, '2025-05-15 04:19:06'),
-(186, 2, 'Tote Bag Blank - Colored (Red)', 3, 13, 50, 15, '2025-05-15 04:19:06'),
 (187, 2, 'Pouch Blank with Zipper - 6x9in', 3, 13, 60, 15, '2025-05-15 04:19:06'),
 (188, 2, 'Canvas Sling Bag Blank', 3, 13, 40, 10, '2025-05-15 04:19:06'),
-(189, 2, 'Kitchen Towel Blank - 100% Cotton', 6, 13, 70, 20, '2025-05-15 04:19:06'),
 (190, 2, 'Mailer Box - Custom Kraft', 7, 14, 90, 20, '2025-05-15 04:19:06'),
 (191, 2, 'Clear Zip Bag - Resealable 6x9in', 7, 14, 300, 60, '2025-05-15 04:19:06'),
 (192, 2, 'Hang Tag - Minimal Design', 7, 14, 200, 50, '2025-05-15 04:19:06'),
@@ -325,7 +346,10 @@ INSERT INTO `inventory` (`inventory_id`, `branch_id`, `item_name`, `supplier_id`
 (215, 2, 'Patch Display Binder', 10, 14, 20, 5, '2025-05-15 04:19:06'),
 (216, 2, 'Digital Weighing Scale', 10, 14, 15, 5, '2025-05-15 04:19:06'),
 (217, 2, 'Paper Tags with Twine', 7, 14, 180, 40, '2025-05-15 04:19:06'),
-(218, 2, 'Shipping Label Stickers (4x6)', 7, 14, 300, 80, '2025-05-15 04:19:06');
+(218, 2, 'Shipping Label Stickers (4x6)', 7, 14, 300, 80, '2025-05-15 04:19:06'),
+(226, 2, 'Bucket Hat Blank - Blue', 7, 12, 5, 10, '2025-05-15 10:27:42'),
+(229, 2, 'Bucket Hat Blank - Blue', 5, 5, 32, 10, '2025-05-15 14:12:09'),
+(230, 2, 'Bucket Hat Blank - Green', 7, 5, 13, 10, '2025-05-15 14:14:08');
 
 -- --------------------------------------------------------
 
@@ -342,15 +366,6 @@ CREATE TABLE `inventory_stock_log` (
   `note` varchar(255) DEFAULT NULL,
   `created_at` timestamp NOT NULL DEFAULT current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
-
---
--- Dumping data for table `inventory_stock_log`
---
-
-INSERT INTO `inventory_stock_log` (`log_id`, `inventory_id`, `change_type`, `quantity`, `supplier_id`, `note`, `created_at`) VALUES
-(1, 182, 'in', 25, 6, '', '2025-05-15 09:15:20'),
-(2, 182, 'in', 25, 6, '', '2025-05-15 09:15:25'),
-(3, 182, 'out', 25, NULL, '', '2025-05-15 09:15:28');
 
 -- --------------------------------------------------------
 
@@ -490,6 +505,43 @@ CREATE TABLE `payments` (
 -- --------------------------------------------------------
 
 --
+-- Table structure for table `positions`
+--
+
+CREATE TABLE `positions` (
+  `position_id` int(11) NOT NULL,
+  `position_name` varchar(100) NOT NULL,
+  `department_id` int(11) DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `positions`
+--
+
+INSERT INTO `positions` (`position_id`, `position_name`, `department_id`) VALUES
+(1, 'Tailor', 1),
+(2, 'Senior Tailor', 1),
+(3, 'Alteration Specialist', 1),
+(4, 'Pattern Maker', 1),
+(5, 'Sublimation Technician', 2),
+(6, 'Screen Printing Operator', 2),
+(7, 'Print Finisher', 2),
+(8, 'Embroidery Machine Operator', 3),
+(9, 'Embroidery Technician', 3),
+(10, 'Quality Control Inspector', 4),
+(11, 'Packing Staff', 5),
+(12, 'Production Staff', 6),
+(13, 'Floor Supervisor', 6),
+(14, 'Shop Assistant', 7),
+(15, 'Inventory Clerk', 8),
+(16, 'Admin Assistant', 9),
+(17, 'HR Staff', 9),
+(18, 'Accountant', 9),
+(19, 'Operations Manager', 10);
+
+-- --------------------------------------------------------
+
+--
 -- Table structure for table `products`
 --
 
@@ -530,6 +582,26 @@ INSERT INTO `services` (`service_id`, `service_name`, `service_description`, `se
 -- --------------------------------------------------------
 
 --
+-- Table structure for table `shifts`
+--
+
+CREATE TABLE `shifts` (
+  `shift_id` int(11) NOT NULL,
+  `shift_name` varchar(20) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `shifts`
+--
+
+INSERT INTO `shifts` (`shift_id`, `shift_name`) VALUES
+(1, 'Morning'),
+(2, 'Afternoon'),
+(3, 'Night');
+
+-- --------------------------------------------------------
+
+--
 -- Table structure for table `shipping`
 --
 
@@ -546,24 +618,22 @@ CREATE TABLE `shipping` (
 -- --------------------------------------------------------
 
 --
--- Table structure for table `sizes_pricing`
+-- Table structure for table `statuses`
 --
 
-CREATE TABLE `sizes_pricing` (
-  `id` int(11) NOT NULL,
-  `size` varchar(50) NOT NULL,
-  `quantity` int(11) NOT NULL,
-  `price` decimal(10,2) NOT NULL
+CREATE TABLE `statuses` (
+  `status_id` int(11) NOT NULL,
+  `status_name` varchar(20) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
--- Dumping data for table `sizes_pricing`
+-- Dumping data for table `statuses`
 --
 
-INSERT INTO `sizes_pricing` (`id`, `size`, `quantity`, `price`) VALUES
-(1, 'Small', 1, 200.00),
-(2, 'Medium', 1, 200.00),
-(3, 'Large', 1, 200.00);
+INSERT INTO `statuses` (`status_id`, `status_name`) VALUES
+(1, 'Active'),
+(2, 'Resigned'),
+(3, 'Terminated');
 
 -- --------------------------------------------------------
 
@@ -721,7 +791,8 @@ INSERT INTO `users` (`user_id`, `branch_id`, `full_name`, `email`, `password`, `
 (11, NULL, 'winter ranola', 'winter@example.com', '$2y$10$TNi9KQqq49J5eTJRWVD.MOp4vll.GTHS1rIaIjDiGOK33YUHodOg6', '09758373702', 'employee', 'Active', '2025-05-05 21:05:48'),
 (12, 2, 'janice pempito', 'janice@example.com', '$2y$10$7cT.zdPcDZ0fNgn/Ua2dfODeFLijKmLiUv6bKWfLIBaho7XyyWeqa', '09758373702', 'employee', 'Active', '2025-05-05 21:06:15'),
 (16, 2, 'joevn', 'joevn838@sakuragi.com', '$2y$10$Tn6nby9MzbRiNqz6mcCXd.fQBT.R/gBuD8RzT9BqAwQPWrk.6/tCK', '09346001341', 'employee', 'Active', '2025-05-15 03:47:32'),
-(18, 2, 'Janna Malasarte', 'jannamalasarte587@sakuragi.com', '$2y$10$/Awi2LLtzLvr9HRroYDPOe1UR18R2DeYXHruP7fhnjXD3B2xoVMoC', '09111701730', 'employee', 'Active', '2025-05-15 03:48:40');
+(18, 2, 'Janna Malasarte', 'jannamalasarte587@sakuragi.com', '$2y$10$/Awi2LLtzLvr9HRroYDPOe1UR18R2DeYXHruP7fhnjXD3B2xoVMoC', '09111701730', 'employee', 'Active', '2025-05-15 03:48:40'),
+(20, 2, 'jeff lance malasarte', 'jefflancemalasarte279@sakuragi.com', '$2y$10$UqoETDs1f9.xlDxurwIhGenekm3jtOuME1aY2w7ZB29sevArjaxOi', '09159059179', 'employee', 'Active', '2025-05-15 08:54:02');
 
 --
 -- Indexes for dumped tables
@@ -748,13 +819,22 @@ ALTER TABLE `branches`
   ADD PRIMARY KEY (`branch_id`);
 
 --
+-- Indexes for table `departments`
+--
+ALTER TABLE `departments`
+  ADD PRIMARY KEY (`department_id`);
+
+--
 -- Indexes for table `employees`
 --
 ALTER TABLE `employees`
   ADD PRIMARY KEY (`employee_id`),
   ADD UNIQUE KEY `employee_id` (`employee_id`),
   ADD KEY `user_id` (`user_id`),
-  ADD KEY `branch_id` (`branch_id`);
+  ADD KEY `branch_id` (`branch_id`),
+  ADD KEY `position_id` (`position_id`),
+  ADD KEY `shift_id` (`shift_id`),
+  ADD KEY `status_id` (`status_id`);
 
 --
 -- Indexes for table `feedback`
@@ -850,6 +930,13 @@ ALTER TABLE `payments`
   ADD KEY `order_id` (`order_id`);
 
 --
+-- Indexes for table `positions`
+--
+ALTER TABLE `positions`
+  ADD PRIMARY KEY (`position_id`),
+  ADD KEY `department_id` (`department_id`);
+
+--
 -- Indexes for table `products`
 --
 ALTER TABLE `products`
@@ -862,6 +949,12 @@ ALTER TABLE `services`
   ADD PRIMARY KEY (`service_id`);
 
 --
+-- Indexes for table `shifts`
+--
+ALTER TABLE `shifts`
+  ADD PRIMARY KEY (`shift_id`);
+
+--
 -- Indexes for table `shipping`
 --
 ALTER TABLE `shipping`
@@ -870,10 +963,10 @@ ALTER TABLE `shipping`
   ADD KEY `order_id` (`order_id`);
 
 --
--- Indexes for table `sizes_pricing`
+-- Indexes for table `statuses`
 --
-ALTER TABLE `sizes_pricing`
-  ADD PRIMARY KEY (`id`);
+ALTER TABLE `statuses`
+  ADD PRIMARY KEY (`status_id`);
 
 --
 -- Indexes for table `suppliers`
@@ -927,10 +1020,16 @@ ALTER TABLE `branches`
   MODIFY `branch_id` bigint(20) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=9;
 
 --
+-- AUTO_INCREMENT for table `departments`
+--
+ALTER TABLE `departments`
+  MODIFY `department_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=11;
+
+--
 -- AUTO_INCREMENT for table `employees`
 --
 ALTER TABLE `employees`
-  MODIFY `employee_id` bigint(20) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=13;
+  MODIFY `employee_id` bigint(20) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=14;
 
 --
 -- AUTO_INCREMENT for table `feedback`
@@ -942,13 +1041,13 @@ ALTER TABLE `feedback`
 -- AUTO_INCREMENT for table `inventory`
 --
 ALTER TABLE `inventory`
-  MODIFY `inventory_id` bigint(20) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=219;
+  MODIFY `inventory_id` bigint(20) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=231;
 
 --
 -- AUTO_INCREMENT for table `inventory_stock_log`
 --
 ALTER TABLE `inventory_stock_log`
-  MODIFY `log_id` bigint(20) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
+  MODIFY `log_id` bigint(20) NOT NULL AUTO_INCREMENT;
 
 --
 -- AUTO_INCREMENT for table `invoices`
@@ -1005,16 +1104,34 @@ ALTER TABLE `payments`
   MODIFY `payment_id` bigint(20) NOT NULL AUTO_INCREMENT;
 
 --
+-- AUTO_INCREMENT for table `positions`
+--
+ALTER TABLE `positions`
+  MODIFY `position_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=20;
+
+--
 -- AUTO_INCREMENT for table `products`
 --
 ALTER TABLE `products`
   MODIFY `product_id` bigint(20) NOT NULL AUTO_INCREMENT;
 
 --
+-- AUTO_INCREMENT for table `shifts`
+--
+ALTER TABLE `shifts`
+  MODIFY `shift_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
+
+--
 -- AUTO_INCREMENT for table `shipping`
 --
 ALTER TABLE `shipping`
   MODIFY `delivery_id` bigint(20) NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT for table `statuses`
+--
+ALTER TABLE `statuses`
+  MODIFY `status_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
 
 --
 -- AUTO_INCREMENT for table `suppliers`
@@ -1038,7 +1155,7 @@ ALTER TABLE `supply_types`
 -- AUTO_INCREMENT for table `users`
 --
 ALTER TABLE `users`
-  MODIFY `user_id` bigint(20) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=19;
+  MODIFY `user_id` bigint(20) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=22;
 
 --
 -- Constraints for dumped tables
@@ -1061,7 +1178,10 @@ ALTER TABLE `audit_logs`
 --
 ALTER TABLE `employees`
   ADD CONSTRAINT `employees_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `users` (`user_id`),
-  ADD CONSTRAINT `employees_ibfk_2` FOREIGN KEY (`branch_id`) REFERENCES `branches` (`branch_id`);
+  ADD CONSTRAINT `employees_ibfk_2` FOREIGN KEY (`branch_id`) REFERENCES `branches` (`branch_id`),
+  ADD CONSTRAINT `employees_ibfk_3` FOREIGN KEY (`position_id`) REFERENCES `positions` (`position_id`),
+  ADD CONSTRAINT `employees_ibfk_4` FOREIGN KEY (`shift_id`) REFERENCES `shifts` (`shift_id`),
+  ADD CONSTRAINT `employees_ibfk_5` FOREIGN KEY (`status_id`) REFERENCES `statuses` (`status_id`);
 
 --
 -- Constraints for table `feedback`
@@ -1143,6 +1263,12 @@ ALTER TABLE `order_workflow`
 --
 ALTER TABLE `payments`
   ADD CONSTRAINT `payments_ibfk_1` FOREIGN KEY (`order_id`) REFERENCES `orders` (`order_id`);
+
+--
+-- Constraints for table `positions`
+--
+ALTER TABLE `positions`
+  ADD CONSTRAINT `positions_ibfk_1` FOREIGN KEY (`department_id`) REFERENCES `departments` (`department_id`);
 
 --
 -- Constraints for table `shipping`

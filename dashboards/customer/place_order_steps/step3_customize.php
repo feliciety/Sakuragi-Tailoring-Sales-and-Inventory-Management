@@ -180,7 +180,7 @@ if ($serviceId) {
         previewContainer.appendChild(summaryNote);
     }
 });
-
+    
 </script>
 <script>
 function updateCost(elem) {

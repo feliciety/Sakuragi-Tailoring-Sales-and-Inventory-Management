@@ -1,6 +1,6 @@
 <?php
-require_once __DIR__ . '/../config/db_connect.php'; // for controller
-
+require_once __DIR__ . '/../config/db_connect.php';
+require_once __DIR__ . '/../config/session_handler.php';
 
 $branchMap = [
     'Main' => 1,
@@ -10,20 +10,19 @@ $branchMap = [
 ];
 
 // DELETE EMPLOYEE
-if (isset($_POST['action']) && $_POST['action'] === 'delete') {
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && $_POST['action'] === 'delete') {
     $employeeId = $_POST['employee_id'];
 
     try {
-        // Delete employee
-        $stmt = $pdo->prepare("DELETE FROM employees WHERE user_id = :employee_id");
-        $stmt->execute(['employee_id' => $employeeId]);
+        $pdo->beginTransaction();
 
-        // Revert user role
-        $stmt = $pdo->prepare("UPDATE users SET role = 'customer' WHERE user_id = :employee_id");
-        $stmt->execute(['employee_id' => $employeeId]);
+        $pdo->prepare("DELETE FROM employees WHERE user_id = ?")->execute([$employeeId]);
+        $pdo->prepare("UPDATE users SET role = 'customer' WHERE user_id = ?")->execute([$employeeId]);
 
+        $pdo->commit();
         $_SESSION['success_message'] = 'Employee deleted and reverted to customer.';
     } catch (PDOException $e) {
+        $pdo->rollBack();
         $_SESSION['error_message'] = 'Error deleting employee: ' . $e->getMessage();
     }
 
@@ -32,47 +31,35 @@ if (isset($_POST['action']) && $_POST['action'] === 'delete') {
 }
 
 // ADD EMPLOYEE
-if (isset($_POST['action']) && $_POST['action'] === 'add') {
-    $full_name = $_POST['full_name'];
-    $position = $_POST['position'];
-    $department = $_POST['department'];
-    $branchName = $_POST['branch_name'];
-    $shift = $_POST['shift'];
-    $status = $_POST['status'];
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && $_POST['action'] === 'add') {
+    $fullName       = $_POST['full_name'];
+    $positionId     = $_POST['position_id'];
+    $departmentId   = $_POST['department_id']; // for form validation only
+    $branchName     = $_POST['branch_name'];
+    $shiftId        = $_POST['shift_id'];
+    $statusId       = $_POST['status_id'];
 
     $branchId = $branchMap[$branchName] ?? null;
-    $email = strtolower(str_replace(' ', '', $full_name)) . rand(100, 999) . '@sakuragi.com';
+    $email    = strtolower(str_replace(' ', '', $fullName)) . rand(100, 999) . '@sakuragi.com';
     $password = password_hash('123456', PASSWORD_DEFAULT);
-    $phone = '09' . rand(100000000, 999999999);
+    $phone    = '09' . rand(100000000, 999999999);
 
     try {
-        // Insert into users
-        $stmt = $pdo->prepare("INSERT INTO users (branch_id, full_name, email, password, phone_number, role, status) 
-                               VALUES (:branch_id, :full_name, :email, :password, :phone, 'employee', 'Active')");
-        $stmt->execute([
-            'branch_id' => $branchId,
-            'full_name' => $full_name,
-            'email' => $email,
-            'password' => $password,
-            'phone' => $phone,
-        ]);
+        $pdo->beginTransaction();
 
+        $stmt = $pdo->prepare("INSERT INTO users (branch_id, full_name, email, password, phone_number, role, status)
+                               VALUES (?, ?, ?, ?, ?, 'employee', 'Active')");
+        $stmt->execute([$branchId, $fullName, $email, $password, $phone]);
         $userId = $pdo->lastInsertId();
 
-        // Insert into employees
-        $stmt = $pdo->prepare("INSERT INTO employees (user_id, branch_id, position, department, shift, hire_date, status, salary) 
-                               VALUES (:user_id, :branch_id, :position, :department, :shift, CURDATE(), :status, 0)");
-        $stmt->execute([
-            'user_id' => $userId,
-            'branch_id' => $branchId,
-            'position' => $position,
-            'department' => $department,
-            'shift' => $shift,
-            'status' => $status,
-        ]);
+        $stmt = $pdo->prepare("INSERT INTO employees (user_id, branch_id, position_id, shift_id, status_id, hire_date, salary)
+                               VALUES (?, ?, ?, ?, ?, CURDATE(), 0)");
+        $stmt->execute([$userId, $branchId, $positionId, $shiftId, $statusId]);
 
+        $pdo->commit();
         $_SESSION['success_message'] = 'Employee added successfully.';
     } catch (PDOException $e) {
+        $pdo->rollBack();
         $_SESSION['error_message'] = 'Error adding employee: ' . $e->getMessage();
     }
 
@@ -81,40 +68,32 @@ if (isset($_POST['action']) && $_POST['action'] === 'add') {
 }
 
 // EDIT EMPLOYEE
-if (isset($_POST['action']) && $_POST['action'] === 'edit') {
-    $employeeId = $_POST['employee_id'];
-    $full_name = $_POST['full_name'];
-    $position = $_POST['position'];
-    $department = $_POST['department'];
-    $branchName = $_POST['branch_name'];
-    $shift = $_POST['shift'];
-    $status = $_POST['status'];
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && $_POST['action'] === 'edit') {
+    $employeeId     = $_POST['employee_id'];
+    $fullName       = $_POST['full_name'];
+    $positionId     = $_POST['position_id'];
+    $departmentId   = $_POST['department_id']; // optional if needed later
+    $branchName     = $_POST['branch_name'];
+    $shiftId        = $_POST['shift_id'];
+    $statusId       = $_POST['status_id'];
+
     $branchId = $branchMap[$branchName] ?? null;
 
     try {
-        // Update employee table
-        $stmt = $pdo->prepare("UPDATE employees 
-                               SET position = :position, department = :department, branch_id = :branch_id, shift = :shift, status = :status 
-                               WHERE user_id = :employee_id");
-        $stmt->execute([
-            'position' => $position,
-            'department' => $department,
-            'branch_id' => $branchId,
-            'shift' => $shift,
-            'status' => $status,
-            'employee_id' => $employeeId,
-        ]);
+        $pdo->beginTransaction();
 
-        // Update user name and branch
-        $stmt = $pdo->prepare("UPDATE users SET full_name = :full_name, branch_id = :branch_id WHERE user_id = :employee_id");
-        $stmt->execute([
-            'full_name' => $full_name,
-            'branch_id' => $branchId,
-            'employee_id' => $employeeId,
-        ]);
+        $stmt = $pdo->prepare("UPDATE employees
+                               SET position_id = ?, shift_id = ?, status_id = ?, branch_id = ?
+                               WHERE user_id = ?");
+        $stmt->execute([$positionId, $shiftId, $statusId, $branchId, $employeeId]);
 
+        $stmt = $pdo->prepare("UPDATE users SET full_name = ?, branch_id = ? WHERE user_id = ?");
+        $stmt->execute([$fullName, $branchId, $employeeId]);
+
+        $pdo->commit();
         $_SESSION['success_message'] = 'Employee updated successfully.';
     } catch (PDOException $e) {
+        $pdo->rollBack();
         $_SESSION['error_message'] = 'Error updating employee: ' . $e->getMessage();
     }
 
