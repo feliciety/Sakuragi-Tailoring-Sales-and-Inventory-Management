@@ -113,12 +113,14 @@ function validateStep1() {
 
 // -------- STEP 2: UPLOAD --------
 function setupStep2() {
-    const uploaded = sessionStorage.getItem('uploadedDesign');
-    setNextButtonState(!!uploaded);
+  const uploaded = sessionStorage.getItem('uploadedDesign');
+  setNextButtonState(!!uploaded); // this must be called after DOM updates
 }
+
 function validateStep2() {
-    return !!sessionStorage.getItem('uploadedDesign');
+  return !!sessionStorage.getItem('uploadedDesign');
 }
+
 
 // -------- STEP 3: CUSTOMIZE --------
 function setupStep3() {

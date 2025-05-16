@@ -52,7 +52,6 @@ function handleFileUpload() {
   const ext = file?.name.split('.').pop().toLowerCase();
   const isValid = file && ['psd', 'zip'].includes(ext) && file.size <= 500 * 1024 * 1024;
 
-  // Reset first
   disableNextButton();
   sessionStorage.removeItem('uploadedDesign');
   updateOrderData({ design: null });
@@ -106,6 +105,16 @@ function simulateUploadProgress() {
     bar.style.width = `${progress}%`;
     text.textContent = `${progress}%`;
   }, 150);
+
+  setTimeout(() => {
+  container.classList.add('d-none');
+  displayUploadedFile();
+  sessionStorage.setItem('uploadedDesign', 'true');
+
+  // Instead of enableNextButton(), use the proper setup trigger
+  if (typeof setupStep2 === 'function') setupStep2();
+}, 400);
+
 }
 
 function displayUploadedFile() {
@@ -114,8 +123,8 @@ function displayUploadedFile() {
   const preview = document.getElementById('imagePreview');
 
   preview.src = ext === 'psd'
-    ? 'data:image/svg+xml;base64,...'  // replace with your psd icon base64
-    : 'data:image/svg+xml;base64,...'; // replace with your zip icon base64
+    ? 'data:image/svg+xml;base64,...'  // your psd icon
+    : 'data:image/svg+xml;base64,...'; // your zip icon
 
   document.getElementById('fileName').textContent = `Name: ${file.name}`;
   document.getElementById('fileSize').textContent = `Size: ${(file.size / 1024 / 1024).toFixed(2)} MB`;
